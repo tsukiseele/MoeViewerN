@@ -1,0 +1,46 @@
+{
+  "id": 909,
+  "version": 1,
+  "title": "Gurobooru",
+  "author": "TsukiSeele",
+  "rating": "S",
+  "details": "Booru图库，收录ACGN插画，解剖，杀害等血腥内容",
+  "flag": "",
+  "type": "image",
+  "icon": "https://guro.booru.org/favicon.ico",
+  "headers": {},
+  "sections": {
+    "index": "https://guro.booru.org/index.php?page=post&s=list&pid={page:-1,20}",
+    {
+      "title": {
+        "selector": "$(.thumb > a).attr(id)",
+        "capture": "(?<=p)(.*)",
+        "replacement": "Gurobooru $1"
+      },
+      "coverUrl": {
+        "selector": "$(.thumb img).attr(src)"
+      },
+      "$next": {
+        "selector": "$(.thumb a).attr(href)",
+        "capture": "(.*)",
+        "replacement": "https://guro.booru.org/$1"
+      }
+    },
+    {
+      "title": {
+        "selector": "$(title).text()"
+      },
+      "tags": {
+        "selector": "$(textarea#tags).text()"
+      },
+      "sampleUrl": {
+        "selector": "$(#image).attr(src)"
+      }
+    }
+  },
+  "search": {
+    "index": "https://guro.booru.org/index.php?page=post&s=list&tags={keywords:}&pid={page:-1,20}",
+    "reuse": "home"
+  },
+  "extraSections": {}
+}

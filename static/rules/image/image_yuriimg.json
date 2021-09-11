@@ -1,0 +1,57 @@
+{
+  "id": 925,
+  "version": 1,
+  "title": "Yuriimg",
+  "author": "TsukiSeele",
+  "type": "image",
+  "rating": "S",
+  "icon": "http://yuriimg.com/favicon.ico",
+  "details": "ACG图站，百合图片",
+  "headers": {
+    "Referer": "http://yuriimg.com/"
+  },
+  "sections": {
+    "index": "http://yuriimg.com/post/{page:0}",
+    {
+      "title": {
+        "selector": "$(a.link).text()"
+      },
+      "tags": {
+        "selector": "$(a.link).text()",
+        "capture": "(?<=画师：).*",
+        "replacement": "$0"
+      },
+      "originUrl": {
+        "selector": "$(div.image > img).attr(data-viewersss)",
+        "capture": ".*",
+        "replacement": "http://yuriimg.com$0"
+      },
+      "sampleUrl": {
+        "selector": "$(div.image > img).attr(data-original)"
+      },
+      "coverUrl": {
+        "selector": "$(div.image > img).attr(data-original)"
+      }
+    },
+    {
+      "title": {
+        "selector": "$(head > title).text()"
+      },
+      "tags": {
+        "selector": "$(img#image).attr(alt)"
+      },
+      "sampleUrl": {
+        "selector": "$(meta[property=og:image]).attr(content)"
+      },
+      "originUrl": {
+        "selector": "$(.img-control > a).attr(href)",
+        "capture": ".*",
+        "replacement": "http://yuriimg.com$0"
+      }
+    }
+  },
+  "search": {
+    "index": "http://yuriimg.com/search/index/tags/{keywords:}/p/{page:0}.html()",
+    "reuse": "home"
+  }
+}

@@ -1,0 +1,56 @@
+{
+  "title": "N-Hentai",
+  "id": 304,
+  "version": 1,
+  "author": "TsukiSeele",
+  "rating": "S",
+  "details": "本子网站，无需梯子",
+  "flag": "",
+  "type": "comic",
+  "icon": "https://nhentai.net/favicon.ico",
+  "headers": {
+    "Referer": "https://nhentai.net/",
+    "Cookie": ""
+  },
+  "sections": {
+    "index": "https://nhentai.net/?page={page:0}",
+    {
+      "title": {
+        "selector": "$(a.cover > div.caption).text()"
+      },
+      "coverUrl": {
+        "selector": "$(a.cover).html()",
+        "capture": "//t.nhentai.net/galleries/\\d+/thumb.(jpg|jpeg|png|gif)",
+        "replacement": "https:$0"
+      },
+      "$next": {
+        "selector": "$(div.gallery > a).attr(href)",
+        "capture": ".*",
+        "replacement": "https://nhentai.net$0"
+      }
+    },
+    {
+      "title": {
+        "selector": "$(.thumb-container > .gallerythumb).attr(href)",
+        "capture": "/\\w+/\\w+/(\\w+)/",
+        "replacement": "$1"
+      },
+      "tags": {
+        "selector": "$(img#image).attr(alt)"
+      },
+      "coverUrl": {
+        "selector": "$(a.gallerythumb > img.lazyload).attr(data-src)"
+      },
+      "originUrl": {
+        "selector": "$(a.gallerythumb > img).attr(data-src)",
+        "capture": "(https?://)t(.nhentai.net/galleries/\\d+/\\d+)t(.\\w+)",
+        "replacement": "$1i$2$3"
+      }
+    }
+  },
+  "search": {
+    "index": "https://yande.re/post?page={page:0}&tags={keywords:}",
+    "reuse": "home"
+  },
+  "extraSections": {}
+}

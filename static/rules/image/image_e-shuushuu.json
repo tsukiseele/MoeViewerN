@@ -1,0 +1,30 @@
+{
+  "id": 905,
+  "version": 1,
+  "title": "E-ShuuShuu",
+  "author": "TsukiSeele",
+  "type": "image",
+  "icon": "http://e-shuushuu.net/special/favicon.ico",
+  "details": "ACG插画站点，不支持搜索",
+  "sections": {
+    "index": "http://e-shuushuu.net/?page={page:0}",
+    {
+      "title": {
+        "selector": "$(.image_block .title).text()"
+      },
+      "coverUrl": {
+        "selector": "$(.thumb_image img).attr(src)",
+        "capture": ".*",
+        "replacement": "http://e-shuushuu.net$0"
+      },
+      "originUrl": {
+        "selector": "$(.thumb_image).attr(href)",
+        "capture": ".*",
+        "replacement": "http://e-shuushuu.net$0"
+      },
+      "tags": {
+        "selector": "$(.meta .quicktag:eq(0)).text()"
+      }
+    }
+  }
+}

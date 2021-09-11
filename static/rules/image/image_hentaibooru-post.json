@@ -1,0 +1,45 @@
+{
+  "id": 910,
+  "version": "1",
+  "title": "Hentaibooru",
+  "author": "TsukiSeele",
+  "type": "image",
+  "rating": "R",
+  "details": "Booru图库，收录ACGN插画",
+  "icon": "https://booru.eu/favicon.ico",
+  "sections": {
+    "index": "https://booru.eu/post/list/{page:1}",
+    {
+      "title": {
+        "selector": "$(span.thumb img).attr(alt)"
+      },
+      "$next": {
+        "selector": "$(span.thumb > a).attr(href)",
+        "capture": ".*",
+        "replacement": "https://booru.eu$0"
+      },
+      "coverUrl": {
+        "selector": "$(span.thumb img).attr(src)",
+        "capture": ".*",
+        "replacement": "https://booru.eu$0"
+      },
+      "tags": {
+        "selector": "$(span.thumb > a).attr(data-tags)"
+      }
+    },
+    {
+      "title": {
+        "selector": "$(head > title).text()"
+      },
+      "originUrl": {
+        "selector": "$(img#main_image).attr(src)",
+        "capture": ".*",
+        "replacement": "https://booru.eu$0"
+      }
+    }
+  },
+  "search": {
+    "index": "https://booru.eu/post/list/{keywords:}/{page:1}",
+    "reuse": "home"
+  }
+}

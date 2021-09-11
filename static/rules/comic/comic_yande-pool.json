@@ -1,0 +1,66 @@
+{
+  "id": 922,
+  "version": 1,
+  "name": "Yande Pool",
+  "author": "TsukiSeele",
+  "rating": "S",
+  "details": "Booru图库，Yande的画集池，收录ACGN画集",
+  "icon": "https://yande.re/favicon.ico",
+  "flag": "",
+  "type": "comic",
+  "sections": {
+    "home": {
+      "index": "https://yande.re/pool?page={page:0}",
+      "rules": [
+        {
+          "title": {
+            "selector": "$(.even a,.odd a).text()"
+          },
+          "coverUrl": {
+            "regex": "\"preview_url\":\"(.*?)\""
+          },
+          "$next": {
+            "selector": "$(.even a,.odd a).attr(href)",
+            "capture": "(.*)",
+            "replacement": "https://yande.re$1"
+          }
+        },
+        {
+          "title": {
+            "selector": "$(.thumb).attr(href)",
+            "capture": "(\\d+)",
+            "replacement": "$1"
+          },
+          "tags": {
+            "selector": "$(.preview).attr(alt)",
+            "capture": "Tags\\: (.*?) User\\:",
+            "replacement": "$1"
+          },
+          "coverUrl": {
+            "selector": "$(.preview).attr(src)"
+          },
+          "$next": {
+            "selector": "$(.thumb).attr(href)",
+            "capture": "(.*)",
+            "replacement": "https://yande.re/$1"
+          }
+        },
+        {
+          "sampleUrl": {
+            "selector": "$(#image).attr(src)"
+          },
+          "largerUrl": {
+            "selector": "$(#highres).attr(href)"
+          },
+          "originUrl": {
+            "selector": "$(#png).attr(href)"
+          }
+        }
+      ]
+    },
+    "search": {
+      "index": "https://yande.re/pool?page={page:0}&query={keywords:}&commit=Search",
+      "reuse": "home"
+    }
+  }
+}

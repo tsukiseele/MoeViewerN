@@ -1,0 +1,47 @@
+{
+  "id": 906,
+  "version": 2,
+  "title": "FootFetishbooru",
+  "author": "TsukiSeele",
+  "rating": "S",
+  "details": "Booru图库，收录足部图片",
+  "flag": "",
+  "type": "image",
+  "icon": "https://footfetishbooru.booru.org/favicon.ico",
+  "headers": {},
+  "sections": {
+    
+    "index": "https://footfetishbooru.booru.org/index.php?page=post&s=list&pid={page:-1,20}",
+    {
+      "title": {
+        "selector": "$(.thumb > a).attr(id)",
+        "capture": "(?<=p)(.*)",
+        "replacement": "FootFetish $1"
+      },
+      "coverUrl": {
+        "selector": "$(.thumb img).attr(src)"
+      },
+      "$next": {
+        "selector": "$(.thumb > a).attr(href)",
+        "capture": "(.*)",
+        "replacement": "https://footfetishbooru.booru.org/$1"
+      }
+    },
+    {
+      "title": {
+        "selector": "$(title).text()"
+      },
+      "originUrl": {
+        "selector": "$(#image).attr(src)"
+      },
+      "tags": {
+        "selector": "$(#tags).text()"
+      }
+    }
+  },
+  "search": {
+    "index": "https://footfetishbooru.booru.org/index.php?page=post&s=list&pid={page:-1,20}&tags={keywords:}",
+    "reuse": "home"
+  },
+  "extraSections": {}
+}

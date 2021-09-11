@@ -1,0 +1,34 @@
+{
+  "id": 915,
+  "version": 1,
+  "name": "Lolibooru",
+  "author": "TsukiSeele",
+  "type": "image",
+  "rating": "R",
+  "details": "Booru图库，收录ACGN插画。只收萝莉，不管是合法，傲娇，无口还是H，只要是萝莉都收",
+  "icon": "https://lolibooru.moe/favicon.ico",
+  "sections": {
+    "home": {
+      "index": "https://lolibooru.moe/post?page={page:0}",
+      "rules": [
+        {
+          "title": {
+            "selector": "$(ul#post-list-posts > li).attr(id)",
+            "capture": "(?<=p).*",
+            "replacement": "Lolibooru $0"
+          },
+          "originUrl": {
+            "selector": "$(ul#post-list-posts > li > a[href]).attr(href)"
+          },
+          "coverUrl": {
+            "selector": "$(div > a.thumb > img).attr(src)"
+          }
+        }
+      ]
+    },
+    "search": {
+      "index": "https://lolibooru.moe/post?tags={keywords:}&page={page:}",
+      "reuse": "home"
+    }
+  }
+}

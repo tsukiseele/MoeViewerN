@@ -1,0 +1,46 @@
+{
+  "id": 904,
+  "version": 1,
+  "name": "Danbooru",
+  "author": "TsukiSeele",
+  "type": "image",
+  "icon": "https://danbooru.donmai.us/favicon.ico",
+  "rating": "Q",
+  "details": "Booru图库，收录ACGN插画",
+  "sections": {
+    "home": {
+      "index": "https://danbooru.donmai.us/posts?page={page:0}",
+      "rules": [
+        {
+          "title": {
+            "selector": "$(div#posts > div > article).attr(id)",
+            "capture": "(?<=post_).*",
+            "replacement": "Danbooru $0"
+          },
+          "originUrl": {
+            "selector": "$(div#posts > div > article).attr(data-file-url)"
+          },
+          "sampleUrl": {
+            "selector": "$(div#posts > div > article).attr(data-large-file-url)"
+          },
+          "coverUrl": {
+            "selector": "$(div#posts > div > article).attr(data-preview-file-url)"
+          },
+          "tags": {
+            "selector": "$(div#posts > div > article).attr(data-tags)"
+          },
+          "source_url": {
+            "selector": "$(div#posts > div > article).attr(data-source)"
+          },
+          "info": {
+            "selector": "$(div#posts > div > article).attr(data-pixiv-id)"
+          }
+        }
+      ]
+    },
+    "search": {
+      "index": "https://danbooru.donmai.us/posts?page={page:}&tags={keywords:}",
+      "reuse": "home"
+    }
+  }
+}

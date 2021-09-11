@@ -1,0 +1,64 @@
+{
+  "title": "Konachan-Safe",
+  "id": 912,
+  "version": 1,
+  "author": "TsukiSeele",
+  "rating": "S",
+  "details": "Booru图库，收录ACGN壁纸，屏蔽了R18内容",
+  "flag": "",
+  "type": "image",
+  "icon": "https://konachan.net/favicon.ico",
+  "headers": {
+    "Referer": "https://konachan.net/"
+  },
+  "sections": {
+    "index": "https://konachan.net/post?page={page:0}",
+    {
+      "title": {
+        "selector": "$(#post-list-posts > li).attr(id)",
+        "capture": "p(.*)",
+        "replacement": "Konachan $1"
+      },
+      "coverUrl": {
+        "selector": "$(.thumb > .preview).attr(src)"
+      },
+      "largerUrl": {
+        "selector": "$(.directlink.smallimg).attr(href)"
+      },
+      "$next": {
+        "selector": "$(.thumb).attr(href)",
+        "capture": "(.*)",
+        "replacement": "https://konachan.net$1"
+      }
+    },
+    {
+      "title": {
+        "selector": "$(input[name=comment[post_id]]).attr(value)",
+        "capture": "(.*)",
+        "replacement": "konachan $1"
+      },
+      "tags": {
+        "selector": "$(#image).attr(alt)"
+      },
+      "sampleUrl": {
+        "selector": "$(#image).attr(src)"
+      },
+      "largerUrl": {
+        "selector": "$(li > a#highres).attr(href)"
+      },
+      "originUrl": {
+        "selector": "$(li > a#png).attr(href)"
+      },
+      "datetime": {
+        "selector": "$(script#forum-posts-latest).html()",
+        "capture": "(\\d{4}-\\d{2}-\\d{2})T(\\d{2}:\\d{2}:\\d{2})",
+        "replacement": "$1 $2"
+      }
+    }
+  },
+  "search": {
+    "index": "https://konachan.net/post?page={page:0}&tags={keywords:}",
+    "reuse": "home"
+  },
+  "extraSections": {}
+}

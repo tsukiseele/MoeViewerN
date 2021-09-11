@@ -1,0 +1,44 @@
+{
+  "id": 926,
+  "version": 1,
+  "title": "ZeroChan",
+  "author": "TsukiSeele",
+  "type": "image",
+  "rating": "S",
+  "icon": "https://www.zerochan.net/favicon.ico",
+  "details": "ACG图站，零域动漫壁纸",
+  "sections": {
+    "index": "https://www.zerochan.net/?p={page:0}",
+    {
+      "title": {
+        "selector": "$(#thumbs2 img).attr(title)"
+      },
+      "coverUrl": {
+        "selector": "$(#thumbs2 img).attr(src)"
+      },
+      "$next": {
+        "selector": "$(#thumbs2 li > a).attr(href)",
+        "capture": ".*",
+        "replacement": "https://www.zerochan.net$0"
+      }
+    },
+    {
+      "title": {
+        "selector": "$(.preview).attr(title)"
+      },
+      "tags": {
+        "selector": "$(.preview img).attr(alt)"
+      },
+      "coverUrl": {
+        "selector": "$(.preview img).attr(src)"
+      },
+      "originUrl": {
+        "selector": "$(.preview).attr(href)"
+      }
+    }
+  },
+  "search": {
+    "index": "https://www.zerochan.net/{keywords:}?p={page:0}",
+    "reuse": "home"
+  }
+}

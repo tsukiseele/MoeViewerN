@@ -1,0 +1,45 @@
+{
+  "id": 918,
+  "version": "1",
+  "title": "Mzitu",
+  "author": "TsukiSeele",
+  "type": "comic",
+  "rating": "Q",
+  "details": "妹子图，真人写真",
+  "flag": "",
+  "icon": "https://www.mzitu.com/favicon.ico",
+  "headers": {
+    "Referer": "https://www.mzitu.com/"
+  },
+  "sections": {
+    "index": "https://www.mzitu.com/page/{page:}/",
+    {
+      "title": {
+        "selector": "$(.lazy).attr(alt)"
+      },
+      "tags": {
+        "selector": "$(.lazy).attr(alt)"
+      },
+      "coverUrl": {
+        "selector": "$(.lazy).attr(data-original)"
+      },
+      "$next": {
+        "selector": "$(#pins > li > a).attr(href)",
+        "capture": ".*",
+        "replacement": "$0/{page:1}"
+      }
+    },
+    {
+      "coverUrl": {
+        "selector": "$(.main-image img).attr(src)"
+      },
+      "originUrl": {
+        "selector": "$(.main-image img).attr(src)"
+      }
+    }
+  },
+  "search": {
+    "index": "  https://www.mzitu.com/search/{keywords:}/page/{page:}/",
+    "reuse": "home"
+  }
+}

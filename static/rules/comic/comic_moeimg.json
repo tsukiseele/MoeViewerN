@@ -1,0 +1,40 @@
+{
+  "id": 917,
+  "version": 2,
+  "title": "Moeimg",
+  "author": "TsukiSeele",
+  "type": "comic",
+  "rating": "Q",
+  "details": "ACG图集，二次元工口画像",
+  "flag": "",
+  "icon": "http://img.moeimg.net/wp-content/uploads/favicon.ico",
+  "sections": {
+    "index": "http://moeimg.net/page/{page:}",
+    {
+      "title": {
+        "selector": "$(.thumbnail_image).attr(alt)"
+      },
+      "$next": {
+        "selector": "$(.box.list > a).attr(href)"
+      },
+      "coverUrl": {
+        "selector": "$(.thumbnail_image).attr(src)"
+      },
+      "tags": {
+        "selector": "$(div.tag).text()"
+      }
+    },
+    {
+      "originUrl": {
+        "selector": "$(.thumbnail_image).attr(src)"
+      },
+      "coverUrl": {
+        "selector": "$(.thumbnail_image).attr(src)"
+      }
+    }
+  },
+  "search": {
+    "index": "http://moeimg.net/tag/{keywords:}/page/{page:}",
+    "reuse": "home"
+  }
+}

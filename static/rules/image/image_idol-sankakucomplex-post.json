@@ -1,0 +1,56 @@
+{
+  "id": 911,
+  "version": "2",
+  "title": "Idol-SankakuComplex",
+  "author": "TsukiSeele",
+  "type": "image",
+  "rating": "R",
+  "details": "Booru图库，收录真人写真以及视频",
+  "icon": "http://idol.sankakucomplex.com/favicon.ico",
+  "sections": {
+    "index": "https://idol.sankakucomplex.com/?page={page:0}",
+    {
+      "title": {
+        "selector": "$(span.thumb.blacklisted).attr(id)",
+        "capture": "(?<=p).*",
+        "replacement": "Sankaku $0"
+      },
+      "$next": {
+        "selector": "$(span.thumb.blacklisted > a).attr(href)",
+        "capture": ".*",
+        "replacement": "https://idol.sankakucomplex.com$0"
+      },
+      "coverUrl": {
+        "selector": "$(span.thumb.blacklisted > a > img.preview).attr(src)",
+        "capture": ".*",
+        "replacement": "https:$0"
+      }
+    },
+    {
+      "title": {
+        "selector": "$(img#image).attr(alt)",
+        "capture": ".*",
+        "replacement": "https:$0"
+      },
+      "tags": {
+        "selector": "$(img#image).attr(alt)",
+        "capture": ".*",
+        "replacement": "https:$0"
+      },
+      "sampleUrl": {
+        "selector": "$(img#image).attr(src)",
+        "capture": ".*",
+        "replacement": "https:$0"
+      },
+      "coverUrl": {
+        "selector": "$(img#image).attr(src)",
+        "capture": ".*",
+        "replacement": "https:$0"
+      }
+    }
+  },
+  "search": {
+    "index": "https://idol.sankakucomplex.com/?tags={keywords:}&commit=Search&page={page:0}",
+    "reuse": "home"
+  }
+}

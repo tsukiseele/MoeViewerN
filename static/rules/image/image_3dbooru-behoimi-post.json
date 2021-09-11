@@ -1,0 +1,50 @@
+{
+  "id": 901,
+  "version": 1,
+  "title": "3dbooru",
+  "author": "TsukiSeele",
+  "type": "image",
+  "rating": "Q",
+  "details": "Booru图库，收录真人写真以及Cosplay",
+  "icon": "http://behoimi.org/favicon.ico",
+  "headers": {
+    "Referer": "http://behoimi.org/post"
+  },
+  "sections": {
+    "index": "http://behoimi.org/post?page={page:0}",
+    {
+      "title": {
+        "selector": "$(span.thumb .preview).attr(alt)"
+      },
+      "$next": {
+        "selector": "$(span.thumb > a).attr(href)",
+        "capture": ".*",
+        "replacement": "http://behoimi.org$0"
+      },
+      "coverUrl": {
+        "selector": "$(span.thumb > a > img).attr(src)"
+      }
+    },
+    {
+      "title": {
+        "selector": "$(head > title).text()"
+      },
+      "tags": {
+        "selector": "$(img#image).attr(alt)"
+      },
+      "sampleUrl": {
+        "selector": "$(img#image).attr(src)"
+      },
+      "originUrl": {
+        "selector": "$(div#stats ul li:eq(2) a).attr(href)"
+      },
+      "coverUrl": {
+        "selector": "$(img#image).attr(src)"
+      }
+    }
+  },
+  "search": {
+    "index": "http://behoimi.org/post?tags={keywords:}&page={page:0}",
+    "reuse": "home"
+  }
+}
