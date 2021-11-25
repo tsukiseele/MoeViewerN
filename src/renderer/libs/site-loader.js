@@ -55,14 +55,23 @@ export async function loadSites(dir) {
       await setDefaultHeaders(site);
       // 设置Cookies到会话
       setCookiesToSession(site);
-
-      resultSet.push(site);
+      resultSet.push(reuseRules(site));
     } catch (e) {}
   }
-  console.log(resultSet);
-
   return resultSet;
 }
+
+function reuseRules(site) {
+  if (site && site.sections) {
+    Object.entries(site.sections).forEach(([, section]) => {
+      if (section.reuse && site.sections[section.reuse]) {
+        section.rule = site.sections[section.reuse].rules;
+      }
+    });
+  }
+  return site;
+}
+
 
 /**
  * 设置默认的请求头

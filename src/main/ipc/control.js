@@ -7,7 +7,8 @@ import {
 } from 'electron';
 
 export default {
-    bind(window) {
+  bind(window) {
+    
         // 窗口最小化
         ipcMain.on('window-min', () => {
             window.minimize();
@@ -23,7 +24,7 @@ export default {
         // 窗口关闭
         ipcMain.on('window-close', () => {
             // window.close();
-            if (process.platform !== 'darwin') app.quit()
+            app.exit()
         });
     },
 };

@@ -47,7 +47,6 @@
     "webpack-node-externals": "2.5.2"
   },
   "dependencies": {
-    "ress": "^4.0.0",
-    "string.prototype.matchall": "^4.0.5"
+    "ress": "^4.0.0"
   }
 }

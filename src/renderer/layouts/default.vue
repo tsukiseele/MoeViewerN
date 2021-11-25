@@ -38,7 +38,7 @@ export default {
   flex-direction: column;
   max-height: 100vh;
   overflow: hidden;
-  
+  // background: var(--bg);
   #container {
     display: flex;
     flex: 1;

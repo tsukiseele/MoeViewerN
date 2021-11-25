@@ -1,7 +1,7 @@
 <template lang="pug">
 .site-list-wrap
   ul.site-list
-    li.site-item(v-for="(site, index) in sites" :key="index" @click="$emit('click', site, index)")
+    li.site-item(v-for="(site, index) in sites" :key="index" @click="onItemClick(site, index)" :class='{active: activeItem.name == site.name}')
       .item-content {{ index + 1  + ". " + site.name }}
 </template>
 
@@ -11,6 +11,15 @@ export default {
     sites: {
       type: Array,
       default: []
+    },
+  },
+  data: () => ({
+    activeItem: {}
+  }),
+  methods: {
+    onItemClick(site, index) {
+      this.activeItem = site
+      this.$emit('itemClick', site, index)
     }
   }
 };
@@ -31,11 +40,16 @@ export default {
     list-style: none;
     padding: 0.33rem;
     color: black;
-    border: 1px solid rgba(192, 192, 224);
+    border-bottom: 1px solid rgba(192, 192, 224, 1);
     transition: background 0.3s ease;
     font-family: Shizuku;
+    cursor: pointer;
+    user-select: none;
     &:hover {
-      background: rgba(192, 192, 224);
+      background-color: rgba(192, 192, 224, .67);
+    }
+    &.active {
+      background-color: rgba(192, 192, 224, 1);
     }
   }
 }

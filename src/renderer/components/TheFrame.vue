@@ -29,9 +29,6 @@ export default {
 </script>
 
 <style lang="less" scoped>
-.frame-wrap {
-  background: rgba(224, 224, 255, 1);
-}
 .frame {
   // 可拖拽窗口
   -webkit-app-region: drag;

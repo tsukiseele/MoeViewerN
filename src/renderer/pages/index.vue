@@ -20,7 +20,7 @@ keep-alive
           .img-info
             p.some-info {{ props.value.title }}
       aside.aside
-        AppSiteList(:sites="sites" @click="onSiteClick")
+        AppSiteList(:sites="sites" @itemClick="onSiteClick")
       AppFab(@click="onFabClick")
       nuxt-child(:image="images[0]") 
   //- 对话框
@@ -36,7 +36,7 @@ keep-alive
 </template>
 
 <script>
-import Sakurawler from "@/libs/moe-spider";
+import Sakurawler from "@/libs/sakurawler";
 import { ipcRenderer } from "electron";
 
 export default {
@@ -58,7 +58,9 @@ export default {
     //
     currImage: null,
     //
-    pullDownDistance: 0
+    pullDownDistance: 0,
+    //
+    sakurawler: null
   }),
   computed: {
     sites() {
@@ -85,10 +87,12 @@ export default {
       this.keywords = null;
     },
     onSiteClick(site, index) {
-      if (!this.isLoading) {
+      if (this.isLoading) {
+        // this.$notify('正在加载，请等待')
+        this.sakurawler.abortRequest();
         this.currentSite = site;
       } else {
-        this.isShowSnackbar = true;
+        this.currentSite = site;
       }
     },
     onCloseDialog() {
@@ -101,7 +105,7 @@ export default {
     openDefaultSite() {
       if (this.sites && !this.currentSite) {
         this.currentSite = this.sites.find(item => {
-          return item.name.toLowerCase().indexOf("lolibooru") >= 0;
+          return item.name.toLowerCase().indexOf("safebooru");
         });
       }
     },
@@ -110,16 +114,15 @@ export default {
     },
     async loadNext() {
       this.page++;
-      this.images.push(...(await this.requestImages()));
+      this.images.push(...(await this.getImageList()));
     },
 
     async loadGallery() {
       this.openDefaultSite();
       this.resetStatus();
-      // this.keywords = "peko";
       // 请求
       try {
-        const res = await this.requestImages();
+        const res = await this.getImageList();
         if (res) {
           this.images = res;
           console.log(this.images);
@@ -129,20 +132,19 @@ export default {
       }
     },
 
-    async requestImages() {
+    async getImageList() {
       this.isLoading = true;
-      console.log("isLoading", this.isLoading);
       try {
-        this.resultSet = await new Sakurawler(
+        this.sakurawler = new Sakurawler(
           this.currentSite,
           this.page,
           this.keywords
-        ).parseSite();
+        );
+        this.resultSet = await this.sakurawler.parseSite();
       } catch (e) {
         console.log(e);
       }
       this.isLoading = false;
-      console.log("isLoading", this.isLoading);
       return this.resultSet[0];
     },
     clickFn(event, { index, value }) {
