@@ -23,7 +23,7 @@
         "capture": "//t.nhentai.net/galleries/\\d+/thumb.(jpg|jpeg|png|gif)",
         "replacement": "https:$0"
       },
-      "$next": {
+      "$children": {
         "selector": "$(div.gallery > a).attr(href)",
         "capture": ".*",
         "replacement": "https://nhentai.net$0"

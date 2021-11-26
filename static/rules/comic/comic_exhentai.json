@@ -23,7 +23,7 @@
           "coverUrl": {
             "selector": "$(.gl3t a img).attr(src)"
           },
-          "$next": {
+          "$children": {
             "selector": "$(.gl3t a).attr(href)",
             "capture": ".*",
             "replacement": "$0?inline_set=ts_l&p={page:0}"
@@ -42,7 +42,7 @@
           "coverUrl": {
             "selector": "$(.gdtl > a > img).attr(src)"
           },
-          "$next": {
+          "$children": {
             "selector": "$(.gdtl > a).attr(href)"
           }
         },

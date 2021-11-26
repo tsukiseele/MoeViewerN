@@ -27,7 +27,7 @@
           "largerUrl": {
             "selector": "$(.directlink.smallimg).attr(href)"
           },
-          "$next": {
+          "$children": {
             "selector": "$(.thumb).attr(href)",
             "capture": "(.*)",
             "replacement": "https://konachan.com$1"

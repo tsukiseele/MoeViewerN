@@ -36,7 +36,7 @@ export default {
   },
   async created() {
     if (!this.image) this.$router.push("/");
-    if (this.image.$next) {
+    if (this.image.$children) {
       try {
         this.images = await new Sakurawler(
           this.image.spider.site,

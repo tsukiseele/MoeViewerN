@@ -15,7 +15,7 @@
         "capture": "(?<=p).*",
         "replacement": "Sankaku $0"
       },
-      "$next": {
+      "$children": {
         "selector": "$(span.thumb.blacklisted > a).attr(href)",
         "capture": ".*",
         "replacement": "https://idol.sankakucomplex.com$0"

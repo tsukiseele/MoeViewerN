@@ -19,7 +19,7 @@
           "coverUrl": {
             "regex": "\"preview_url\":\"(.*?)\""
           },
-          "$next": {
+          "$children": {
             "selector": "$(.even a,.odd a).attr(href)",
             "capture": "(.*)",
             "replacement": "https://yande.re$1"
@@ -39,7 +39,7 @@
           "coverUrl": {
             "selector": "$(.preview).attr(src)"
           },
-          "$next": {
+          "$children": {
             "selector": "$(.thumb).attr(href)",
             "capture": "(.*)",
             "replacement": "https://yande.re/$1"

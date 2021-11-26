@@ -23,7 +23,7 @@
       "coverUrl": {
         "selector": "$(.lazy).attr(data-original)"
       },
-      "$next": {
+      "$children": {
         "selector": "$(#pins > li > a).attr(href)",
         "capture": ".*",
         "replacement": "$0/{page:1}"

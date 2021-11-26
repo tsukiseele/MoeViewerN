@@ -14,7 +14,7 @@
       "title": {
         "selector": "$(.thumbnail_image).attr(alt)"
       },
-      "$next": {
+      "$children": {
         "selector": "$(.box.list > a).attr(href)"
       },
       "coverUrl": {

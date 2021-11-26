@@ -16,7 +16,7 @@
       "coverUrl": {
         "selector": "$(#thumbs2 img).attr(src)"
       },
-      "$next": {
+      "$children": {
         "selector": "$(#thumbs2 li > a).attr(href)",
         "capture": ".*",
         "replacement": "https://www.zerochan.net$0"

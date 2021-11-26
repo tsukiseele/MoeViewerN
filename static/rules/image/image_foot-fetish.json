@@ -21,7 +21,7 @@
       "coverUrl": {
         "selector": "$(.thumb img).attr(src)"
       },
-      "$next": {
+      "$children": {
         "selector": "$(.thumb > a).attr(href)",
         "capture": "(.*)",
         "replacement": "https://footfetishbooru.booru.org/$1"

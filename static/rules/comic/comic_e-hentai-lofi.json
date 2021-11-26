@@ -16,7 +16,7 @@
       "title": {
         "selector": "$(table.it tr:eq(0)).text()"
       },
-      "$next": {
+      "$children": {
         "selector": "$(td.ii > a).attr(href)",
         "capture": ".*",
         "replacement": "$0/{page:0}"
@@ -35,7 +35,7 @@
       "tags": {
         "selector": "$(tbody > tr:eq(3) > td:eq(1)).text()"
       },
-      "$next": {
+      "$children": {
         "selector": "$(div#gh div.gi a).attr(href)"
       }
     },

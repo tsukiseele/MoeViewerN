@@ -31,7 +31,7 @@
             "capture": ".*(?=\\sRating)",
             "replacement": "$0"
           },
-          "$next": {
+          "$children": {
             "selector": "$(.content > div > span.thumb > a).attr(href)",
             "capture": "(.*)",
             "replacement": "https://chan.sankakucomplex.com$1"

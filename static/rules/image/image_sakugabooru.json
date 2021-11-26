@@ -20,7 +20,7 @@
       "coverUrl": {
         "selector": "$(div.inner > a.thumb > img).attr(src)"
       },
-      "$next": {
+      "$children": {
         "selector": "$(div.inner > a).attr(href)",
         "capture": "(.*)",
         "replacement": "https://www.sakugabooru.com$1"

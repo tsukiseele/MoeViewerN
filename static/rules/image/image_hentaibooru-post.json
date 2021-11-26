@@ -13,7 +13,7 @@
       "title": {
         "selector": "$(span.thumb img).attr(alt)"
       },
-      "$next": {
+      "$children": {
         "selector": "$(span.thumb > a).attr(href)",
         "capture": ".*",
         "replacement": "https://booru.eu$0"

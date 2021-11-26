@@ -18,7 +18,7 @@
       "tags": {
         "selector": "$(span.thumb > a > img).attr(alt)"
       },
-      "$next": {
+      "$children": {
         "selector": "$(span.thumb > a).attr(href)",
         "capture": ".*",
         "replacement": "https://rule34.xxx/$0"

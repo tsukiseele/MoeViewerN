@@ -16,7 +16,7 @@
       "title": {
         "selector": "$(span.thumb .preview).attr(alt)"
       },
-      "$next": {
+      "$children": {
         "selector": "$(span.thumb > a).attr(href)",
         "capture": ".*",
         "replacement": "http://behoimi.org$0"

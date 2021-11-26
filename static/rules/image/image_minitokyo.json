@@ -13,7 +13,7 @@
       "title": {
         "selector": "$(ul.wallpapers > li > a > img).attr(alt)"
       },
-      "$next": {
+      "$children": {
         "selector": "$(ul.wallpapers > li > a).attr(href)"
       },
       "coverUrl": {
@@ -45,7 +45,7 @@
       "title": {
         "selector": "$(ul.scans > li > a > img).attr(alt)"
       },
-      "$next": {
+      "$children": {
         "selector": "$(ul.scans > li > a).attr(href)"
       },
       "coverUrl": {
