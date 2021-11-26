@@ -1,25 +1,20 @@
 <template lang="pug">
 aside.aside
   ul
-    //- li.mdi.mdi-home(@click="$router.push('/')")
-    li.mdi.mdi-image-multiple(@click="$router.push('/')")
-    //- li.mdi.mdi-view-dashboard(@click="$router.push('/gallery')")
-    li.mdi.mdi-star(@click="$router.push('/favorites')")
-    li.mdi.mdi-package-variant-closed(@click="$router.push('/subscribes')")
-    li.mdi.mdi-cog(@click="$router.push('/settings')")
-    li.mdi.mdi-power(@click="onExit")
+    li.material-icons(@click="$router.push('/')") dashboard
+    li.material-icons(@click="$router.push('/favorites')") loyalty
+    li.material-icons(@click="$router.push('/subscribes')") code
+    li.material-icons(@click="$router.push('/settings')") tune
+    li.material-icons(@click="$router.push('/download')") download
+    li.material-icons(@click="$router.push('/about')") info
 </template>
- 
+
 <script>
-import { ipcRenderer } from "electron";
+import { ipcRenderer } from 'electron'
 
 export default {
-  methods: {
-    onExit() {
-      ipcRenderer.send("window-close");
-    }
-  }
-};
+  methods: {}
+}
 </script>
 
 <style lang="less" scoped>
@@ -29,17 +24,22 @@ export default {
   flex-direction: column;
   background: rgba(96, 96, 128, 1);
   height: calc(100vh - var(--frame-height));
-  li {
-    color: var(--text);
+  ul {
     list-style: none;
-    display: block;
-    padding: 1rem;
-    cursor: pointer;
-    background-color: rgba(96, 96, 128, 1);
-    transition: 0.2s;
-    // border-radius: .33rem;
-    &:hover {
-      filter: brightness(1.2);
+    li {
+      display: block;
+      text-align: center;
+      line-height: 3rem;
+      margin-bottom: 0.5rem;
+      font-size: 22px;
+      cursor: pointer;
+      user-select: none;
+      color: var(--text);
+      background-color: rgba(96, 96, 128, 1);
+      transition: 0.25s;
+      &:hover {
+        filter: brightness(1.2);
+      }
     }
   }
 }

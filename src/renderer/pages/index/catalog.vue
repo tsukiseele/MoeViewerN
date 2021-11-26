@@ -49,9 +49,6 @@ export default {
             if (!img[k]) img[k] = this.image[k];
           }
         }
-        // for (const image of images) {
-        //   if (image.)
-        // }
         console.log(this.images);
       } catch (error) {
         console.log(error);

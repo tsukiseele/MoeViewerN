@@ -73,10 +73,10 @@ export default class Sakurawler {
    * @param {Number} keywords 关键字
    * @returns {Promise<Array<Object>>}
    */
-  async parseRules(index, rule, nuxtUrl = null, page = this.page, keywords = this.keywords) {
+  async parseRules(index, rule, nextUrl = null, page = this.page, keywords = this.keywords) {
     if (!rule) return []
     // 生成URL
-    const url = nuxtUrl || this.replaceUrlTemplate(index, page, keywords)
+    const url = nextUrl || this.replaceUrlTemplate(index, page, keywords)
     console.log('Request: ', url)
     // 发送请求
     const html = await this.requestAsText(url)
@@ -132,6 +132,7 @@ export default class Sakurawler {
    * @returns {Promise<Array<Object>>}
    */
   async parseNext(res) {
+    console.log(res);
     const section = this.getCurrentSection()
     return await this.parseRules(section.index, section.rules[1], res.$next)
   }

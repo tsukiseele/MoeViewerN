@@ -202,6 +202,7 @@ export default {
 .aside {
   color: white;
   width: 200px;
+  border-left: 1px solid rgba(160, 160, 192);
   .site-item {
     font-family: Shizuku;
     list-style: none;
