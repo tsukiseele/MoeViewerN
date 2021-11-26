@@ -1,6 +1,6 @@
 <template lang="pug">
 .frame-wrap
-  .frame
+  .frame-bar
     .frame-icon.mdi.mdi-alpha-m-box
     .frame-title MoeViewerN
     .frame-spacer
@@ -11,25 +11,25 @@
 </template>
 
 <script>
-import { ipcRenderer } from "electron";
+import { ipcRenderer } from 'electron'
 
 export default {
   methods: {
     onMin() {
-      ipcRenderer.send("window-min");
+      ipcRenderer.send('window-min')
     },
     onMax() {
-      ipcRenderer.send("window-max");
+      ipcRenderer.send('window-max')
     },
     onClose() {
-      ipcRenderer.send("window-close");
+      ipcRenderer.send('window-close')
     }
   }
-};
+}
 </script>
 
 <style lang="less" scoped>
-.frame {
+.frame-bar {
   // 可拖拽窗口
   -webkit-app-region: drag;
   user-select: none;

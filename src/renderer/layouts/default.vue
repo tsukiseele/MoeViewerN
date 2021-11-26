@@ -45,6 +45,8 @@ export default {
     flex: 1;
     main {
       flex: 1;
+      max-height: calc(100vh - var(--frame-height));
+      overflow: auto;
     }
   }
 }

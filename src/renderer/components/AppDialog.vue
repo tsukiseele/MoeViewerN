@@ -18,7 +18,6 @@ export default {
   },
   props: {
     width: {
-
       type: String | Number,
       default: '60vw'
     },
@@ -94,15 +93,15 @@ export default {
     }
   }
 }
-  .zoom-enter-active  {
-    transition: 0.3s ease-out;
-  }
-  .zoom-leave-active  {
-    transition: 0.2s ease-in;
-  }
-  .zoom-enter ,
-  .zoom-leave-to  {
-    opacity: 0;
-    transform: scale(0.5);
-  }
+.zoom-enter-active {
+  transition: 0.3s ease-out;
+}
+.zoom-leave-active {
+  transition: 0.2s ease-in;
+}
+.zoom-enter,
+.zoom-leave-to {
+  opacity: 0;
+  transform: scale(0.5);
+}
 </style>

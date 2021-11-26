@@ -25,7 +25,8 @@ export default {
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.33);
   background: rgba(192, 192, 255, 1);
   transition: box-shadow 0.3s ease;
-
+  cursor: pointer;
+  user-select: none;
   &:hover {
     box-shadow: 0 2px 16px rgba(0, 0, 32, 0.33);
   }

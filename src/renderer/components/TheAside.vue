@@ -1,8 +1,8 @@
 <template lang="pug">
 aside.aside
   ul
-    li.material-icons-outlined(@click="$router.push('/')") dashboard
-    li.material-icons-outlined(@click="$router.push('/favorites')") loyalty
+    li.material-icons(@click="$router.push('/')") dashboard
+    li.material-icons(@click="$router.push('/favorites')") loyalty
     li.material-icons(@click="$router.push('/subscribes')") code
     li.material-icons(@click="$router.push('/settings')") tune
     li.material-icons(@click="$router.push('/download')") download

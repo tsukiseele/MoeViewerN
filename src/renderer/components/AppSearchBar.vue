@@ -1,53 +1,68 @@
 <template lang="pug">
-  .app-search-bar-wrap(v-show="visible" @click="$emit('change', false)")
-    .app-search-bar(:class="classList")
-      i.mdi.mdi-star
-      input.app-search-input(@focus="onActive(true)" @blur="onActive(false)")
+div
+  .app-search-bar-wrap(v-show="visible" @click="$emit('close', false)")
+  transition(name="drop")
+    .app-search-bar(v-show="visible" :class="{ active: isActive }")
+      input.app-search-input(v-model="inputValue" @focus="isActive = true" @blur="isActive = false")
+      i.material-icons(@click="onSubmit") search
 </template>
 
 <script>
 export default {
-  model: { 
-    prop: 'visible',
-    event: 'change'
+  model: {
+    prop: 'value',
+    event: 'input'
   },
   props: {
     visible: {
       type: Boolean,
       default: false
+    },
+    value: {
+      type: String,
+      default: ''
+    }
+  },
+  watch: {
+    inputValue(newVal) {
+      this.$emit("input", newVal)
+    },
+    value(newVal) {
+      this.inputValue = newVal
     }
   },
   data: () => ({
-    classList: ""
+    inputValue: '',
+    isActive: ''
   }),
   methods: {
-    onActive(state) {
-      this.classList = { active: state };
+    onSubmit() {
+      this.$emit('submit')
     }
   }
-};
+}
 </script>
 <style lang="scss" scoped>
 .app-search-bar-wrap {
-  position: fixed;
+  position: absolute;
+  top: 0;
+  left: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(0,0,0,.33);
 }
 .app-search-bar {
   position: absolute;
+  width: 20rem;
+  top: 0%;
+  left: 50%;
+  transform: translateX(-50%);
   display: flex;
   align-items: center;
   background-color: white;
-  width: 80%;
-  top: 20%;
-  left: 10%;
-  padding: 10px;
+  padding: 0.5rem 1rem;
   box-shadow: 0 0 8px 2px rgba(0, 0, 0, 0.12);
-  transition: 0.3s;
-  
   &::before {
-    content: "";
+    content: '';
     position: absolute;
     bottom: 0;
     left: 50%;
@@ -63,15 +78,37 @@ export default {
     }
   }
   .app-search-input {
+    outline: none;
     box-sizing: border-box;
     position: relative;
     display: block;
     width: 100%;
-    height: 100%;
-    // border-radius: 5px;
-    padding: 5px;
+    line-height: 2.4rem;
+    height: 2.4rem;
     overflow: hidden;
     transition: 0.3s;
   }
+  i {
+    cursor: pointer;
+    user-select: none;
+    padding: 0.5rem;
+    transition: 0.2s;
+    border-radius: 50%;
+    &:hover {
+      background-color: rgba(128, 128, 128, 0.33);
+    }
+  }
+}
+
+.drop-enter-active {
+  transition: 0.3s ease-out;
+}
+.drop-leave-active {
+  transition: 0.2s ease-in;
+}
+.drop-enter,
+.drop-leave-to {
+  transform: translateX(-50%) translateY(-100%);
+  opacity: 0;
 }
 </style>

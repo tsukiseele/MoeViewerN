@@ -23,27 +23,18 @@ keep-alive
         AppSiteList(:sites="sites" @itemClick="onSiteClick")
       AppFab(@click="onFabClick")
       nuxt-child(:image="images[0]") 
-  //- 对话框
-  //- Dialog(
-  //-   :onHide="onCloseDialog",
-  //-   :show="isShowDialog",
-  //-   title="对话框",
-  //-   content="内容"
-  //- )
-  
-  //- 提示框
-  //- Snackbar(message="提示框", v-model="isShowSnackbar")
+    AppSearchBar(v-model="keywords" @submit="onSearchSubmit" @close="onSearchClose" :visible="isShowSearchBar")
 </template>
 
 <script>
-import Sakurawler from "@/libs/sakurawler";
-import { ipcRenderer } from "electron";
+import Sakurawler from '@/libs/sakurawler'
+import { ipcRenderer } from 'electron'
 
 export default {
   data: () => ({
     // 弹出组件状态
     isShowDialog: false,
-    isShowSnackbar: false,
+    isShowSearchBar: false,
     //
     resultSet: [],
     // 瀑布流
@@ -53,7 +44,7 @@ export default {
     isLoading: false,
     //
     page: 1, // 当前页码
-    keywords: "",
+    keywords: '',
     currentSite: null,
     //
     currImage: null,
@@ -64,123 +55,118 @@ export default {
   }),
   computed: {
     sites() {
-      return this.$store.state.sites;
+      return this.$store.state.sites
     },
     headers() {
-      return this.currentSite ? this.currentSite.headers : null;
+      return this.currentSite ? this.currentSite.headers : null
     }
   },
   watch: {
     sites() {
-      this.openDefaultSite();
+      this.openDefaultSite()
     },
     currentSite() {
-      this.loadGallery();
+      this.sakurawler && this.sakurawler.abortRequest()
+      this.resetStatus()
+      this.loadGallery()
     }
   },
   created() {
-    this.openDefaultSite();
+    this.openDefaultSite()
   },
   methods: {
+    onSearchSubmit() {
+      this.loadGallery()
+      this.isShowSearchBar = false
+    },
+    onSearchClose() {
+      this.isShowSearchBar = false
+    },
     resetStatus() {
-      this.page = 1;
-      this.keywords = null;
+      this.page = 1
+      this.keywords = null
     },
     onSiteClick(site, index) {
       if (this.isLoading) {
         // this.$notify('正在加载，请等待')
-        this.sakurawler.abortRequest();
-        this.currentSite = site;
+        this.sakurawler.abortRequest()
+        this.currentSite = site
       } else {
-        this.currentSite = site;
+        this.currentSite = site
       }
     },
     onCloseDialog() {
-      this.isShowDialog = false;
+      this.isShowDialog = false
     },
     onFabClick() {
-      // this.isShowDialog = true;
-      ipcRenderer.send("openSectionWindow");
+      this.isShowSearchBar = true
     },
     openDefaultSite() {
+      this.resetStatus()
       if (this.sites && !this.currentSite) {
         this.currentSite = this.sites.find(item => {
-          console.log(item);
-          return item.name.toLowerCase().indexOf("safebooru");
-        });
+          console.log(item)
+          return item.name.toLowerCase().indexOf('safebooru')
+        })
       }
     },
     preloaded() {
-      this.isLoading = false;
+      this.isLoading = false
     },
     async loadNext() {
-      this.page++;
-      this.images.push(...(await this.getImageList()));
+      this.page++
+      this.images.push(...(await this.getImageList()))
     },
 
     async loadGallery() {
-      this.openDefaultSite();
-      this.resetStatus();
       // 请求
       try {
-        const res = await this.getImageList();
+        const res = await this.getImageList()
         if (res) {
-          this.images = res;
-          console.log(this.images);
+          this.images = res
+          console.log(this.images)
         }
       } catch (e) {
-        console.log(e);
+        console.log(e)
       }
     },
 
     async getImageList() {
-      this.isLoading = true;
+      this.isLoading = true
       try {
-        this.sakurawler = new Sakurawler(
-          this.currentSite,
-          this.page,
-          this.keywords
-        );
-        this.resultSet = await this.sakurawler.parseSite();
+        this.sakurawler = new Sakurawler(this.currentSite, this.page, this.keywords)
+        this.resultSet = await this.sakurawler.parseSite()
       } catch (e) {
-        console.log(e);
+        console.log(e)
       }
-      this.isLoading = false;
-      return this.resultSet[0];
+      this.isLoading = false
+      return this.resultSet[0]
     },
     clickFn(event, { index, value }) {
-      /*
-    event.preventDefault();
-    if (event.target.tagName.toLowerCase() == "img") {
-      console.log("img clicked", index, value);
-    }*/
-      // this.isShowDialog = true;
-      console.log(this.images[index]);
-      this.currImage = this.images[index];
+      this.currImage = this.images[index]
       this.$router.push({
-        name: "index-catalog",
+        name: 'index-catalog',
         params: { image: this.images[index] }
-      });
-      // ipcRenderer.send("openSectionWindow", "/catalog");
+      })
     },
 
     imgErrorFn(imgItem) {
-      console.log("图片加载错误", imgItem);
+      console.log('图片加载错误', imgItem)
     },
 
     pullDownMove(pullDownDistance) {
-      this.pullDownDistance = pullDownDistance;
+      this.pullDownDistance = pullDownDistance
     },
 
     pullDownEnd(pullDownDistance) {
-      console.log("pullDownEnd");
+      console.log('pullDownEnd')
       if (this.pullDownDistance > 50) {
-        alert("下拉刷新");
+        alert('下拉刷新')
       }
-      this.pullDownDistance = 0;
+      this.pullDownDistance = 0
     }
   }
-};
+}
 </script>
 
 <style lang="less" scoped>

@@ -54,12 +54,18 @@ export default {
 </script>
 
 <style lang="less" scoped>
+.subscribe-wrap {
+  // height: 100vh;
+  // height: 100%;
+  // overflow-y: scroll;
+  // overflow-x: hidden;
+}
 .subscribes {
   display: flex;
   flex-direction: column;
   .list-enter {
     opacity: 0;
-    transform: translateX(-1rem);
+    transform: translateX(-2rem);
   }
   .list-enter-active,
   .list-leave-active {
@@ -67,7 +73,7 @@ export default {
   }
   .list-leave-to {
     opacity: 0;
-    transform: translateX(1rem);
+    transform: translateX(2rem);
   }
   .subscribe {
     display: flex;
