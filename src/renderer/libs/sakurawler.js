@@ -134,7 +134,7 @@ export default class Sakurawler {
   async parseNext(res) {
     console.log(res);
     const section = this.getCurrentSection()
-    return await this.parseRules(section.index, section.rules[1], res.$next)
+    return await this.parseRules(section.index, section.rules[1], res.$children)
   }
 
   /**

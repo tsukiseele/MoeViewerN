@@ -105,6 +105,7 @@ export default {
     openDefaultSite() {
       if (this.sites && !this.currentSite) {
         this.currentSite = this.sites.find(item => {
+          console.log(item);
           return item.name.toLowerCase().indexOf("safebooru");
         });
       }

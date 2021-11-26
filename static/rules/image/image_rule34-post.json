@@ -1,60 +1,64 @@
 {
   "id": 919,
   "version": 2,
-  "title": "Rule34",
+  "name": "Rule34",
   "author": "TsukiSeele",
   "type": "image",
   "rating": "R",
   "icon": "https://rule34.xxx/favicon.ico",
   "details": "Booru图库，收录ACGN插画，R18内容较多",
   "sections": {
-    "index": "https://rule34.xxx/index.php?page=post&s=list&pid={page:-1,42}",
-    {
-      "title": {
-        "selector": "$(span.thumb > a).attr(id)",
-        "capture": "(?<=p).*",
-        "replacement": "Rule34 $0"
-      },
-      "tags": {
-        "selector": "$(span.thumb > a > img).attr(alt)"
-      },
-      "$children": {
-        "selector": "$(span.thumb > a).attr(href)",
-        "capture": ".*",
-        "replacement": "https://rule34.xxx/$0"
-      },
-      "coverUrl": {
-        "selector": "$(span.thumb > a > img).attr(src)",
-        "capture": "(https:)?(.*)",
-        "replacement": "https:$2"
-      }
+    "home": {
+      "index": "https://rule34.xxx/index.php?page=post&s=list&pid={page:-1,42}",
+      "rules": [
+        {
+          "title": {
+            "selector": "$(span.thumb > a).attr(id)",
+            "capture": "(?<=p).*",
+            "replacement": "Rule34 $0"
+          },
+          "tags": {
+            "selector": "$(span.thumb > a > img).attr(alt)"
+          },
+          "$children": {
+            "selector": "$(span.thumb > a).attr(href)",
+            "capture": ".*",
+            "replacement": "https://rule34.xxx/$0"
+          },
+          "coverUrl": {
+            "selector": "$(span.thumb > a > img).attr(src)",
+            "capture": "(https:)?(.*)",
+            "replacement": "https:$2"
+          }
+        },
+        {
+          "title": {
+            "selector": "$(head > title).text()"
+          },
+          "tags": {
+            "selector": "$(img#image).attr(alt)"
+          },
+          "originUrl": {
+            "selector": "$(body).html()",
+            "capture": "(https?:)?(//(img.)?rule34.xxx//?images/\\d+?/.*?\\.(jpg|png|jpeg))",
+            "replacement": "https:$2"
+          },
+          "sampleUrl": {
+            "selector": "$(img#image).attr(src)",
+            "capture": "(https:)?(.*)",
+            "replacement": "https:$2"
+          },
+          "coverUrl": {
+            "selector": "$(img#image).attr(src)",
+            "capture": "(https:)?(.*)",
+            "replacement": "https:$2"
+          }
+        }
+      ]
     },
-    {
-      "title": {
-        "selector": "$(head > title).text()"
-      },
-      "tags": {
-        "selector": "$(img#image).attr(alt)"
-      },
-      "originUrl": {
-        "selector": "$(body).html()",
-        "capture": "(https?:)?(//(img.)?rule34.xxx//?images/\\d+?/.*?\\.(jpg|png|jpeg))",
-        "replacement": "https:$2"
-      },
-      "sampleUrl": {
-        "selector": "$(img#image).attr(src)",
-        "capture": "(https:)?(.*)",
-        "replacement": "https:$2"
-      },
-      "coverUrl": {
-        "selector": "$(img#image).attr(src)",
-        "capture": "(https:)?(.*)",
-        "replacement": "https:$2"
-      }
+    "search": {
+      "index": "https://rule34.xxx/index.php?tags={keywords:}&page=post&s=list&pid={page:-1,42}",
+      "reuse": "home"
     }
-  },
-  "search": {
-    "index": "https://rule34.xxx/index.php?tags={keywords:}&page=post&s=list&pid={page:-1,42}",
-    "reuse": "home"
   }
 }
