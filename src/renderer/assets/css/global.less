@@ -1,3 +1,5 @@
+@import './icons.less';
+
 .fade-enter-active,
 .fade-leave-active {
   transition: opacity 0.5s;
@@ -22,6 +24,7 @@
 :root {
   --frame-height: 2rem;
   --text: rgba(216, 216, 216, 1);
+  --bg: rgba(224, 224, 255, 1);
 }
 
 ::-webkit-scrollbar {
@@ -42,10 +45,16 @@
 ::-webkit-scrollbar,
 ::-webkit-scrollbar-track-piece {
   // background-color: transparent;
-  background-color: rgba(192, 192, 224, 1);
+  // background-color: rgba(192, 192, 224, 1);
 }
 
 @font-face {
   font-family: "Shizuku";
   src: url(../fonts/InfoDisplay.woff);
+}
+.page-enter-active, .page-leave-active {
+  transition: opacity 0.25s;
+}
+.page-enter, .page-leave-active {
+  opacity: 0;
 }

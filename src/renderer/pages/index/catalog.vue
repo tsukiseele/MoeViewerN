@@ -8,7 +8,7 @@
 </template>
 
 <script>
-import MoeSpider from "@/libs/moe-spider";
+import Sakurawler from "@/libs/sakurawler";
 
 export default {
   /*
@@ -36,9 +36,9 @@ export default {
   },
   async created() {
     if (!this.image) this.$router.push("/");
-    if (this.image.$next) {
+    if (this.image.$children) {
       try {
-        this.images = await new MoeSpider(
+        this.images = await new Sakurawler(
           this.image.spider.site,
           this.image.spider.page,
           this.image.spider.keywords
@@ -49,9 +49,6 @@ export default {
             if (!img[k]) img[k] = this.image[k];
           }
         }
-        // for (const image of images) {
-        //   if (image.)
-        // }
         console.log(this.images);
       } catch (error) {
         console.log(error);

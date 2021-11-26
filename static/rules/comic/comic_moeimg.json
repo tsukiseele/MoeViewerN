@@ -1,7 +1,7 @@
 {
   "id": 917,
   "version": 2,
-  "title": "Moeimg",
+  "name": "Moeimg",
   "author": "TsukiSeele",
   "type": "comic",
   "rating": "Q",
@@ -9,32 +9,36 @@
   "flag": "",
   "icon": "http://img.moeimg.net/wp-content/uploads/favicon.ico",
   "sections": {
-    "index": "http://moeimg.net/page/{page:}",
-    {
-      "title": {
-        "selector": "$(.thumbnail_image).attr(alt)"
-      },
-      "$next": {
-        "selector": "$(.box.list > a).attr(href)"
-      },
-      "coverUrl": {
-        "selector": "$(.thumbnail_image).attr(src)"
-      },
-      "tags": {
-        "selector": "$(div.tag).text()"
-      }
+    "home": {
+      "index": "http://moeimg.net/page/{page:}",
+      "rules": [
+        {
+          "title": {
+            "selector": "$(.thumbnail_image).attr(alt)"
+          },
+          "$children": {
+            "selector": "$(.box.list > a).attr(href)"
+          },
+          "coverUrl": {
+            "selector": "$(.thumbnail_image).attr(src)"
+          },
+          "tags": {
+            "selector": "$(div.tag).text()"
+          }
+        },
+        {
+          "originUrl": {
+            "selector": "$(.thumbnail_image).attr(src)"
+          },
+          "coverUrl": {
+            "selector": "$(.thumbnail_image).attr(src)"
+          }
+        }
+      ]
     },
-    {
-      "originUrl": {
-        "selector": "$(.thumbnail_image).attr(src)"
-      },
-      "coverUrl": {
-        "selector": "$(.thumbnail_image).attr(src)"
-      }
+    "search": {
+      "index": "http://moeimg.net/tag/{keywords:}/page/{page:}",
+      "reuse": "home"
     }
-  },
-  "search": {
-    "index": "http://moeimg.net/tag/{keywords:}/page/{page:}",
-    "reuse": "home"
   }
 }

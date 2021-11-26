@@ -1,73 +1,78 @@
 {
   "id": 916,
   "version": 2,
-  "title": "Minitokyo",
+  "name": "Minitokyo",
   "author": "TsukiSeele",
   "type": "image",
   "rating": "S",
   "details": "ACG壁纸站点，对插件的兼容较差，凑合着用",
   "icon": "http://gallery.minitokyo.net/favicon.ico",
   "sections": {
-    "index": "http://gallery.minitokyo.net/wallpapers?order=id&page={page:0}",
-    {
-      "title": {
-        "selector": "$(ul.wallpapers > li > a > img).attr(alt)"
-      },
-      "$next": {
-        "selector": "$(ul.wallpapers > li > a).attr(href)"
-      },
-      "coverUrl": {
-        "selector": "$(ul.wallpapers > li > a > img).attr(src)"
-      }
+    "home": {
+      "index": "http://gallery.minitokyo.net/wallpapers?order=id&page={page:0}",
+      "rules": [
+        {
+          "title": {
+            "selector": "$(ul.wallpapers > li > a > img).attr(alt)"
+          },
+          "$children": {
+            "selector": "$(ul.wallpapers > li > a).attr(href)"
+          },
+          "coverUrl": {
+            "selector": "$(ul.wallpapers > li > a > img).attr(src)"
+          }
+        },
+        {
+          "title": {
+            "selector": "$(div#preview > p).text()"
+          },
+          "tags": {
+            "selector": "$(div#preview > a > img).attr(alt)"
+          },
+          "originUrl": {
+            "selector": "$(div#preview > a).attr(href)"
+          },
+          "sampleUrl": {
+            "selector": "$(div#preview > a > img).attr(src)"
+          },
+          "coverUrl": {
+            "selector": "$(div#preview > a > img).attr(src)"
+          }
+        }
+      ]
     },
-    {
-      "title": {
-        "selector": "$(div#preview > p).text()"
-      },
-      "tags": {
-        "selector": "$(div#preview > a > img).attr(alt)"
-      },
-      "originUrl": {
-        "selector": "$(div#preview > a).attr(href)"
-      },
-      "sampleUrl": {
-        "selector": "$(div#preview > a > img).attr(src)"
-      },
-      "coverUrl": {
-        "selector": "$(div#preview > a > img).attr(src)"
-      }
-    }
-  },
-  "search": {
-    "index": "http://www.minitokyo.net/{keywords:}",
-
-    {
-      "title": {
-        "selector": "$(ul.scans > li > a > img).attr(alt)"
-      },
-      "$next": {
-        "selector": "$(ul.scans > li > a).attr(href)"
-      },
-      "coverUrl": {
-        "selector": "$(ul.scans > li > a > img).attr(src)"
-      }
-    },
-    {
-      "title": {
-        "selector": "$(div#preview > p).text()"
-      },
-      "tags": {
-        "selector": "$(div#preview > a > img).attr(alt)"
-      },
-      "originUrl": {
-        "selector": "$(div#preview > a).attr(href)"
-      },
-      "sampleUrl": {
-        "selector": "$(div#preview > a > img).attr(src)"
-      },
-      "coverUrl": {
-        "selector": "$(div#preview > a > img).attr(src)"
-      }
+    "search": {
+      "index": "http://www.minitokyo.net/{keywords:}",
+      "rules": [
+        {
+          "title": {
+            "selector": "$(ul.scans > li > a > img).attr(alt)"
+          },
+          "$children": {
+            "selector": "$(ul.scans > li > a).attr(href)"
+          },
+          "coverUrl": {
+            "selector": "$(ul.scans > li > a > img).attr(src)"
+          }
+        },
+        {
+          "title": {
+            "selector": "$(div#preview > p).text()"
+          },
+          "tags": {
+            "selector": "$(div#preview > a > img).attr(alt)"
+          },
+          "originUrl": {
+            "selector": "$(div#preview > a).attr(href)"
+          },
+          "sampleUrl": {
+            "selector": "$(div#preview > a > img).attr(src)"
+          },
+          "coverUrl": {
+            "selector": "$(div#preview > a > img).attr(src)"
+          }
+        }
+      ]
     }
   }
 }

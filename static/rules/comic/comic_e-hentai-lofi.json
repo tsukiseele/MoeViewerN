@@ -1,7 +1,7 @@
 {
   "id": 301,
   "version": 2,
-  "title": "E-Hentai-Lofi",
+  "name": "E-Hentai-Lofi",
   "author": "TsukiSeele",
   "type": "comic",
   "icon": "https://e-hentai.org/favicon.ico",
@@ -11,42 +11,46 @@
     "Cookie": "igneous=ed27332b5; ipb_member_id=4249385; ipb_pass_hash=887e9708aaae76e7161526fd299cff64; sl=dm_1;"
   },
   "sections": {
-    "index": "https://e-hentai.org/lofi/?page={page:-1}",
-    {
-      "title": {
-        "selector": "$(table.it tr:eq(0)).text()"
-      },
-      "$next": {
-        "selector": "$(td.ii > a).attr(href)",
-        "capture": ".*",
-        "replacement": "$0/{page:0}"
-      },
-      "coverUrl": {
-        "selector": "$(td.ii > a > img).attr(src)"
-      }
+    "home": {
+      "index": "https://e-hentai.org/lofi/?page={page:-1}",
+      "rules": [
+        {
+          "title": {
+            "selector": "$(table.it tr:eq(0)).text()"
+          },
+          "$children": {
+            "selector": "$(td.ii > a).attr(href)",
+            "capture": ".*",
+            "replacement": "$0/{page:0}"
+          },
+          "coverUrl": {
+            "selector": "$(td.ii > a > img).attr(src)"
+          }
+        },
+        {
+          "title": {
+            "selector": "$(div#gt h1).text()"
+          },
+          "coverUrl": {
+            "selector": "$(div#gh div.gi a img).attr(src)"
+          },
+          "tags": {
+            "selector": "$(tbody > tr:eq(3) > td:eq(1)).text()"
+          },
+          "$children": {
+            "selector": "$(div#gh div.gi a).attr(href)"
+          }
+        },
+        {
+          "originUrl": {
+            "selector": "$(div#sd a img#sm).attr(src)"
+          }
+        }
+      ]
     },
-    {
-      "title": {
-        "selector": "$(div#gt h1).text()"
-      },
-      "coverUrl": {
-        "selector": "$(div#gh div.gi a img).attr(src)"
-      },
-      "tags": {
-        "selector": "$(tbody > tr:eq(3) > td:eq(1)).text()"
-      },
-      "$next": {
-        "selector": "$(div#gh div.gi a).attr(href)"
-      }
-    },
-    {
-      "originUrl": {
-        "selector": "$(div#sd a img#sm).attr(src)"
-      }
+    "search": {
+      "index": "https://e-hentai.org/lofi/?f_search={keywords:}&page={page:-1}",
+      "reuse": "home"
     }
-  },
-  "search": {
-    "index": "https://e-hentai.org/lofi/?f_search={keywords:}&page={page:-1}",
-    "reuse": "home"
   }
 }

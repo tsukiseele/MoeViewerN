@@ -42,7 +42,7 @@ const macOS = {
 }
 
 module.exports = {
-  productName: 'moe-viewer-n',
+  productName: 'MoeViewerNative',
   appId: 'com.tsukiseele.moeviewern',
   artifactName: 'setup-${version}.${ext}',
   directories: {

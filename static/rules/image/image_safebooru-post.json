@@ -20,7 +20,7 @@
           "tags": {
             "selector": "$(.thumb img).attr(alt)"
           },
-          "$next": {
+          "$children": {
             "selector": "$(.thumb a).attr(href)",
             "capture": ".*",
             "replacement": "https://safebooru.org/$0"

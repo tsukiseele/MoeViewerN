@@ -1,7 +1,7 @@
 {
   "id": 921,
   "version": 1,
-  "title": "Sakugabooru",
+  "name": "Sakugabooru",
   "author": "TsukiSeele",
   "rating": "S",
   "details": "Booru图库，然而收录的却是视频",
@@ -10,45 +10,48 @@
   "icon": "https://www.sakugabooru.com/favicon.ico?new",
   "headers": {},
   "sections": {
-    "index": "https://www.sakugabooru.com/post?page={page:}",
-    {
-      "title": {
-        "selector": "$(ul#post-list-posts > li).attr(id)",
-        "capture": "(?<=p)(.*)",
-        "replacement": "Sakugabooru $1"
-      },
-      "coverUrl": {
-        "selector": "$(div.inner > a.thumb > img).attr(src)"
-      },
-      "$next": {
-        "selector": "$(div.inner > a).attr(href)",
-        "capture": "(.*)",
-        "replacement": "https://www.sakugabooru.com$1"
-      }
+    "home": {
+      "index": "https://www.sakugabooru.com/post?page={page:}",
+      "rules": [
+        {
+          "title": {
+            "selector": "$(ul#post-list-posts > li).attr(id)",
+            "capture": "(?<=p)(.*)",
+            "replacement": "Sakugabooru $1"
+          },
+          "coverUrl": {
+            "selector": "$(div.inner > a.thumb > img).attr(src)"
+          },
+          "$children": {
+            "selector": "$(div.inner > a).attr(href)",
+            "capture": "(.*)",
+            "replacement": "https://www.sakugabooru.com$1"
+          }
+        },
+        {
+          "title": {
+            "selector": "$(title).text()"
+          },
+          "tags": {
+            "selector": "$(textarea#post_tags).text()"
+          },
+          "sampleUrl": {
+            "selector": "$(video source).attr(src)"
+          },
+          "originUrl": {
+            "selector": "$(a#highres).attr(href)"
+          },
+          "datetime": {
+            "selector": "$(script#forum-posts-latest).html()",
+            "capture": "(\\d{4}-\\d{2}-\\d{2})T(\\d{2}:\\d{2}:\\d{2})",
+            "replacement": "$1 $2"
+          }
+        }
+      ]
     },
-    {
-      "title": {
-        "selector": "$(title).text()"
-      },
-      "tags": {
-        "selector": "$(textarea#post_tags).text()"
-      },
-      "sampleUrl": {
-        "selector": "$(video source).attr(src)"
-      },
-      "originUrl": {
-        "selector": "$(a#highres).attr(href)"
-      },
-      "datetime": {
-        "selector": "$(script#forum-posts-latest).html()",
-        "capture": "(\\d{4}-\\d{2}-\\d{2})T(\\d{2}:\\d{2}:\\d{2})",
-        "replacement": "$1 $2"
-      }
+    "search": {
+      "index": "https://www.sakugabooru.com/post?page={page:}&tags={keywords:}",
+      "reuse": "home"
     }
-  },
-  "search": {
-    "index": "https://www.sakugabooru.com/post?page={page:}&tags={keywords:}",
-    "reuse": "home"
-  },
-  "extraSections": {}
+  }
 }

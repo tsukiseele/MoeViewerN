@@ -1,42 +1,47 @@
 {
   "id": 902,
   "version": 1,
-  "title": "Atfbooru",
+  "name": "Atfbooru",
   "author": "TsukiSeele",
   "type": "image",
   "icon": "https://booru.allthefallen.moe/favicon.ico",
   "rating": "Q",
   "details": "Booru图库，收录ACGN插画",
   "sections": {
-    "index": "https://booru.allthefallen.moe/posts?page={page:}",
-    {
-      "title": {
-        "selector": "$(div#posts > div > article).attr(id)",
-        "capture": "(?<=post_).*",
-        "replacement": "ATF $0"
-      },
-      "originUrl": {
-        "selector": "$(div#posts > div > article).attr(data-file-url)"
-      },
-      "sampleUrl": {
-        "selector": "$(div#posts > div > article).attr(data-large-file-url)"
-      },
-      "coverUrl": {
-        "selector": "$(div#posts > div > article).attr(data-preview-file-url)"
-      },
-      "tags": {
-        "selector": "$(div#posts > div > article).attr(data-tags)"
-      },
-      "source_url": {
-        "selector": "$(div#posts > div > article).attr(data-source)"
-      },
-      "info": {
-        "selector": "$(div#posts > div > article).attr(data-pixiv-id)"
-      }
+    "home": {
+      "index": "https://booru.allthefallen.moe/posts?page={page:}",
+      "rules": [
+        {
+          "title": {
+            "selector": "$(div#posts > div > article).attr(id)",
+            "capture": "(?<=post_).*",
+            "replacement": "ATF $0"
+          },
+          "originUrl": {
+            "selector": "$(div#posts > div > article).attr(data-file-url)"
+          },
+          "sampleUrl": {
+            "selector": "$(div#posts > div > article).attr(data-large-file-url)"
+          },
+          "coverUrl": {
+            "selector": "$(div#posts > div > article).attr(data-preview-file-url)"
+          },
+          "tags": {
+            "selector": "$(div#posts > div > article).attr(data-tags)"
+          },
+          "source_url": {
+            "selector": "$(div#posts > div > article).attr(data-source)"
+          },
+          "info": {
+            "selector": "$(div#posts > div > article).attr(data-pixiv-id)"
+          }
+        }
+      ]
+    },
+
+    "search": {
+      "index": "https://booru.allthefallen.moe/posts?page={page:}&tags={keywords:}",
+      "reuse": "home"
     }
-  },
-  "search": {
-    "index": "https://booru.allthefallen.moe/posts?page={page:}&tags={keywords:}",
-    "reuse": "home"
   }
 }

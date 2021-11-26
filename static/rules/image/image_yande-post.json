@@ -21,7 +21,7 @@
           "coverUrl": {
             "selector": "$(div > a.thumb > img).attr(src)"
           },
-          "$next": {
+          "$children": {
             "selector": "$(div.inner > a).attr(href)",
             "capture": "(.*)",
             "replacement": "https://yande.re/$1"

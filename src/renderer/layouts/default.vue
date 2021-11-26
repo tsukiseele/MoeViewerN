@@ -4,7 +4,7 @@
     #container
       TheAside
       main
-        nuxt
+        nuxt(:keep-alive="false")
 </template>
 
 <script>
@@ -27,7 +27,8 @@ export default {
       const sites = await SiteLoader.loadSites("./static/rules/");
       this.$store.commit("sites", sites);
     }
-  }
+  },
+  
 }
 </script>
 
@@ -38,7 +39,7 @@ export default {
   flex-direction: column;
   max-height: 100vh;
   overflow: hidden;
-  
+  // background: var(--bg);
   #container {
     display: flex;
     flex: 1;
