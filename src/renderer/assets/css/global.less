@@ -26,26 +26,23 @@
   --bg: rgba(224, 224, 255, 1);
 }
 
-::-webkit-scrollbar {
-  width: 0.67rem;
-  height: 0.67rem;
+*::-webkit-scrollbar {
+  width: 0.5rem;
+  height: 0.5rem;
 }
-::-webkit-scrollbar,
-::-webkit-scrollbar-track-piece {
+*::-webkit-scrollbar,
+*::-webkit-scrollbar-track-piece {
   background-color: transparent;
 }
-::-webkit-scrollbar-thumb {
-  // border-radius: 0.33rem;
-  background-color: rgba(96, 96, 128, 0.67);
-
-  // background-color: #b28fce;
-  background-image: repeating-linear-gradient(45deg, hsla(0,0%,100%,.6) 0 2rem, transparent 2rem 4rem);
-  // background-image: -webkit-linear-gradient(45deg, hsla(0, 0%, 100%, 0.6) 25%, transparent 0, transparent 50%, hsla(0, 0%, 100%, 0.6) 0, hsla(0, 0%, 100%, 0.6) 75%, transparent 0, transparent);
+*::-webkit-scrollbar-thumb {
+  background-color: transparent;
 }
-::-webkit-scrollbar,
-::-webkit-scrollbar-track-piece {
-  // background-color: transparent;
-  // background-color: rgba(192, 192, 224, 1);
+*:hover::-webkit-scrollbar-thumb {
+  background-color: rgba(128, 128, 128, 0.5);
+}
+*::-webkit-scrollbar,
+*::-webkit-scrollbar-track-piece {
+  background-color: transparent;
 }
 
 @font-face {
