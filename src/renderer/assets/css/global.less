@@ -12,8 +12,7 @@
   // rem 尺寸
   font-size: 16px;
   // 默认字体
-  font-family: Shizuku, "更纱黑体 SC", "Microsoft YaHei",
-    "Franklin Gothic Medium", "Arial Narrow", Arial, sans-serif;
+  font-family: Shizuku, '更纱黑体 SC', 'Microsoft YaHei', 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
   overflow: hidden;
   // 滚动条
   //* {
@@ -36,11 +35,12 @@
   background-color: transparent;
 }
 ::-webkit-scrollbar-thumb {
-  border-radius: 0.33rem;
-  background-color: rgba(96, 96, 128);
+  // border-radius: 0.33rem;
+  background-color: rgba(96, 96, 128, 0.67);
 
   // background-color: #b28fce;
-  // background-image: -webkit-linear-gradient(45deg,hsla(0,0%,100%,.6) 25%,transparent 0,transparent 50%,hsla(0,0%,100%,.6) 0,hsla(0,0%,100%,.6) 75%,transparent 0,transparent);
+  background-image: repeating-linear-gradient(45deg, hsla(0,0%,100%,.6) 0 2rem, transparent 2rem 4rem);
+  // background-image: -webkit-linear-gradient(45deg, hsla(0, 0%, 100%, 0.6) 25%, transparent 0, transparent 50%, hsla(0, 0%, 100%, 0.6) 0, hsla(0, 0%, 100%, 0.6) 75%, transparent 0, transparent);
 }
 ::-webkit-scrollbar,
 ::-webkit-scrollbar-track-piece {
@@ -49,12 +49,14 @@
 }
 
 @font-face {
-  font-family: "Shizuku";
+  font-family: 'Shizuku';
   src: url(../fonts/InfoDisplay.woff);
 }
-.page-enter-active, .page-leave-active {
+.page-enter-active,
+.page-leave-active {
   transition: opacity 0.25s;
 }
-.page-enter, .page-leave-active {
+.page-enter,
+.page-leave-active {
   opacity: 0;
 }

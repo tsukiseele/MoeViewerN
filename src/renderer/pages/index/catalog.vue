@@ -1,6 +1,7 @@
 <template lang="pug">
   #catalog
-    AppWindow(class="window" v-model="isShowDialog")
+    //- AppWindow(class="window" v-model="isShowDialog")
+    AppLayer(:title="image.title")
       .list
         .list-item(v-for="(image, index) in images" :key="index")
           img.list-item--image(:src="image.sampleUrl || image.largerUrl || image.originUrl || image.coverUrl")
@@ -11,7 +12,7 @@
 import Sakurawler from "@/libs/sakurawler";
 
 export default {
-  /*
+  /**
   props: {
     image: {
       type: Object,
@@ -19,7 +20,6 @@ export default {
     }
   },*/
   data: () => ({
-    isShowDialog: true,
     images: []
   }),
   computed: {

@@ -11,8 +11,8 @@ keep-alive
         :headers="headers",
         @preloaded="preloaded"
         @scrollReachBottom="loadNext",
-        @click="clickFn",
-        @imgError="imgErrorFn",
+        @click="onItemClick",
+        @imgError="onImageLoadError",
         @pullDownMove="pullDownMove",
         @pullDownEnd="pullDownEnd"
       )
@@ -22,7 +22,7 @@ keep-alive
       aside.aside
         AppSiteList(:sites="sites" @itemClick="onSiteClick")
       AppFab(@click="onFabClick")
-      nuxt-child(:image="images[0]") 
+      nuxt-child(:image="images[0] || []") 
     AppSearchBar(v-model="keywords" @submit="onSearchSubmit" @close="onSearchClose" :visible="isShowSearchBar")
 </template>
 
@@ -35,6 +35,7 @@ export default {
     // 弹出组件状态
     isShowDialog: false,
     isShowSearchBar: false,
+    isShowCa: false,
     //
     resultSet: [],
     // 瀑布流
@@ -67,8 +68,7 @@ export default {
     },
     currentSite() {
       this.sakurawler && this.sakurawler.abortRequest()
-      this.resetStatus()
-      this.loadGallery()
+      this.reload()
     }
   },
   created() {
@@ -76,15 +76,11 @@ export default {
   },
   methods: {
     onSearchSubmit() {
-      this.loadGallery()
+      this.reload()
       this.isShowSearchBar = false
     },
     onSearchClose() {
       this.isShowSearchBar = false
-    },
-    resetStatus() {
-      this.page = 1
-      this.keywords = null
     },
     onSiteClick(site, index) {
       if (this.isLoading) {
@@ -102,10 +98,8 @@ export default {
       this.isShowSearchBar = true
     },
     openDefaultSite() {
-      this.resetStatus()
       if (this.sites && !this.currentSite) {
         this.currentSite = this.sites.find(item => {
-          console.log(item)
           return item.name.toLowerCase().indexOf('safebooru')
         })
       }
@@ -117,20 +111,16 @@ export default {
       this.page++
       this.images.push(...(await this.getImageList()))
     },
-
-    async loadGallery() {
-      // 请求
+    async reload() {
+      this.page = 1
+      this.keywords = null
       try {
-        const res = await this.getImageList()
-        if (res) {
-          this.images = res
-          console.log(this.images)
-        }
+        this.images = await this.getImageList() || []
+        console.log(this.images)
       } catch (e) {
         console.log(e)
       }
     },
-
     async getImageList() {
       this.isLoading = true
       try {
@@ -140,24 +130,23 @@ export default {
         console.log(e)
       }
       this.isLoading = false
-      return this.resultSet[0]
+      return this.resultSet ? this.resultSet[0] : null
     },
-    clickFn(event, { index, value }) {
+    onItemClick(event, { index, value }) {
+      
       this.currImage = this.images[index]
       this.$router.push({
         name: 'index-catalog',
         params: { image: this.images[index] }
       })
+      this.isShowCa = true
     },
-
-    imgErrorFn(imgItem) {
+    onImageLoadError(imgItem) {
       console.log('图片加载错误', imgItem)
     },
-
     pullDownMove(pullDownDistance) {
       this.pullDownDistance = pullDownDistance
     },
-
     pullDownEnd(pullDownDistance) {
       console.log('pullDownEnd')
       if (this.pullDownDistance > 50) {
