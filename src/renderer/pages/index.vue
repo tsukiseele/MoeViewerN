@@ -202,7 +202,8 @@ export default {
 /deep/ a.img-inner-box {
   border-radius: 0 !important;
   overflow: hidden;
-  transition: box-shadow 0.3s ease;
+  transition: box-shadow 0.25s ease;
+  cursor: pointer;
   &:hover {
     box-shadow: 0 2px 12px rgba(0, 0, 0, 0.5) !important;
   }

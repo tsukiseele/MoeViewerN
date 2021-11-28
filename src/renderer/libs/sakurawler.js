@@ -33,8 +33,10 @@ export default class Sakurawler {
    * 中断请求
    */
   abortRequest() {
-    this.abortController.abort()
-    this.abortController.isAbort = true
+    if (this.abortController) {
+      this.abortController.abort()
+      this.abortController.isAbort = true
+    }
     clearTimeout(this.abortTimer)
   }
   /**
@@ -132,7 +134,7 @@ export default class Sakurawler {
    * @returns {Promise<Array<Object>>}
    */
   async parseNext(res) {
-    console.log(res);
+    console.log(res)
     const section = this.getCurrentSection()
     return await this.parseRules(section.index, section.rules[1], res.$children)
   }
