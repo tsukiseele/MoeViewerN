@@ -56,31 +56,21 @@ export default {
       // const gap = (pageWidth - itemWidth * column) / (column + 1) // 计算真实间距 = (页面宽度- 图片宽度*实际列数)/实际列数/2
       const items = document.querySelectorAll('#catalog .list-item') // 获取所有的外层元素
       const heightArr = [] // 定义一个空数组，保存最低高度。
-
       const margin = (pageWidth - (itemWidth + minGap) * column) / 2
 
-      // console.log('ITEMS: ', items)
       for (let i = 0; i < items.length; i++) {
         items[i].style.width = itemWidth + 'px'
         items[i].style.height = this.images[i]._height
         // 遍历所有的外层容器
         const height = items[i].offsetHeight
-        // 如果当前处在第一行
         if (i < column) {
-          // 直接设置元素距离上部的位置和距离左边的距离。
-          // items[i].style.top = `${gap}px`
           items[i].style.top = 0
-          // items[i].style.left = `${(itemWidth + gap) * i + gap}px`
           items[i].style.left = `${(itemWidth + minGap) * i + margin}px`
-          
-          // 保存当前元素的高度。
           heightArr.push(height)
         } else {
-          // 不是第一行的话，就进行比对。
-          let minHeight = heightArr[0] // 先保存第一项的高度
-          let minIndex = 0 // 保存第一项的索引值
+          let minHeight = heightArr[0]
+          let minIndex = 0
           for (let j = 0; j < heightArr.length; j++) {
-            // 通过循环遍历比对，拿到最小值和最小值的索引。
             if (minHeight > heightArr[j]) {
               minHeight = heightArr[j]
               minIndex = j
