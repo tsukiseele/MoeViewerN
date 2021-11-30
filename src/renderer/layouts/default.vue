@@ -4,13 +4,13 @@
     #container
       TheAside
       main
-        nuxt(:keep-alive="false")
+        nuxt(:keep-alive="true")
 </template>
 
 <script>
-import * as SiteLoader from "@/libs/site-loader";
-import TheFrame from "@/components/TheFrame.vue";
-import TheAside from "@/components/TheAside.vue";
+import * as SiteLoader from '@/libs/site-loader'
+import TheFrame from '@/components/TheFrame.vue'
+import TheAside from '@/components/TheAside.vue'
 
 export default {
   components: {
@@ -19,16 +19,35 @@ export default {
   },
   computed: {
     sites() {
-      return this.$store.state.sites;
+      return this.$store.state.sites
     }
   },
   async created() {
     if (!this.sites) {
-      const sites = await SiteLoader.loadSites("./static/rules/");
-      this.$store.commit("sites", sites);
+      const sites = await SiteLoader.loadSites('./static/rules/')
+      this.$store.commit('sites', sites)
     }
   },
-  
+  mounted() {
+    document.addEventListener('keydown', event => {
+      switch (event.key) {
+        case 'Escape':
+          console.log("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx");
+          console.log(this.$route, ' ======> ');
+          this.$router.go(-1)
+          
+          console.log(this.$route);
+          break
+
+        default:
+          break
+      }
+    })
+  },
+  beforeDestroy() {},
+  methods: {
+    onKeyDown() {}
+  }
 }
 </script>
 

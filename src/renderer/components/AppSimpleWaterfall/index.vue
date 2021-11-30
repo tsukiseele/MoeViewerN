@@ -2,14 +2,15 @@
   .simple-waterfall
     slot(name="header")
     .list
-      .list-item(v-for="(item, index) in items" :key="index")
+      .list-item(v-for="(item, index) in items" :key="index" @click="$emit('click', item)")
         img.list-item--image(:src="imageKey ? item[imageKey] : item.src")
         .list-item--title {{ item.title }}
-          slot(:index='i', :item='item')
+          slot(:index='index', :item='item')
     slot(name="footer")
 </template>
 
 <script>
+import { lchown } from 'original-fs'
 export default {
   props: {
     items: {
@@ -32,7 +33,7 @@ export default {
       type: Boolean,
       default: false
     },
-    column: {
+    maxColumn: {
       type: Number,
       default: null
     },
@@ -41,35 +42,40 @@ export default {
       default: null
     }
   },
+  data: () => ({
+    column: null,
+    resizeObserver: null
+  }),
   watch: {
-    items() {
+    async items() {
+      this.$emit('load')
       await this.getImageSize()
       this.fall()
+      this.$emit('loaded')
     }
   },
   methods: {
-    // 获取滚动条的宽度
-    getScrollbarWidth() {
-      const oDiv = document.createElement('div')
-      oDiv.style.cssText = `width: 50px; height: 50px; overflow: scroll;`
-      document.body.appendChild(oDiv)
-      const scrollbarWidth = oDiv.offsetWidth - oDiv.clientWidth
-      oDiv.remove()
-      return scrollbarWidth
+    responsive() {
+      /*
+      if (column) {
+      }*/
+      this.fall()
     },
     fall() {
-      // 获取当前页面的宽度 = window.innerWidth - 滚动条的宽度
-      const pageWidth = window.innerWidth - this.getScrollbarWidth()
+      // 获取当前页面的宽度
+      const containerWidth = this.$el.offsetWidth
       // 若传入列数，则使用，否则自动计算：实际列数 = 页面宽度 / (图片宽度 + 间距)
-      const column = this.column || Math.floor(pageWidth / (this.itemWidth + this.gap))
+      this.column = Math.floor(containerWidth / (this.itemWidth + this.gap))
+      this.column = this.maxColumn && this.column > this.maxColumn ? this.maxColumn : this.column
       // 若传入平均间距，则自动计算，否则使用传入的间距
-      const realGap = this.evenly ? (pageWidth - this.itemWidth * column) / (column + 1) : this.gap
+      const realGap = this.evenly ? (containerWidth - this.itemWidth * this.column) / (this.column - 1) : this.gap
       // 若传入平均间距，则为0，否则自动计算
-      const margin = this.evenly ? 0 : (pageWidth - (this.itemWidth + realGap) * column + realGap) / 2
+      const margin = this.evenly ? realGap : (containerWidth - (this.itemWidth + realGap) * this.column + realGap) / 2
       // 获取所有需要布局的项
       const itemEls = this.$el.querySelectorAll('.list-item')
       // 数组，保存最低高度
       const heightArr = []
+      // 保存偏移量
       let top, left
       // 遍历并通过已知高度布局
       itemEls.forEach((itemEl, i) => {
@@ -78,51 +84,45 @@ export default {
         // 遍历所有的外层容器
         const height = itemEl.offsetHeight
         // 如果当前处在第一行
-        if (i < column) {
+        if (i < this.column) {
           top = 0
           left = (this.itemWidth + realGap) * i + margin
           heightArr.push(height)
         } else {
-          const minHeight = Math.min.apply(null, this.heightArr) // 最低高低
-          const minIndex = this.heightArr.indexOf(minHeight) // 最低高度的索引
-          // 通过最小值为当前元素设置top值，通过索引为当前元素设置left值。
+          const minHeight = Math.min(...heightArr)
+          const minIndex = heightArr.indexOf(minHeight)
           top = minHeight + realGap
           left = (this.itemWidth + realGap) * minIndex + margin
-          // 并修改当前索引的高度为当前元素的高度
           heightArr[minIndex] = minHeight + realGap + height
         }
-        itemEl.style.top = top
-        itemEl.style.left = left
+        itemEl.style.top = top + 'px'
+        itemEl.style.left = left + 'px'
       })
+      this.$el.style.height = this.height ? this.height : Math.max(...heightArr) + 'px'
     },
     async getImageSize() {
-      const promiseArr = []
-      this.items.forEach(image =>
-        promiseArr.push(
-          new Promise((resolve, reject) => {
-            let timeout = 0
-            const check = () => {
-              const img = new Image()
-              console.log('ImageKey: ', this.imageKey)
-              img.src = this.imageKey ? image[this.imageKey] : image.src
-              console.log(image)
+      await Promise.allSettled(this.items.map(
+        item =>
+          new Promise(resolve => {
+            const img = new Image()
+            img.src = this.imageKey ? item[this.imageKey] : item.src
+            img.onload = img.onerror = e => {
               if (img.width > 0 && img.height > 0) {
-                clearInterval(set)
-                image._height = img.height
-                resolve({ width: img.width, height: img.height })
+                item._height = img.height
               }
-              if (timeout > 10000) {
-                clearInterval(set)
-                console.log('reject: ', img.width, img.height)
-                reject()
-              }
-              timeout += 100
+              resolve({ width: img.width, height: img.height })
             }
-            const set = setInterval(check, 100)
           })
-        )
-      )
-      await Promise.allSettled(promiseArr)
+      ))
+    },
+    // 监听组件变化
+    listenLayoutChanged() {
+      this.resizeObserver = new ResizeObserver(entries => {
+        entries.forEach(ele => {
+          this.responsive()
+        })
+      })
+      this.resizeObserver.observe(this.$el)
     }
   },
   mounted() {
@@ -130,6 +130,10 @@ export default {
       await this.getImageSize()
       this.fall()
     })
+    this.listenLayoutChanged()
+  },
+  beforeDestroy() {
+    this.resizeObserver && this.resizeObserver.disconnect()
   }
 }
 </script>
@@ -137,9 +141,9 @@ export default {
 <style lang="scss" scoped>
 .list {
   position: relative;
-  // height: 100vh;
   .list-item {
     position: absolute;
+    transition: 0.3s ease;
     img {
       width: 100%;
       height: 100%;

@@ -1,5 +1,4 @@
 <template lang="pug">
-keep-alive
   .layout
     .gallery
       AppWaterfall.waterfall(
@@ -22,8 +21,8 @@ keep-alive
       aside.aside
         AppSiteList(:sites="sites" @itemClick="onSiteClick")
       AppFab(@click="onFabClick")
-      nuxt-child(:image="images[0] || []") 
     AppSearchBar(v-model="keywords" @submit="onSearchSubmit" @close="onSearchClose" :visible="isShowSearchBar")
+    nuxt-child
 </template>
 
 <script>
@@ -35,7 +34,6 @@ export default {
     // 弹出组件状态
     isShowDialog: false,
     isShowSearchBar: false,
-    isShowCa: false,
     //
     resultSet: [],
     // 瀑布流
@@ -139,7 +137,6 @@ export default {
         name: 'index-catalog',
         params: { image: this.images[index] }
       })
-      this.isShowCa = true
     },
     onImageLoadError(imgItem) {
       console.log('图片加载错误', imgItem)
