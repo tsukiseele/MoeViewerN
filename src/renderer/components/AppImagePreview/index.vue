@@ -23,19 +23,5 @@ export default {
 </script>
 
 <style lang="less" scoped>
-.app-image-preview {
-  position: fixed;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  left: 0;
-  pointer-events: none;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  img {
-    object-fit: contain;
-  }
-}
+@import './index.less';
 </style>

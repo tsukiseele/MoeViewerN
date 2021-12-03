@@ -29,24 +29,21 @@ export default {
     }
   },
   mounted() {
-    document.addEventListener('keydown', event => {
+    document.addEventListener('keydown', this.onKeyDown)
+  },
+  beforeDestroy() {
+    document.removeEventListener('keydown', this.onKeyDown)
+  },
+  methods: {
+    onKeyDown(event) {
       switch (event.key) {
         case 'Escape':
-          console.log("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx");
-          console.log(this.$route, ' ======> ');
           this.$router.go(-1)
-          
-          console.log(this.$route);
           break
-
         default:
           break
       }
-    })
-  },
-  beforeDestroy() {},
-  methods: {
-    onKeyDown() {}
+    }
   }
 }
 </script>

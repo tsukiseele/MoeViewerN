@@ -10,7 +10,6 @@
 </template>
 
 <script>
-import { lchown } from 'original-fs'
 export default {
   props: {
     items: {
@@ -138,16 +137,6 @@ export default {
 }
 </script>
 
-<style lang="scss" scoped>
-.list {
-  position: relative;
-  .list-item {
-    position: absolute;
-    transition: 0.3s ease;
-    img {
-      width: 100%;
-      height: 100%;
-    }
-  }
-}
+<style lang="less" scoped>
+@import './index.less';
 </style>

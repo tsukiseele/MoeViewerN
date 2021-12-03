@@ -14,7 +14,6 @@
 </template>
 
 <script>
-import { remote } from 'electron'
 
 export default {
   components: {},
