@@ -36,7 +36,7 @@
     }
   },
   "dependencies": {
-    "@mdi/font": "^6.6.96",
+    "@mdi/font": "~6.6.96",
     "cheerio": "~1.0.0-rc.10",
     "electron-acrylic-window": "~0.5.11",
     "get-proxy-settings": "~0.1.13",

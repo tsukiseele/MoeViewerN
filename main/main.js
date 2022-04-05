@@ -23,7 +23,9 @@ ipcMain.on('close', () => {
 })
 
 ipcMain.handle('getSiteList', async (event, query) => {
-  return await SiteLoader.loadSites('./static/rules')
+  const SiteLoader = (await import('./libs/site-loader.mjs')).default
+  console.log('rules path: ', process.cwd());
+  return await SiteLoader.loadSites(`${process.cwd()}/static/rules'`)
 })
 ipcMain.handle('request', async (event, params) => {
   const response = await fetch(params.url, { method: 'GET', ...params.options })
