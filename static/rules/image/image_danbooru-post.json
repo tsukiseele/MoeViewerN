@@ -13,8 +13,8 @@
       "rules": [
         {
           "title": {
-            "selector": "$(div#posts > div > article).attr(id)",
-            "capture": "(?<=post_).*",
+            "selector": "$(#posts .post-preview).attr(data-id)",
+            "capture": ".*",
             "replacement": "Danbooru $0"
           },
           "originUrl": {
@@ -24,7 +24,7 @@
             "selector": "$(div#posts > div > article).attr(data-large-file-url)"
           },
           "coverUrl": {
-            "selector": "$(div#posts > div > article).attr(data-preview-file-url)"
+            "selector": "$(#posts .post-preview .post-preview-image).attr(src)"
           },
           "tags": {
             "selector": "$(div#posts > div > article).attr(data-tags)"
