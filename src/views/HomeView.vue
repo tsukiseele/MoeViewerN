@@ -104,7 +104,7 @@ async function handleImage(items) {
 
 <style lang="scss" scoped>
 #home {
-  background-color: aliceblue;
+  // background-color: aliceblue;
   height: 100%;
   display: flex;
   flex-direction: column;

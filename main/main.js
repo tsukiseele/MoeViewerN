@@ -21,21 +21,23 @@ ipcMain.on('close', () => {
 })
 ipcMain.on('setCookies', (event, url, cookie) => {
   for (const item of cookie.split(';')) {
-      let [k, v] = item.split('=');
-      if (k) {
-          v = v || ""
-          const name = k.trim();
-          const value = v.trim();
-          session.defaultSession.cookies.set({
-              url,
-              name,
-              value,
-              sameSite: "unspecified",
-              secure: true,
-          }).then(null, e => {
-              console.log(e);
-          })
-      }
+    let [k, v] = item.split('=')
+    if (k) {
+      v = v || ''
+      const name = k.trim()
+      const value = v.trim()
+      session.defaultSession.cookies
+        .set({
+          url,
+          name,
+          value,
+          sameSite: 'unspecified',
+          secure: true,
+        })
+        .then(null, (e) => {
+          console.log(e)
+        })
+    }
   }
 })
 ipcMain.handle('getSiteList', async (event, query) => {
@@ -43,14 +45,10 @@ ipcMain.handle('getSiteList', async (event, query) => {
 })
 ipcMain.handle('request', async (event, _params) => {
   const params = JSON.parse(_params)
-  // console.log('PARAMS', params);
-  console.log("OPTIONS", params.options);
   const response = await fetch(params.url, { method: 'GET', ...params.options })
-  // console.log(response);
   const buffer = await response.arrayBuffer()
-  const b64 = Buffer.from(buffer).toString('base64');
-  // console.log("JSON", b64);
-  return  b64 //arrayBuffer()
+  const base64 = Buffer.from(buffer).toString('base64')
+  return base64
 })
 ipcMain.handle('load', async (event, query) => {
   console.log('query', query)
@@ -59,9 +57,7 @@ ipcMain.handle('load', async (event, query) => {
   const sites = await SiteLoader.loadSites(`${process.cwd()}/static/rules`)
   const site = sites.find((site) => site.id == query.siteId)
   const request = async (url, options) => {
-    // options.header =
-    options.header = site.headers;
-    console.log(options.header);
+    options.header = site.headers
     return await fetch(url, options)
   }
   const sakurawler = new Sakurawler(site, query.page || 1, query.keywords || '', request)

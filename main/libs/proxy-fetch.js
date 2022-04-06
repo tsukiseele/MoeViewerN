@@ -1,5 +1,6 @@
-const nodeFetch = require('node-fetch')
-const timeoutSignal = require('timeout-signal')
+// const nodeFetch = require('node-fetch')
+const nodeFetch = require('node-fetch-retry')
+// const timeoutSignal = require('timeout-signal')
 const HttpsProxyAgent = require('https-proxy-agent')
 const ProxySettings = require('get-proxy-settings')
 
@@ -22,7 +23,9 @@ const load = async () => {
   return (_fetch = async (...args) => {
     args[1] = args[1] ? args[1] : {}
     args[1].agent = globalThis.proxyAgent || args[1].agent
-    // args[1].signal = timeoutSignal(args[1].timeout || 0)
+    args[1].retry = 3
+    args[1].pause = 1000
+    // args[1].signal = timeoutSignal(args[1].timeout || 10000)
     // args[1].timeout = 0
     return nodeFetch(...args)
   })

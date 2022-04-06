@@ -1,5 +1,5 @@
 const fs = require('fs/promises')
-const {session} = require('electron')
+const { session } = require('electron')
 /**
  *
  * @param dir
@@ -53,7 +53,7 @@ async function loadSites(dir) {
       const site = JSON.parse((await loadSite(json)).toString())
       // 注入默认请求头
       setDefaultHeaders(site)
-      // 设置Cookies到会话
+      // 设置Cookies到会话，现已使用node-fetch进行请求，彻底摆脱浏览器环境，故弃用
       // setCookiesToSession(site)
       // 重用规则
       reuseRules(site)
@@ -92,62 +92,19 @@ function setDefaultHeaders(site) {
   if (!site) return
   const headers = site.headers || {}
   if (!headers.hasOwnProperty('User-Agent')) {
-    headers['User-Agnet'] = 'Mozilla/5.0 (Windows NT 6.2; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/27.0.1453.94 Safari/537.36'
+    headers['User-Agnet'] = 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.198 Safari/537.36'
   }
   if (!headers.hasOwnProperty('Referer') && site.sections.home && site.sections.home.index) {
     const match = new RegExp('https?://.+?/').exec(site.sections.home.index)
     if (match && match[0]) headers['Referer'] = match[0]
     headers['Referrer'] = match[0]
   }
-  if (headers.hasOwnProperty('Cookie')) {
-    headers['Cookie'] = headers['Cookie'] + 'SameSite=None; Secure;'
-  }
+  // if (headers.hasOwnProperty('Cookie')) {
+  //   headers['Cookie'] = headers['Cookie'] + 'SameSite=None; Secure;'
+  // }
   site.headers = headers
 }
-/*
-export async function setDefaultHeaders(site) {
-  if (!site) return;
-  const headers = site.requestHeaders || {};
-  if (!headers.hasOwnProperty("User-Agent")) {
-    headers["User-Agnet"] =
-      "Mozilla/5.0 (Windows NT 6.2; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/27.0.1453.94 Safari/537.36";
-  }
-  if (
-    !headers.hasOwnProperty("Referer") &&
-    site.homeSection &&
-    site.homeSection.indexUrl
-  ) {
-    const match = new RegExp("https?://.+?/").exec(site.homeSection.indexUrl);
-    if (match && match[0]) headers["Referer"] = match[0];
-    headers["Referrer"] = match[0];
-  }
-  if (headers.hasOwnProperty("Cookie")) {
-    headers["Cookie"] = headers["Cookie"] + "SameSite=None; Secure;";
-  }
-  site.requestHeaders = headers;
-}
-*/
 
-const setCookie = (event, url, cookie) => {
-  for (const item of cookie.split(';')) {
-      let [k, v] = item.split('=');
-      if (k) {
-          v = v || ""
-          const name = k.trim();
-        const value = v.trim();
-        console.log(session);
-          session.defaultSession.cookies.set({
-              url,
-              name,
-              value,
-               sameSite: "unspecified",
-              secure: true,
-          }).then(null, e => {
-              console.log(e);
-          })
-      }
-  }
-}
 /**
  * 设置Cookies到会话
  * @param site
@@ -156,6 +113,7 @@ function setCookiesToSession(site) {
   if (!site || !site.headers || !site.sections.home || !site.sections.home.index) return
   const match = new RegExp('https?://.+?/').exec(site.sections.home.index)
   const cookie = site.headers['cookie'] || site.headers['Cookie']
+
   if (match && match[0] && cookie) {
     const domain = match[0]
     // const p = /https?:\/\/(.*?\.).+?\..+?\//g.exec(domain)
@@ -163,27 +121,17 @@ function setCookiesToSession(site) {
     //   domain = domain.replace(p[1], '*.')
     // }
     // domain = domain.replace(/https?:\/\//, '*://') || domain
-    setCookie(null, domain, cookie)
-    // ipcRenderer.send('setCookies', domain, cookie)
+    for (const item of cookie.split(';')) {
+      let [k, v] = item.split('=')
+      if (k) {
+        v = v || ''
+        const name = k.trim()
+        const value = v.trim()
+        session.defaultSession.cookies.set({ domain, name, value, sameSite: 'none', secure: true })
+      }
+    }
   }
 }
-/*
-export function setCookiesToSession(site) {
-  if (
-    !site ||
-    !site.requestHeaders ||
-    !site.homeSection ||
-    !site.homeSection.indexUrl
-  )
-    return;
-  const match = new RegExp("https?://.+?/").exec(site.homeSection.indexUrl);
-  const cookie = site.requestHeaders["cookie"] || site.requestHeaders["Cookie"];
-  if (match && match[0] && cookie) {
-    const domain = match[0];
-    ipcRenderer.send("setCookies", domain, cookie);
-  }
-}
-*/
 module.exports = {
   setCookiesToSession,
   setDefaultHeaders,
