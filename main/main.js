@@ -1,14 +1,11 @@
 const { ipcMain, BrowserWindow } = require('electron')
-
-let SiteLoader = null
-let Sakurawler = null
+const SiteLoader = require('./libs/site-loader.js')
+const Sakurawler = require('./libs/sakurawler.js')
 let fetch = null
-// import ES module
+
+// import async module
 ;(async () => {
-  SiteLoader = (await import('./libs/site-loader.mjs')).default
-  Sakurawler = (await import('./libs/sakurawler.mjs')).default
-  fetch = (await import('./libs/proxy-fetch.mjs')).default
-  // const fs = await import('fs/promises')
+  fetch = await require('./libs/proxy-fetch.js')()
 })()
 
 ipcMain.on('minimize', () => {
@@ -23,9 +20,7 @@ ipcMain.on('close', () => {
 })
 
 ipcMain.handle('getSiteList', async (event, query) => {
-  const SiteLoader = (await import('./libs/site-loader.mjs')).default
-  console.log('rules path: ', process.cwd());
-  return await SiteLoader.loadSites(`${process.cwd()}/static/rules'`)
+  return await SiteLoader.loadSites(`${process.cwd()}/static/rules`)
 })
 ipcMain.handle('request', async (event, params) => {
   const response = await fetch(params.url, { method: 'GET', ...params.options })

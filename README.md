@@ -21,7 +21,11 @@ If the standalone TypeScript plugin doesn't feel fast enough to you, Volar has a
 
 See [Vite Configuration Reference](https://vitejs.dev/config/).
 
-## Install all the required tools and configurations using Microsoft's windows-build-tools (only windows) 
+## (Optional) Use Acrylic Window
+### Install all the required tools and configurations using Microsoft's windows-build-tools (only windows) 
+```
+"electron-acrylic-window": "~0.5.11", 
+```
 
 1. `npm install -g windows-build-tools`
 

@@ -1,13 +1,20 @@
 const { app, BrowserWindow } = require('electron')
 const path = require('path')
-const { BrowserWindow: AcrylicBrowserWindow, setVibrancy } = require('electron-acrylic-window')
+// const { BrowserWindow: AcrylicBrowserWindow, setVibrancy } = require('electron-acrylic-window')
 const isDev = process.env.IS_DEV == 'true' ? true : false
 
 require('./main.js')
 
 function createWindow() {
   // see https://www.npmjs.com/package/electron-acrylic-window
-  const mainWindow = new AcrylicBrowserWindow({
+  let AcrylicBrowserWindow
+  try {
+    const eaw = require('electron-acrylic-window')
+    if (eaw) AcrylicBrowserWindow = eaw.AcrylicBrowserWindow
+  } catch (error) {
+    console.log(error);
+  }
+  const mainWindow = new (AcrylicBrowserWindow || BrowserWindow)({
     width: 1080,
     height: 720,
     frame: false,
@@ -28,6 +35,16 @@ function createWindow() {
   })
   // setVibrancy(mainWindow, {})
   mainWindow.loadURL(isDev ? 'http://localhost:3000' : `file://${path.join(__dirname, '../dist/index.html')}`)
+  // mainWindow.webContents.executeJavaScript(`
+  //   var path = require('path');
+  //   module.paths.push(path.resolve('node_modules'));
+  //   module.paths.push(path.resolve('../node_modules'));
+  //   module.paths.push(path.resolve(__dirname, '..', '..', 'electron', 'node_modules'));
+  //   module.paths.push(path.resolve(__dirname, '..', '..', 'electron.asar', 'node_modules'));
+  //   module.paths.push(path.resolve(__dirname, '..', '..', 'app', 'node_modules'));
+  //   module.paths.push(path.resolve(__dirname, '..', '..', 'app.asar', 'node_modules'));
+  //   path = undefined;
+  // `);
   // Open the DevTools.
   if (isDev) {
     mainWindow.webContents.openDevTools()
