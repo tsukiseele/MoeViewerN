@@ -51,9 +51,9 @@ async function loadSites(dir) {
     try {
       const site = JSON.parse((await loadSite(json)).toString())
       // 注入默认请求头
-      await setDefaultHeaders(site)
+      setDefaultHeaders(site)
       // 设置Cookies到会话
-      setCookiesToSession(site)
+      // setCookiesToSession(site)
       // 重用规则
       reuseRules(site)
       if (checkSite(site)) {
@@ -87,7 +87,7 @@ function reuseRules(site) {
  * @param site
  */
 
-async function setDefaultHeaders(site) {
+function setDefaultHeaders(site) {
   if (!site) return
   const headers = site.headers || {}
   if (!headers.hasOwnProperty('User-Agent')) {
@@ -136,13 +136,12 @@ function setCookiesToSession(site) {
   const cookie = site.headers['cookie'] || site.headers['Cookie']
   if (match && match[0] && cookie) {
     const domain = match[0]
-    /*
-            const p = /https?:\/\/(.*?\.).+?\..+?\//g.exec(domain)
-            if (p && p[1]) {
-              domain = domain.replace(p[1], "*.");
-            }
-            domain = domain.replace(/https?:\/\//, "*://") || domain*/
-    // ipcRenderer.send('setCookies', domain, cookie)
+    // const p = /https?:\/\/(.*?\.).+?\..+?\//g.exec(domain)
+    // if (p && p[1]) {
+    //   domain = domain.replace(p[1], '*.')
+    // }
+    // domain = domain.replace(/https?:\/\//, '*://') || domain
+    ipcRenderer.send('setCookies', domain, cookie)
   }
 }
 /*

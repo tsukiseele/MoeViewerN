@@ -12,7 +12,6 @@ function createWindow() {
     const eaw = require('electron-acrylic-window')
     if (eaw) AcrylicBrowserWindow = eaw.AcrylicBrowserWindow
   } catch (error) {
-    console.log(error);
   }
   const mainWindow = new (AcrylicBrowserWindow || BrowserWindow)({
     width: 1080,

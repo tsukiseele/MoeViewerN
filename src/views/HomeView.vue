@@ -14,11 +14,13 @@ const query = ref({
   siteId: 923,
 })
 const sites = ref(() => [])
+const currentSite = ref(() => ({}))
 const isLoaded = ref(false)
 
 onMounted(async () => {
   sites.value = await $native.getSiteList()
   currentSiteId.value = sites && sites.value.length ? sites.value[25].id : 923
+  currentSite.value = sites && sites.value.length ? sites.value[25] : null
   query.value.siteId = currentSiteId.value
   results.value = await $native.load({ ...query.value })
 })
@@ -32,7 +34,53 @@ async function onSearch() {
     isLoaded.value = false
     query.value.keywords = keywords.value
     query.value.siteId = currentSiteId.value
+    currentSite.value = sites.value.find((site) => site.id == query.value.siteId)
     results.value = await $native.load({ ...query.value })
+  }
+}
+const b64toBlob = (b64Data, contentType='', sliceSize=512) => {
+  const byteCharacters = atob(b64Data);
+  const byteArrays = [];
+
+  for (let offset = 0; offset < byteCharacters.length; offset += sliceSize) {
+    const slice = byteCharacters.slice(offset, offset + sliceSize);
+
+    const byteNumbers = new Array(slice.length);
+    for (let i = 0; i < slice.length; i++) {
+      byteNumbers[i] = slice.charCodeAt(i);
+    }
+
+    const byteArray = new Uint8Array(byteNumbers);
+    byteArrays.push(byteArray);
+  }
+
+  const blob = new Blob(byteArrays, {type: contentType});
+  return blob;
+}
+async function getImageSize(items) {
+  console.log('EEEEEEEEEEEEEEEEEEEEEEEEXEC');
+  if (this.items && this.items.length) {
+    return await Promise.allSettled(
+      this.items.map(
+        (item) =>
+          new Promise(async (resolve) => {
+            const b64Data = await $native.request( JSON.stringify({ url: item.coverUrl, options: { headers: currentSite.value.headers } }))
+            const img = new Image()
+            const blob = b64toBlob(b64Data, 'image/jpeg');
+            const url = URL.createObjectURL(blob)
+            item.coverUrl = url
+            console.log('BLOB URL: ', url);
+            img.src = url
+            // img.src = this.imageKey ? item[this.imageKey] : item.src
+            img.onload = img.onerror = (e) => {
+              if (img.width > 0 && img.height > 0) {
+                item._height = img.height
+              }
+              resolve({ width: img.width, height: img.height })
+            }
+          })
+      )
+    )
   }
 }
 </script>
@@ -45,7 +93,7 @@ async function onSearch() {
     SInput(v-model:value="keywords")
     i.mdi.mdi-magnify(@click="onSearch" ) 
   main
-    AppSimpleWaterfall(v-show="isLoaded && results && results.length" :items="results" image-key="coverUrl" :item-width="200" @loaded="onLoaded" @loading="isLoaded = false")
+    AppSimpleWaterfall(v-show="isLoaded && results && results.length" :items="results" image-key="coverUrl" :getImgSize="getImageSize" :item-width="200" @loaded="onLoaded" @loading="isLoaded = false")
       template(v-slot="{item, index}")
         .list-item(v-if="item")
           img.item-image(:src="item ? item.coverUrl : ''")

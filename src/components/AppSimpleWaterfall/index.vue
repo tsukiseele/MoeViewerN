@@ -38,6 +38,10 @@ export default {
       type: Number || String,
       default: null,
     },
+    getImgSize: {
+      type: Function,
+      default: null
+    }
   },
   data: () => ({
     column: 0,
@@ -104,22 +108,26 @@ export default {
       this.$el.style.height = this.height ? this.height : Math.max(...heightArr) + 'px'
     },
     async getImageSize() {
-      if (this.items && this.items.length) {
-        await Promise.allSettled(
-          this.items.map(
-            (item) =>
-              new Promise((resolve) => {
-                const img = new Image()
-                img.src = this.imageKey ? item[this.imageKey] : item.src
-                img.onload = img.onerror = (e) => {
-                  if (img.width > 0 && img.height > 0) {
-                    item._height = img.height
+      if (this.getImgSize) {
+       await this.getImgSize(this.items)
+      } else {
+        if (this.items && this.items.length) {
+          await Promise.allSettled(
+            this.items.map(
+              (item) =>
+                new Promise((resolve) => {
+                  const img = new Image()
+                  img.src = this.imageKey ? item[this.imageKey] : item.src
+                  img.onload = img.onerror = (e) => {
+                    if (img.width > 0 && img.height > 0) {
+                      item._height = img.height
+                    }
+                    resolve({ width: img.width, height: img.height })
                   }
-                  resolve({ width: img.width, height: img.height })
-                }
-              })
+                })
+            )
           )
-        )
+        }
       }
     },
     // 监听组件变化
