@@ -46,7 +46,7 @@ ipcMain.handle('request', async (event, _params) => {
   // console.log('PARAMS', params);
   console.log("OPTIONS", params.options);
   const response = await fetch(params.url, { method: 'GET', ...params.options })
-  console.log(response);
+  // console.log(response);
   const buffer = await response.arrayBuffer()
   const b64 = Buffer.from(buffer).toString('base64');
   // console.log("JSON", b64);

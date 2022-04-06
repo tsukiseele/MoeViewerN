@@ -1,8 +1,9 @@
 const nodeFetch = require('node-fetch')
+const timeoutSignal = require('timeout-signal')
 const HttpsProxyAgent = require('https-proxy-agent')
 const ProxySettings = require('get-proxy-settings')
 
-let _fetch = null;
+let _fetch = null
 
 const load = async () => {
   try {
@@ -18,14 +19,15 @@ const load = async () => {
   } catch (error) {
     console.warn('Failed to get proxy configuration: ', error)
   }
-  return _fetch = async (...args) => {
-    if (globalThis.proxyAgent) {
-      args[1] ? (args[1].agent = proxyAgent) : (args[1] = { agent: proxyAgent })
-    }
+  return (_fetch = async (...args) => {
+    args[1] = args[1] ? args[1] : {}
+    args[1].agent = globalThis.proxyAgent || args[1].agent
+    // args[1].signal = timeoutSignal(args[1].timeout || 0)
+    // args[1].timeout = 0
     return nodeFetch(...args)
-  }
+  })
 }
 const fetch = async () => {
-  return _fetch || await load()
+  return _fetch || (await load())
 }
 module.exports = fetch

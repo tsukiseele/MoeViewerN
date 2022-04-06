@@ -38,45 +38,45 @@ async function onSearch() {
     results.value = await $native.load({ ...query.value })
   }
 }
-const b64toBlob = (b64Data, contentType='', sliceSize=512) => {
-  const byteCharacters = atob(b64Data);
-  const byteArrays = [];
+const b64toBlob = (b64Data, contentType = '', sliceSize = 512) => {
+  const byteCharacters = atob(b64Data)
+  const byteArrays = []
 
   for (let offset = 0; offset < byteCharacters.length; offset += sliceSize) {
-    const slice = byteCharacters.slice(offset, offset + sliceSize);
+    const slice = byteCharacters.slice(offset, offset + sliceSize)
 
-    const byteNumbers = new Array(slice.length);
+    const byteNumbers = new Array(slice.length)
     for (let i = 0; i < slice.length; i++) {
-      byteNumbers[i] = slice.charCodeAt(i);
+      byteNumbers[i] = slice.charCodeAt(i)
     }
 
-    const byteArray = new Uint8Array(byteNumbers);
-    byteArrays.push(byteArray);
+    const byteArray = new Uint8Array(byteNumbers)
+    byteArrays.push(byteArray)
   }
 
-  const blob = new Blob(byteArrays, {type: contentType});
-  return blob;
+  const blob = new Blob(byteArrays, { type: contentType })
+  return blob
 }
-async function getImageSize(items) {
-  console.log('EEEEEEEEEEEEEEEEEEEEEEEEXEC');
+async function handleImage(items) {
   if (this.items && this.items.length) {
     return await Promise.allSettled(
       this.items.map(
         (item) =>
-          new Promise(async (resolve) => {
-            const b64Data = await $native.request( JSON.stringify({ url: item.coverUrl, options: { headers: currentSite.value.headers } }))
-            const img = new Image()
-            const blob = b64toBlob(b64Data, 'image/jpeg');
-            const url = URL.createObjectURL(blob)
-            item.coverUrl = url
-            console.log('BLOB URL: ', url);
-            img.src = url
-            // img.src = this.imageKey ? item[this.imageKey] : item.src
-            img.onload = img.onerror = (e) => {
-              if (img.width > 0 && img.height > 0) {
-                item._height = img.height
+          new Promise(async (resolve, reject) => {
+            try {
+              const base64 = await $native.request(JSON.stringify({ url: item.coverUrl, options: { headers: currentSite.value.headers, timeout: 5000 } }))
+              const blob = b64toBlob(base64, 'image/jpeg')
+              const img = new Image()
+              item._src = img.src = URL.createObjectURL(blob)
+              img.onload = img.onerror = (e) => {
+                if (img.width > 0 && img.height > 0) {
+                  item._height = img.height
+                }
+                resolve({ width: img.width, height: img.height })
               }
-              resolve({ width: img.width, height: img.height })
+            } catch (error) {
+              console.log(error)
+              reject(error)
             }
           })
       )
@@ -93,10 +93,10 @@ async function getImageSize(items) {
     SInput(v-model:value="keywords")
     i.mdi.mdi-magnify(@click="onSearch" ) 
   main
-    AppSimpleWaterfall(v-show="isLoaded && results && results.length" :items="results" image-key="coverUrl" :getImgSize="getImageSize" :item-width="200" @loaded="onLoaded" @loading="isLoaded = false")
+    AppSimpleWaterfall(v-show="isLoaded && results && results.length" :items="results" :handleImage="handleImage" image-key="coverUrl" :item-width="200" @loaded="onLoaded" @loading="isLoaded = false")
       template(v-slot="{item, index}")
         .list-item(v-if="item")
-          img.item-image(:src="item ? item.coverUrl : ''")
+          img.item-image(:src="item ? item._src : ''")
           .item-title {{ item.title }}
     AppLoading(:show="!isLoaded")
     h1.no-data(v-show="isLoaded && (!results || !results.length)") 没有数据
@@ -104,6 +104,7 @@ async function getImageSize(items) {
 
 <style lang="scss" scoped>
 #home {
+  background-color: aliceblue;
   height: 100%;
   display: flex;
   flex-direction: column;

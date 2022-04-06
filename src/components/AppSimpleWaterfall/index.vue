@@ -38,10 +38,10 @@ export default {
       type: Number || String,
       default: null,
     },
-    getImgSize: {
+    handleImage: {
       type: Function,
-      default: null
-    }
+      default: null,
+    },
   },
   data: () => ({
     column: 0,
@@ -51,7 +51,11 @@ export default {
   watch: {
     async items() {
       this.$emit('loading')
-      await this.init()
+      try {
+        await this.init()
+      } catch (error) {
+        console.log(error)
+      }
       this.$emit('loaded')
     },
   },
@@ -108,8 +112,8 @@ export default {
       this.$el.style.height = this.height ? this.height : Math.max(...heightArr) + 'px'
     },
     async getImageSize() {
-      if (this.getImgSize) {
-       await this.getImgSize(this.items)
+      if (this.handleImage) {
+        await this.handleImage(this.items)
       } else {
         if (this.items && this.items.length) {
           await Promise.allSettled(

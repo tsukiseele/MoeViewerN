@@ -28,9 +28,7 @@ contextBridge.exposeInMainWorld('$native', {
     return JSON.parse(await ipcRenderer.invoke('load', query))
   },
   async request(params) {
-    const res = await ipcRenderer.invoke('request', params)
-    console.log("BRIDGE: ", res);
-    return res
+    return await ipcRenderer.invoke('request', params)
   },
   async getSiteList(query) {
     return await ipcRenderer.invoke('getSiteList', query)

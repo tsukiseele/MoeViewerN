@@ -1,4 +1,5 @@
 const fs = require('fs/promises')
+const {session} = require('electron')
 /**
  *
  * @param dir
@@ -126,6 +127,27 @@ export async function setDefaultHeaders(site) {
   site.requestHeaders = headers;
 }
 */
+
+const setCookie = (event, url, cookie) => {
+  for (const item of cookie.split(';')) {
+      let [k, v] = item.split('=');
+      if (k) {
+          v = v || ""
+          const name = k.trim();
+        const value = v.trim();
+        console.log(session);
+          session.defaultSession.cookies.set({
+              url,
+              name,
+              value,
+               sameSite: "unspecified",
+              secure: true,
+          }).then(null, e => {
+              console.log(e);
+          })
+      }
+  }
+}
 /**
  * 设置Cookies到会话
  * @param site
@@ -141,7 +163,8 @@ function setCookiesToSession(site) {
     //   domain = domain.replace(p[1], '*.')
     // }
     // domain = domain.replace(/https?:\/\//, '*://') || domain
-    ipcRenderer.send('setCookies', domain, cookie)
+    setCookie(null, domain, cookie)
+    // ipcRenderer.send('setCookies', domain, cookie)
   }
 }
 /*
