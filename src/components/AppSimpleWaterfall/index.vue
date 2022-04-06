@@ -91,7 +91,7 @@ export default {
       // 遍历并通过已知高度布局
       itemEls.forEach((itemEl, i) => {
         itemEl.style.width = this.itemWidth + 'px'
-        itemEl.style.height = this.items[i]._height
+        // itemEl.style.height = this.items[i]._height
         // 遍历所有的外层容器
         const height = itemEl.offsetHeight
         // 如果当前处在第一行
