@@ -1,12 +1,18 @@
 const { ipcMain, BrowserWindow } = require('electron')
 const SiteLoader = require('./libs/site-loader.js')
 const Sakurawler = require('./libs/sakurawler.js')
-
+const delay = require('delay')
+let pRetry = null
+let pTimeout = null
 let fetch = null
 
 // import async module
 ;(async () => {
   fetch = await require('./libs/proxy-fetch.js')()
+  // console.log(await import('p-retry'));
+  pRetry = (await import('p-retry')).default
+  pTimeout = (await import('p-timeout')).default
+  // pRetry = await require('p-retry')
 })()
 
 ipcMain.on('minimize', () => {
@@ -19,33 +25,20 @@ ipcMain.on('maximize', () => {
 ipcMain.on('close', () => {
   BrowserWindow.getFocusedWindow().close()
 })
-ipcMain.on('setCookies', (event, url, cookie) => {
-  for (const item of cookie.split(';')) {
-    let [k, v] = item.split('=')
-    if (k) {
-      v = v || ''
-      const name = k.trim()
-      const value = v.trim()
-      session.defaultSession.cookies
-        .set({
-          url,
-          name,
-          value,
-          sameSite: 'unspecified',
-          secure: true,
-        })
-        .then(null, (e) => {
-          console.log(e)
-        })
-    }
-  }
-})
+
 ipcMain.handle('getSiteList', async (event, query) => {
   return await SiteLoader.loadSites(`${process.cwd()}/static/rules`)
 })
 ipcMain.handle('request', async (event, _params) => {
   const params = JSON.parse(_params)
-  const response = await fetch(params.url, { method: 'GET', ...params.options })
+  console.log('request: ', params.url)
+  const response = await pRetry(async () => await pTimeout(fetch(params.url, { method: 'GET', ...params.options }), 5000), {
+    retries: 3,
+    onFailedAttempt: async (error) => {
+      // console.log('Waiting for 1 second before retrying')
+      // await delay(1000)
+    },
+  })
   const buffer = await response.arrayBuffer()
   const base64 = Buffer.from(buffer).toString('base64')
   return base64

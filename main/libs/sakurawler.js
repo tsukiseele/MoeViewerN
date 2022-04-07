@@ -24,11 +24,11 @@ module.exports = class Sakurawler {
    * @param {Number} page 当前页
    * @param {String} keywords 关键字
    */
-  constructor(site, page = 1, keywords = null, request) {
+  constructor(site, page = 1, keywords = null, fetch) {
     this.site = site
     this.page = page
     this.keywords = keywords
-    this.request = request
+    this.fetch = fetch
   }
   /**
    * 中断请求
@@ -148,8 +148,8 @@ module.exports = class Sakurawler {
    */
   async request(url, options, timeout) {
     // 如果已有传入请求，则使用传入的
-    if (this.request) {
-      return this.request(url, options, timeout)
+    if (this.fetch) {
+      return this.fetch(url, options, timeout)
     }
     this.abortController = new AbortController()
     this.abortTimer = setTimeout(() => {

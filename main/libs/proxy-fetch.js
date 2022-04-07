@@ -23,8 +23,8 @@ const load = async () => {
   return (_fetch = async (...args) => {
     args[1] = args[1] || {}
     args[1].agent = globalThis.proxyAgent || args[1].agent
-    args[1].retry = 3
-    args[1].pause = 1000
+    // args[1].retry = 3
+    // args[1].pause = 1000
     // args[1].signal = timeoutSignal(args[1].timeout || 10000)
     // args[1].timeout = 0
     return nodeFetch(...args)

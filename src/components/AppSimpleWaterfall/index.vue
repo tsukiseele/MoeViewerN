@@ -60,7 +60,7 @@ export default {
           }
           this.$emit('loaded')
         } else {
-          this.init()
+          this.responsive()
         }
       },
       deep: true,
@@ -69,7 +69,7 @@ export default {
   methods: {
     init() {
       this.getImageSize()
-      this.fall()
+      this.responsive()
     },
     responsive() {
       if (this.timer) return
@@ -98,6 +98,8 @@ export default {
       // 遍历并通过已知高度布局
       itemEls.forEach((itemEl, i) => {
         itemEl.style.width = this.itemWidth + 'px'
+        const img = itemEl.querySelector('img')
+        img && img.setAttribute('loaded', '')
         // itemEl.style.height = this.items[i]._height
         // 遍历所有的外层容器
         const height = itemEl.offsetHeight
@@ -154,7 +156,7 @@ export default {
   mounted() {
     this.$nextTick(async () => {
       await this.getImageSize()
-      this.fall()
+      this.responsive()
     })
     this.listenLayoutChanged()
   },

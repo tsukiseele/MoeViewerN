@@ -4,6 +4,7 @@ import AppSimpleWaterfall from '@/components/AppSimpleWaterfall/index.vue'
 import AppLoading from '@/components/AppLoading/index.vue'
 import SInput from '@/components/SInput/index.vue'
 import pRetry from 'p-retry'
+import pTimeout from 'p-timeout'
 
 const results = ref(() => [])
 const keywords = ref('')
@@ -18,6 +19,8 @@ const sites = ref(() => [])
 const currentSite = ref(() => ({}))
 const isLoaded = ref(false)
 
+// const placeholder = )
+// console.log(placeholder);
 onMounted(async () => {
   sites.value = await $native.getSiteList()
   currentSiteId.value = sites && sites.value.length ? sites.value[25].id : 923
@@ -60,15 +63,19 @@ const b64toBlob = (b64Data, contentType = '', sliceSize = 512) => {
 }
 async function handleImage(items) {
   if (this.items && this.items.length) {
+    // items.forEach((item) => (item._src = '/images/placeholder.webp'))
     return await Promise.allSettled(
       this.items.map(
         (item) =>
           new Promise(async (resolve, reject) => {
             try {
               // const base64 = await $native.request(JSON.stringify({ url: item.coverUrl, options: { headers: currentSite.value.headers, timeout: 5000 } }))
-              const base64 = await pRetry(async () => $native.request(JSON.stringify({ url: item.coverUrl, options: { headers: currentSite.value.headers, timeout: 5000 } })), {retries: 3})
-              // console.log(base64);
-              // const base64 = await $native.request(JSON.stringify({ url: item.coverUrl, options: { headers: currentSite.value.headers, timeout: 5000 } }))
+              // const base64 = await pRetry(await
+              //   pTimeout( async () =>
+              //       await $native.request(JSON.stringify({ url: item.coverUrl, options: { headers: currentSite.value.headers, timeout: 5000 } })
+              //     ),5000
+              // , {retries: 3}))
+              const base64 = await $native.request(JSON.stringify({ url: item.coverUrl, options: { headers: currentSite.value.headers } }))
               const blob = b64toBlob(base64, 'image/jpeg')
               const img = new Image()
               item._src = img.src = URL.createObjectURL(blob)
@@ -100,7 +107,7 @@ async function handleImage(items) {
     AppSimpleWaterfall(v-show="isLoaded && results && results.length" :items="results" :handleImage="handleImage" image-key="coverUrl" :item-width="200" @loaded="onLoaded" @loading="isLoaded = false")
       template(v-slot="{item, index}")
         .list-item(v-if="item")
-          img.item-image(:src="item ? item._src : ''")
+          img.item-image(:src="item._src || '/images/placeholder.webp'")
           .item-title {{ item.title }}
     AppLoading(:show="!isLoaded")
     h1.no-data(v-show="isLoaded && (!results || !results.length)") 没有数据
