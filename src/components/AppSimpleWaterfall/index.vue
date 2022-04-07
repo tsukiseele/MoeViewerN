@@ -49,19 +49,26 @@ export default {
     timer: null,
   }),
   watch: {
-    async items() {
-      this.$emit('loading')
-      try {
-        await this.init()
-      } catch (error) {
-        console.log(error)
-      }
-      this.$emit('loaded')
+    items: {
+      handler(nv, ov) {
+        if (nv && ov && nv.length != ov.length) {
+          this.$emit('loading')
+          try {
+            this.init()
+          } catch (error) {
+            console.log(error)
+          }
+          this.$emit('loaded')
+        } else {
+          this.init()
+        }
+      },
+      deep: true,
     },
   },
   methods: {
-    async init() {
-      await this.getImageSize()
+    init() {
+      this.getImageSize()
       this.fall()
     },
     responsive() {

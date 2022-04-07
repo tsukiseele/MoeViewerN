@@ -3,6 +3,7 @@ import { onMounted, ref, watch, reactive } from 'vue'
 import AppSimpleWaterfall from '@/components/AppSimpleWaterfall/index.vue'
 import AppLoading from '@/components/AppLoading/index.vue'
 import SInput from '@/components/SInput/index.vue'
+import pRetry from 'p-retry'
 
 const results = ref(() => [])
 const keywords = ref('')
@@ -64,7 +65,10 @@ async function handleImage(items) {
         (item) =>
           new Promise(async (resolve, reject) => {
             try {
-              const base64 = await $native.request(JSON.stringify({ url: item.coverUrl, options: { headers: currentSite.value.headers, timeout: 5000 } }))
+              // const base64 = await $native.request(JSON.stringify({ url: item.coverUrl, options: { headers: currentSite.value.headers, timeout: 5000 } }))
+              const base64 = await pRetry(async () => $native.request(JSON.stringify({ url: item.coverUrl, options: { headers: currentSite.value.headers, timeout: 5000 } })), {retries: 3})
+              // console.log(base64);
+              // const base64 = await $native.request(JSON.stringify({ url: item.coverUrl, options: { headers: currentSite.value.headers, timeout: 5000 } }))
               const blob = b64toBlob(base64, 'image/jpeg')
               const img = new Image()
               item._src = img.src = URL.createObjectURL(blob)
