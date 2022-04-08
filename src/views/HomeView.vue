@@ -1,9 +1,12 @@
 <script setup>
 import { onMounted, ref, watch, reactive } from 'vue'
+import PLimit from 'p-limit'
+import { Base64 } from 'js-base64';
 import AppSimpleWaterfall from '@/components/AppSimpleWaterfall/index.vue'
 import AppLoading from '@/components/AppLoading/index.vue'
 import SInput from '@/components/SInput/index.vue'
-import PLimit from 'p-limit'
+import placeholder from '@/assets/images/placeholder.webp'
+
 const results = ref(() => [])
 const keywords = ref('')
 const currentSiteId = ref(() => ({}))
@@ -17,8 +20,6 @@ const sites = ref(() => [])
 const currentSite = ref(() => ({}))
 const isLoaded = ref(false)
 
-// const placeholder = )
-// console.log(placeholder);
 onMounted(async () => {
   sites.value = await $native.getSiteList()
   currentSiteId.value = sites && sites.value.length ? sites.value[25].id : 923
@@ -40,54 +41,37 @@ async function onSearch() {
     results.value = await $native.load({ ...query.value })
   }
 }
-const b64toBlob = (b64Data, contentType = '', sliceSize = 512) => {
-  const byteCharacters = atob(b64Data)
-  const byteArrays = []
-
-  for (let offset = 0; offset < byteCharacters.length; offset += sliceSize) {
-    const slice = byteCharacters.slice(offset, offset + sliceSize)
-
-    const byteNumbers = new Array(slice.length)
-    for (let i = 0; i < slice.length; i++) {
-      byteNumbers[i] = slice.charCodeAt(i)
+const base64ToBlob = (base64, type) => {
+  return new Blob([Base64.toUint8Array(base64)], { type: type })
+}
+async function getImageSize(src) {
+  const img = new Image()
+  img.src = src
+  return await new Promise((resolve, reject) => {
+    try {
+      img.onload = img.onerror = (e) => resolve({ width: img.width, height: img.height })
+    } catch (error) {
+      reject(error)
     }
-
-    const byteArray = new Uint8Array(byteNumbers)
-    byteArrays.push(byteArray)
-  }
-
-  const blob = new Blob(byteArrays, { type: contentType })
-  return blob
+  })
 }
 async function handleImage(items) {
   if (this.items && this.items.length) {
-    // items.forEach((item) => (item._src = '/images/placeholder.webp'))
-    const pLimit = PLimit(5)
-    return await Promise.allSettled(
+    const pLimit = PLimit(10)
+    const success = await Promise.allSettled(
       this.items.map((item) =>
-        pLimit(
-          (item) =>
-            new Promise(async (resolve, reject) => {
-              try {
-                const { data, type } = await $native.request(JSON.stringify({ url: item.coverUrl, options: { headers: currentSite.value.headers } }))
-                const blob = b64toBlob(data, type)
-                const img = new Image()
-                item._src = img.src = URL.createObjectURL(blob)
-                img.onload = img.onerror = (e) => {
-                  if (img.width > 0 && img.height > 0) {
-                    item._height = img.height
-                  }
-                  resolve({ width: img.width, height: img.height })
-                }
-              } catch (error) {
-                console.log(error)
-                reject(error)
-              }
-            }),
-          item
-        )
+        pLimit(async (item) => {
+          const { data, type } = await $native.request(JSON.stringify({ url: item.coverUrl, options: { headers: currentSite.value.headers, timeout: 5000 } }))
+          const src = URL.createObjectURL(base64ToBlob(data, type))
+          item._src = src
+          const { width, height } = getImageSize(src)
+          // if (width > 0 && height > 0) {
+          //   item._height = height
+          // }
+        }, item)
       )
     )
+    return success
   }
 }
 </script>
@@ -103,7 +87,7 @@ async function handleImage(items) {
     AppSimpleWaterfall(v-show="isLoaded && results && results.length" :items="results" :handleImage="handleImage" image-key="coverUrl" :item-width="200" @loaded="onLoaded" @loading="isLoaded = false")
       template(v-slot="{item, index}")
         .list-item(v-if="item")
-          img.item-image(:src="item._src || '/images/placeholder.webp'")
+          img.item-image(:src="item._src || placeholder")
           .item-title {{ item.title }}
     AppLoading(:show="!isLoaded")
     h1.no-data(v-show="isLoaded && (!results || !results.length)") 没有数据

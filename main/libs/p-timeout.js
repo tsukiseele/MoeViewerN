@@ -52,7 +52,7 @@ function pTimeout(promise, milliseconds, fallback, options) {
 		}
 
 		timer = options.customTimers.setTimeout.call(undefined, () => {
-			if (typeof fallback === 'function') {
+      if (typeof fallback === 'function') {
 				try {
 					resolve(fallback());
 				} catch (error) {
