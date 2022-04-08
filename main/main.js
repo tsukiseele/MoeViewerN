@@ -46,6 +46,7 @@ ipcMain.handle('load', async (event, query) => {
   const site = sites.find((site) => site.id == query.siteId)
   const request = async (url, options) => {
     options.header = site.headers
+    options.timeout = 5000
     return await fetch(url, options)
   }
   const sakurawler = new Sakurawler(site, query.page || 1, query.keywords || '', request)

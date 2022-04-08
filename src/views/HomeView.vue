@@ -1,11 +1,13 @@
 <script setup>
-import { onMounted, ref, watch, reactive } from 'vue'
+import { onMounted, ref, watch, reactive, computed } from 'vue'
 import PLimit from 'p-limit'
-import { Base64 } from 'js-base64';
+import { Base64 } from 'js-base64'
 import AppSimpleWaterfall from '@/components/AppSimpleWaterfall/index.vue'
 import AppLoading from '@/components/AppLoading/index.vue'
 import SInput from '@/components/SInput/index.vue'
+import { NButton, NSelect, NInput } from 'naive-ui'
 import placeholder from '@/assets/images/placeholder.webp'
+import { useMessage } from 'naive-ui'
 
 const results = ref(() => [])
 const keywords = ref('')
@@ -16,9 +18,11 @@ const query = ref({
   keywords: 'namori',
   siteId: 923,
 })
-const sites = ref(() => [])
+const sites = ref([])
 const currentSite = ref(() => ({}))
 const isLoaded = ref(false)
+
+window.$message = useMessage()
 
 onMounted(async () => {
   sites.value = await $native.getSiteList()
@@ -71,18 +75,22 @@ async function handleImage(items) {
         }, item)
       )
     )
+    if (!success || !success.length) {
+      window.$message.success(`没有找到数据哦！`)
+    }
     return success
   }
 }
+const siteOptions = computed(() => sites.value && sites.value.length && sites.value.map((site) => ({ label: site.name, value: site.id })))
 </script>
 
 <template lang="pug">
 #home
   header
-    select(v-model="currentSiteId") 
-      option(v-for="site in sites" :key="site.name" :value="site.id") {{ site.name }}
-    SInput(v-model:value="keywords")
-    i.mdi.mdi-magnify(@click="onSearch" ) 
+    NSelect(v-model:value="currentSiteId" :options="siteOptions")
+    NInput(v-model:value="keywords" type="text" placeholder="Enter keywords" @keyup.enter="onSearch")
+      template(#suffix)
+        i.mdi.mdi-magnify(@click="onSearch" ) 
   main
     AppSimpleWaterfall(v-show="isLoaded && results && results.length" :items="results" :handleImage="handleImage" image-key="coverUrl" :item-width="200" @loaded="onLoaded" @loading="isLoaded = false")
       template(v-slot="{item, index}")
@@ -104,22 +112,26 @@ async function handleImage(items) {
     justify-content: flex-end;
     align-items: center;
     height: 3rem;
-    i {
-      text-align: center;
-      vertical-align: middle;
+    .n-select,
+    .n-input {
+      width: 12rem;
       margin: 0 0.5rem;
-      border-radius: 50%;
-      height: 2.5rem;
-      width: 2.5rem;
-      transition: 0.25s ease-out;
-      border: 1px solid transparent;
+    }
+    i {
+      // transition: 0.25s ease-out;
       cursor: pointer;
       user-select: none;
-      font-size: 2rem;
+      border-radius: 50%;
+      width: 2rem;
+      height: 2rem;
+      text-align: center;
+      transition: 0.25s ease-out;
       &:hover {
         color: teal;
-        border: 1px solid teal;
-        background-color: rgba(255, 255, 255, 0.67);
+      }
+      &:focus,
+      &:active {
+        background-color: #eee;
       }
     }
   }
@@ -136,8 +148,6 @@ async function handleImage(items) {
     .item-title {
       padding: 0.5rem;
     }
-  }
-  header {
   }
 }
 </style>

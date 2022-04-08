@@ -5,9 +5,9 @@ const { AbortController, abortableFetch } = require('abortcontroller-polyfill/di
 const { fetch: nodeFetch } = abortableFetch(require('node-fetch'))
 const HttpsProxyAgent = require('https-proxy-agent')
 const ProxySettings = require('get-proxy-settings')
-const { pTimeout, TimeoutError } = require('./p-timeout.js')
+// const { pTimeout, TimeoutError } = require('./p-timeout.js')
 
-// let pTimeout = null
+let pTimeout = null
 let pRetry = null
 let _fetch = null
 
@@ -26,7 +26,7 @@ const load = async () => {
     console.warn('Failed to get proxy configuration: ', error)
   }
 
-  // pTimeout = (await import('p-timeout')).default
+  pTimeout = (await import('p-timeout')).default
   pRetry = (await import('p-retry')).default
 
   return (_fetch = async (...args) => {
@@ -38,12 +38,12 @@ const load = async () => {
     return await pRetry(
       async () => {
         console.log('request: ', args[0])
-        const abortController = new AbortController()
-        const onTimeout = () => {
-          abortController.abort()
-          throw new TimeoutError(`Promise timed out after ${args[1]._timeout} milliseconds`)
-        }
-        const response = await pTimeout(nodeFetch(...args), args[1]._timeout, onTimeout, abortController.signal)
+        // const abortController = new AbortController()
+        // const onTimeout = () => {
+        //   abortController.abort()
+        //   throw new TimeoutError(`Promise timed out after ${args[1]._timeout} milliseconds`)
+        // }
+        const response = await pTimeout(nodeFetch(...args), args[1]._timeout/*, onTimeout, abortController.signal*/)
         if (response && response.status === 404) {
           throw new AbortError(response.statusText)
         }

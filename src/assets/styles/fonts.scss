@@ -1,4 +1,13 @@
 @font-face {
+  font-family: 'Ubuntu';
+  font-style: normal;
+  font-weight: 400;
+  src: local('Ubuntu'),
+    local('Ubuntu-Regular'),
+    url(../fonts/Ubuntu-Regular.ttf);
+}
+// Icon
+@font-face {
   font-family: 'Material Icons';
   font-style: normal;
   font-weight: 400;
