@@ -3,9 +3,7 @@ import { onMounted, ref, watch, reactive } from 'vue'
 import AppSimpleWaterfall from '@/components/AppSimpleWaterfall/index.vue'
 import AppLoading from '@/components/AppLoading/index.vue'
 import SInput from '@/components/SInput/index.vue'
-import pRetry from 'p-retry'
-import pTimeout from 'p-timeout'
-
+import PLimit from 'p-limit'
 const results = ref(() => [])
 const keywords = ref('')
 const currentSiteId = ref(() => ({}))
@@ -64,32 +62,30 @@ const b64toBlob = (b64Data, contentType = '', sliceSize = 512) => {
 async function handleImage(items) {
   if (this.items && this.items.length) {
     // items.forEach((item) => (item._src = '/images/placeholder.webp'))
+    const pLimit = PLimit(5)
     return await Promise.allSettled(
-      this.items.map(
-        (item) =>
-          new Promise(async (resolve, reject) => {
-            try {
-              // const base64 = await $native.request(JSON.stringify({ url: item.coverUrl, options: { headers: currentSite.value.headers, timeout: 5000 } }))
-              // const base64 = await pRetry(await
-              //   pTimeout( async () =>
-              //       await $native.request(JSON.stringify({ url: item.coverUrl, options: { headers: currentSite.value.headers, timeout: 5000 } })
-              //     ),5000
-              // , {retries: 3}))
-              const base64 = await $native.request(JSON.stringify({ url: item.coverUrl, options: { headers: currentSite.value.headers } }))
-              const blob = b64toBlob(base64, 'image/jpeg')
-              const img = new Image()
-              item._src = img.src = URL.createObjectURL(blob)
-              img.onload = img.onerror = (e) => {
-                if (img.width > 0 && img.height > 0) {
-                  item._height = img.height
+      this.items.map((item) =>
+        pLimit(
+          (item) =>
+            new Promise(async (resolve, reject) => {
+              try {
+                const { data, type } = await $native.request(JSON.stringify({ url: item.coverUrl, options: { headers: currentSite.value.headers } }))
+                const blob = b64toBlob(data, type)
+                const img = new Image()
+                item._src = img.src = URL.createObjectURL(blob)
+                img.onload = img.onerror = (e) => {
+                  if (img.width > 0 && img.height > 0) {
+                    item._height = img.height
+                  }
+                  resolve({ width: img.width, height: img.height })
                 }
-                resolve({ width: img.width, height: img.height })
+              } catch (error) {
+                console.log(error)
+                reject(error)
               }
-            } catch (error) {
-              console.log(error)
-              reject(error)
-            }
-          })
+            }),
+          item
+        )
       )
     )
   }

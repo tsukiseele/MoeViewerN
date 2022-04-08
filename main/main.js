@@ -11,7 +11,8 @@ let fetch = null
   fetch = await require('./libs/proxy-fetch.js')()
   // console.log(await import('p-retry'));
   pRetry = (await import('p-retry')).default
-  pTimeout = (await import('p-timeout')).default
+  // pTimeout = (await import('p-timeout')).default
+  pTimeout = (await import('./libs/p-timeout.mjs')).default
   // pRetry = await require('p-retry')
 })()
 
@@ -31,17 +32,11 @@ ipcMain.handle('getSiteList', async (event, query) => {
 })
 ipcMain.handle('request', async (event, _params) => {
   const params = JSON.parse(_params)
-  console.log('request: ', params.url)
-  const response = await pRetry(async () => await pTimeout(fetch(params.url, { method: 'GET', ...params.options }), 5000), {
-    retries: 3,
-    onFailedAttempt: async (error) => {
-      // console.log('Waiting for 1 second before retrying')
-      // await delay(1000)
-    },
-  })
-  const buffer = await response.arrayBuffer()
+  const response = await fetch(params.url, { method: 'GET', ...params.options })
+  const blob = await response.blob()
+  const buffer = await blob.arrayBuffer()
   const base64 = Buffer.from(buffer).toString('base64')
-  return base64
+  return { data: base64, type: blob.type }
 })
 ipcMain.handle('load', async (event, query) => {
   console.log('query', query)

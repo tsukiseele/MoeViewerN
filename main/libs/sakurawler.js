@@ -146,7 +146,7 @@ module.exports = class Sakurawler {
    * @param {Number} timeout 最大超时
    * @returns {Promise<Response>}
    */
-  async request(url, options, timeout) {
+  request(url, options, timeout) {
     // 如果已有传入请求，则使用传入的
     if (this.fetch) {
       return this.fetch(url, options, timeout)
@@ -174,7 +174,7 @@ module.exports = class Sakurawler {
         },
         this.timeout
       )
-      return response.text()
+      return await response.text()
     } catch (e) {
       console.log(e)
     } finally {
