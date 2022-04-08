@@ -2,8 +2,8 @@ const { ipcMain, BrowserWindow } = require('electron')
 const SiteLoader = require('./libs/site-loader.js')
 const Sakurawler = require('./libs/sakurawler.js')
 const delay = require('delay')
-let pRetry = null
-let pTimeout = null
+// let pRetry = null
+// let pTimeout = null
 let fetch = null
 
 // import async module
@@ -12,7 +12,7 @@ let fetch = null
   // console.log(await import('p-retry'));
   pRetry = (await import('p-retry')).default
   // pTimeout = (await import('p-timeout')).default
-  pTimeout = (await import('./libs/p-timeout.mjs')).default
+  // pTimeout = (await import('./libs/p-timeout.mjs')).default
   // pRetry = await require('p-retry')
 })()
 
