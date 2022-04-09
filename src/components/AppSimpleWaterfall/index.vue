@@ -98,8 +98,8 @@ export default {
       // 遍历并通过已知高度布局
       itemEls.forEach((itemEl, i) => {
         itemEl.style.width = this.itemWidth + 'px'
-        const img = itemEl.querySelector('img')
-        img && img.setAttribute('loaded', '')
+        // const img = itemEl.querySelector('img')
+        // img && img.setAttribute('loaded', '')
         // itemEl.style.height = this.items[i]._height
         // 遍历所有的外层容器
         const height = itemEl.offsetHeight
@@ -117,6 +117,7 @@ export default {
         }
         itemEl.style.top = top + 'px'
         itemEl.style.left = left + 'px'
+        itemEl.style.opacity = 1
       })
       this.$el.style.height = this.height ? this.height : Math.max(...heightArr) + 'px'
     },

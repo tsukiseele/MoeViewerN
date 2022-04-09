@@ -1,8 +1,10 @@
 .waterfall--list {
   position: relative;
+  // transition: .25s ease-out;
   .waterfall--list-item {
     position: absolute;
-    transition: top 0.25s ease, left 0.25s ease;
+    opacity: 0;
+    transition: top 0.25s ease, left 0.25s ease, opacity .25s ease-out, height .25s ease;
     :deep(img) {
       width: 100%;
       height: 100%;

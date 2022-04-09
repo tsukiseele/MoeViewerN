@@ -1,14 +1,18 @@
 <script setup>
-import { onMounted, ref, watch, reactive, computed } from 'vue'
+import { onMounted, ref, watch, computed } from 'vue'
+import { useRouter, useRoute } from 'vue-router'
 import PLimit from 'p-limit'
 import { Base64 } from 'js-base64'
 import AppSimpleWaterfall from '@/components/AppSimpleWaterfall/index.vue'
 import AppLoading from '@/components/AppLoading/index.vue'
+import CatalogLayer from '@/views/Layer/CatalogLayer.vue'
 import SInput from '@/components/SInput/index.vue'
-import { NButton, NSelect, NInput } from 'naive-ui'
+import { NButton, NSelect, NInput, NResult } from 'naive-ui'
 import placeholder from '@/assets/images/placeholder.webp'
 import { useMessage } from 'naive-ui'
 
+const showCatalog = ref(false)
+const router = useRouter()
 const results = ref(() => [])
 const keywords = ref('')
 const currentSiteId = ref(() => ({}))
@@ -29,7 +33,7 @@ onMounted(async () => {
   currentSiteId.value = sites && sites.value.length ? sites.value[25].id : 923
   currentSite.value = sites && sites.value.length ? sites.value[25] : null
   query.value.siteId = currentSiteId.value
-  results.value = await $native.load({ ...query.value })
+  loadList({ ...query.value })
 })
 
 function onLoaded() {
@@ -38,12 +42,18 @@ function onLoaded() {
 
 async function onSearch() {
   if (currentSiteId != query.value.siteId || keywords.value != query.value.keywords) {
-    isLoaded.value = false
     query.value.keywords = keywords.value
     query.value.siteId = currentSiteId.value
     currentSite.value = sites.value.find((site) => site.id == query.value.siteId)
-    results.value = await $native.load({ ...query.value })
+    loadList({ ...query.value })
   }
+}
+async function loadList(params) {
+  isLoaded.value = false
+  results.value = await $native.load(params)
+  if (!results.value || !results.value.length) 
+    window.$message.error(`资源未找到！`)
+  isLoaded.value = true
 }
 const base64ToBlob = (base64, type) => {
   return new Blob([Base64.toUint8Array(base64)], { type: type })
@@ -60,6 +70,7 @@ async function getImageSize(src) {
   })
 }
 async function handleImage(items) {
+  console.log('ITEMS', items)
   if (this.items && this.items.length) {
     const pLimit = PLimit(10)
     const success = await Promise.allSettled(
@@ -68,18 +79,19 @@ async function handleImage(items) {
           const { data, type } = await $native.request(JSON.stringify({ url: item.coverUrl, options: { headers: currentSite.value.headers, timeout: 5000 } }))
           const src = URL.createObjectURL(base64ToBlob(data, type))
           item._src = src
-          const { width, height } = getImageSize(src)
+          // const { width, height } = getImageSize(src)
           // if (width > 0 && height > 0) {
           //   item._height = height
           // }
         }, item)
       )
     )
-    if (!success || !success.length) {
-      window.$message.success(`没有找到数据哦！`)
-    }
     return success
   }
+}
+function openCatalog() {
+  showCatalog.value = true
+  console.log(showCatalog.value);
 }
 const siteOptions = computed(() => sites.value && sites.value.length && sites.value.map((site) => ({ label: site.name, value: site.id })))
 </script>
@@ -92,13 +104,17 @@ const siteOptions = computed(() => sites.value && sites.value.length && sites.va
       template(#suffix)
         i.mdi.mdi-magnify(@click="onSearch" ) 
   main
-    AppSimpleWaterfall(v-show="isLoaded && results && results.length" :items="results" :handleImage="handleImage" image-key="coverUrl" :item-width="200" @loaded="onLoaded" @loading="isLoaded = false")
+    AppSimpleWaterfall(v-if="isLoaded && results && results.length" :items="results" :handleImage="handleImage" image-key="coverUrl" :item-width="200" @loaded="onLoaded" @loading="isLoaded = false")
       template(v-slot="{item, index}")
-        .list-item(v-if="item")
+        .list-item(v-if="item" @click="openCatalog")
           img.item-image(:src="item._src || placeholder")
           .item-title {{ item.title }}
+    NResult(v-else-if="isLoaded" status="404" title="资源未找到" description="可能因素：目标未命中，网络不可用，防火墙拦截（尤其是在中国大陆）")
+      template(#footer)
+        NButton(@click="onSearch") 重新加载
     AppLoading(:show="!isLoaded")
-    h1.no-data(v-show="isLoaded && (!results || !results.length)") 没有数据
+  CatalogLayer(v-model:show="showCatalog")
+    //- h1.no-data(v-show="isLoaded && (!results || !results.length)") 没有数据
 </template>
 
 <style lang="scss" scoped>
@@ -142,9 +158,16 @@ const siteOptions = computed(() => sites.value && sites.value.length && sites.va
     overflow: auto;
     padding: 1rem 0;
   }
+  .n-result {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
   .list-item {
     box-shadow: 0 0 5px rgba(0, 0, 0, 0.12);
     background-color: whitesmoke;
+    cursor: pointer;
     .item-title {
       padding: 0.5rem;
     }

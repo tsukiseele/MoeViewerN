@@ -5,6 +5,7 @@ const { AbortController, abortableFetch } = require('abortcontroller-polyfill/di
 const { fetch: nodeFetch } = abortableFetch(require('node-fetch'))
 const HttpsProxyAgent = require('https-proxy-agent')
 const ProxySettings = require('get-proxy-settings')
+const delay = require('delay')
 // const { pTimeout, TimeoutError } = require('./p-timeout.js')
 
 let pTimeout = null
@@ -43,7 +44,7 @@ const load = async () => {
         //   abortController.abort()
         //   throw new TimeoutError(`Promise timed out after ${args[1]._timeout} milliseconds`)
         // }
-        const response = await pTimeout(nodeFetch(...args), args[1]._timeout/*, onTimeout, abortController.signal*/)
+        const response = await pTimeout(nodeFetch(...args), args[1]._timeout /*, onTimeout, abortController.signal*/)
         if (response && response.status === 404) {
           throw new AbortError(response.statusText)
         }
@@ -52,9 +53,8 @@ const load = async () => {
       {
         retries: args[1].retries,
         onFailedAttempt: async (error) => {
-          console.error(error)
-          //  console.log('Waiting for 1 second before retrying')
-          //  await delay(1000)
+          console.log('Waiting for 1~3 second before retrying')
+          await delay(1000 + Math.random() * 2000)
         },
       }
     )
