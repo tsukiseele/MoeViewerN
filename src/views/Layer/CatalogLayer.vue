@@ -3,7 +3,7 @@ SLayer(:show="show" :title="resultSet && resultSet[0].title && resultSet[0].tags
   template(v-if="isLoaded")
     section(v-if="resultSet && resultSet.length === 1")
       NImageGroup(:theme-overrides="imageGroupThemeOverrides" show-toolbar-tooltip)
-        NImage(:src="resultSet[0].originUrl || resultSet[0].largerUrl || resultSet[0].sampleUrl" object-fit="contain")
+        NImage(:src="resultSet[0]._src" object-fit="contain")
     section(v-else-if="resultSet && resultSet.length")
       NImageGroup(:theme-overrides="imageGroupThemeOverrides" show-toolbar-tooltip)
         NImage(v-for="item in resultSet"  :src="item.originUrl || item.largerUrl || item.sampleUrl || item.cover" object-fit="contain")
@@ -20,6 +20,7 @@ import { defineComponent, computed } from '@vue/runtime-core'
 import SLayer from '@/components/SLayer/index.vue'
 import { NButton, NResult, NImage, NImageGroup, useThemeVars } from 'naive-ui'
 
+import { Base64 } from 'js-base64'
 import AppLoading from '@/components/AppLoading/index.vue'
 export default defineComponent({
   components: {
@@ -53,11 +54,16 @@ export default defineComponent({
           if (this.item) {
             this.isLoaded = false
             if (this.item.$children) {
-              const result = await $native.loadChild(JSON.stringify({ item: this.item }))
-              console.log(result)
-              this.resultSet = result
+              this.resultSet = await $native.loadChild(JSON.stringify({ item: this.item }))
             } else {
               this.resultSet = [this.item]
+            }
+            if (this.resultSet.length === 1) {
+              const once =this.resultSet[0]
+              const { data, type } = await $native.request(JSON.stringify({ url: once.originUrl || once.largerUrl || once.sampleUrl, options: { headers: once.spider.site.headers } }))
+              const src = URL.createObjectURL(this.base64ToBlob(data, type))
+              console.log("SRC", src);
+              once._src = src
             }
           }
           console.log(this.resultSet.length, 'LENGTH')
@@ -74,6 +80,9 @@ export default defineComponent({
     // document.addEventListener('wheel', this.onWheel, false)
   },
   methods: {
+    base64ToBlob(base64, type) {
+      return new Blob([Base64.toUint8Array(base64)], { type: type })
+    },
     onWheel(e) {
       const v = e.deltaY
       const el = document.querySelector('.n-image-preview-wrapper')
