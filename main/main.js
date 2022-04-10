@@ -9,6 +9,8 @@ let fetch = null
   fetch = await require('./libs/proxy-fetch.js')()
 })()
 
+global.childItem = null
+
 ipcMain.on('minimize', () => {
   BrowserWindow.getFocusedWindow().minimize()
 })
@@ -30,6 +32,19 @@ ipcMain.handle('request', async (event, _params) => {
   const buffer = await blob.arrayBuffer()
   const base64 = Buffer.from(buffer).toString('base64')
   return { data: base64, type: blob.type }
+})
+ipcMain.handle('loadChild', async (event, _params) => {
+  const params = JSON.parse(_params)
+  if (params.item && params.item.$children) {
+    const request = async (url, options) => {
+      options.header = params.item.spider.site.headers
+      options.timeout = 5000
+      return await fetch(url, options)
+    }
+    const spider = new Sakurawler(params.item.spider.site, params.item.spider.page, params.item.spider.keywords, request)
+    return JSON.stringify(await spider.parseNext(params.item))
+  }
+  return []
 })
 ipcMain.handle('load', async (event, query) => {
   console.log('query', query)

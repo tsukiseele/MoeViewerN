@@ -1,7 +1,8 @@
 <template lang="pug">
 NModal(v-model:show="showModal" :mask-closable="false")
-  NCard(:title="title"  @close="showModal = false")
+  .layer()
     header
+      .title {{ title }}
       i.close.mdi.mdi-window-close(@click="showModal = false" ) 
     main
       slot
@@ -27,8 +28,7 @@ export default defineComponent({
     },
   },
   emits: ['update:show'],
-  data: () => ({
-  }),
+  data: () => ({}),
   computed: {
     showModal: {
       get() {
@@ -44,24 +44,40 @@ export default defineComponent({
 </script>
 
 <style lang="scss" scoped>
-.n-card {
+.layer {
+  display: flex;
+  flex-direction: column;
+
   // margin-top: var(--frame-height);
   width: 100%;
   height: 100vh;
   // height: calc(100vh - var(--frame-height));
   background-color: rgba($color: #ffffff, $alpha: 0.8);
   backdrop-filter: blur(16px);
+  overflow: hidden;
   header {
     display: flex;
     justify-content: flex-end;
-    height: var(--frame-height); 
-      i {
-        cursor: pointer;
-        transition: .25s ease-out;
-        &:hover {
-          color: teal;
-        }
+    align-items: center;
+    // height: var(--frame-height);
+    padding: 0.5rem 1rem;
+    .title {
+      flex: 1;
+      width: 0;
+      font-size: 1.2rem;
+    }
+    i {
+      cursor: pointer;
+      transition: 0.25s ease-out;
+      &:hover {
+        color: teal;
       }
+    }
+  }
+  main {
+    flex: 1;
+    height: 0;
+    overflow: auto;
   }
 }
 </style>

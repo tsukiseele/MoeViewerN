@@ -12,6 +12,7 @@ import placeholder from '@/assets/images/placeholder.webp'
 import { useMessage } from 'naive-ui'
 
 const showCatalog = ref(false)
+const childItem = ref(null)
 const router = useRouter()
 const results = ref(() => [])
 const keywords = ref('')
@@ -89,8 +90,11 @@ async function handleImage(items) {
     return success
   }
 }
-function openCatalog() {
+function openChild(item) {
+  childItem.value = item
+  console.log(childItem.value);
   showCatalog.value = true
+  
   console.log(showCatalog.value);
 }
 const siteOptions = computed(() => sites.value && sites.value.length && sites.value.map((site) => ({ label: site.name, value: site.id })))
@@ -106,14 +110,14 @@ const siteOptions = computed(() => sites.value && sites.value.length && sites.va
   main
     AppSimpleWaterfall(v-if="isLoaded && results && results.length" :items="results" :handleImage="handleImage" image-key="coverUrl" :item-width="200" @loaded="onLoaded" @loading="isLoaded = false")
       template(v-slot="{item, index}")
-        .list-item(v-if="item" @click="openCatalog")
+        .list-item(v-if="item" @click="openChild(item)")
           img.item-image(:src="item._src || placeholder")
           .item-title {{ item.title }}
     NResult(v-else-if="isLoaded" status="404" title="资源未找到" description="可能因素：目标未命中，网络不可用，防火墙拦截（尤其是在中国大陆）")
       template(#footer)
         NButton(@click="onSearch") 重新加载
     AppLoading(:show="!isLoaded")
-  CatalogLayer(v-model:show="showCatalog")
+  CatalogLayer(v-model:show="showCatalog" :item="childItem")
     //- h1.no-data(v-show="isLoaded && (!results || !results.length)") 没有数据
 </template>
 
