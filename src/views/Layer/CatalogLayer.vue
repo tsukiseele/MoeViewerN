@@ -51,6 +51,7 @@ export default defineComponent({
       if (nv) {
         try {
           if (this.item) {
+            this.isLoaded = false
             if (this.item.$children) {
               const result = await $native.loadChild(JSON.stringify({ item: this.item }))
               console.log(result)
@@ -66,26 +67,31 @@ export default defineComponent({
           this.isLoaded = true
         }
       } else {
-        this.isLoaded = false
       }
     },
   },
   async mounted() {
-    document.addEventListener('wheel', this.onWheel, false)
+    // document.addEventListener('wheel', this.onWheel, false)
   },
   methods: {
     onWheel(e) {
       const v = e.deltaY
-      const el = document.querySelector('img.n-image-preview')
-      if (v > 0) {
-        this.scale += 0.25
-      } else if (this.scale > 0.5) {
-        this.scale -= 0.25
+      const el = document.querySelector('.n-image-preview-wrapper')
+      if (el) {
+        if (v > 0) {
+          this.scale += 0.25
+        } else if (this.scale > 0.5) {
+          this.scale -= 0.25
+        }
+        el.style.transition = '.25s ease'
+        el.style.transform = el.style.transform.replace(/scale\(.*\)/g, '')
+        el.style.transform += ` scale(${this.scale})`
+        console.log(v)
       }
-      el.style.transform = el.style.transform.replace(/scale\(.*\)/g, '')
-      el.style.transform += ` scale(${this.scale})`
-      console.log(v)
     },
+  },
+  beforeUnmount() {
+    // document.removeEventListener('wheel', this.onWheel, false)
   },
   setup() {
     return {
