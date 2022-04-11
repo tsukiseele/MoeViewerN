@@ -3,6 +3,9 @@
 
 这个模板应该可以帮助你开始在 Vite 中使用 Vue 3 进行开发。 
 
+## 预览
+![](./sample/preview_1.webp)
+
 ## 推荐的 IDE 设置 
 
 [VSCode](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=johnsoncodehk.volar) (和禁用) + [TypeScript Vue Plugin (Volar)](https://marketplace.visualstudio.com/items?itemName=johnsoncodehk.vscode-typescript-vue-plugin).

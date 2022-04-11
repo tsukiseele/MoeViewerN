@@ -44,6 +44,7 @@
     "get-proxy-settings": "~0.1.13",
     "https-proxy-agent": "~5.0.0",
     "js-base64": "^3.7.2",
+    "lodash": "^4.17.21",
     "naive-ui": "^2.27.0",
     "node-fetch": "~2.6.7",
     "p-limit": "~4.0.0",

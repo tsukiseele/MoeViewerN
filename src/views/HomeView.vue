@@ -9,6 +9,7 @@ import CatalogLayer from '@/views/Layer/CatalogLayer.vue'
 import SInput from '@/components/SInput/index.vue'
 import { NButton, NSelect, NInput, NAutoComplete, NResult, NTag, useMessage } from 'naive-ui'
 import placeholder from '@/assets/images/placeholder.webp'
+import _ from 'lodash'
 
 const showCatalog = ref(false)
 const childItem = ref(null)
@@ -108,31 +109,35 @@ const renderLabel = (option) => {
     5: { type: 'Meta', color: '#007f7f' },
   }
   const type = typeMap[option.value.category]
-  return [option.label, ' ', h(NTag, { size: 'small', color: { color: type.color, borderColor: type.color, textColor: 'white' } }, { default: () => type.type })]
+  return [`${option.value.value}`, ` ${option.value.antecedent ? `→ ${option.value.antecedent} ` : ' '}`, h(NTag, { size: 'small', color: { color: type.color, borderColor: type.color, textColor: 'white' } }, { default: () => type.type })]
 }
 
-watch(keywords, async (nv) => {
-  keywordsOptions.value = []
-  if (nv) {
-    const kwds = nv.split(' ')
-    const next = kwds[kwds.length - 1]
-    if (next) {
-      const tags = await (await fetch(`https://danbooru.donmai.us/tags.json?search[name_matches]=${next}*`)).json()
-      const label = tags.map((tag) => ({
-        label: nv.replace(next, '') + tag.name,
-        value: tag,
-      }))
-      keywordsOptions.value = label
+const getKeywordsOptions = 
+  _.throttle(async (nv) => {
+    keywordsOptions.value = []
+    if (nv) {
+      const kwds = nv.split(' ')
+      const word = kwds[kwds.length - 1]
+
+      if (word) {
+        const tags = await (await fetch(`https://danbooru.donmai.us/autocomplete.json?search[query]=${word}&search[type]=tag_query&limit=10`)).json()
+        const label = tags.map((tag) => ({
+          label: nv.replace(word, '') + tag.value,
+          value: tag,
+        }))
+        keywordsOptions.value = label
+      }
     }
-  }
-})
+  }, 300)
+
+watch(keywords, nv => getKeywordsOptions(nv))
 </script>
 
 <template lang="pug">
 #home
   header
     NSelect(v-model:value="currentSiteId" :options="siteOptions")
-    NAutoComplete(v-model:value="keywords" :options="keywordsOptions" :render-label="renderLabel" type="text" placeholder="Enter keywords" @keyup.enter="onSearch")
+    NAutoComplete(v-model:value="keywords" :options="keywordsOptions" :render-label="renderLabel" type="text" placeholder="Enter keywords" @keyup.enter="onSearch" :input-props="{'spellcheck': false}")
       template(#suffix)
         i.mdi.mdi-magnify(@click="onSearch" )
   main
