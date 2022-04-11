@@ -101,13 +101,14 @@ const keywordsOptions = ref([])
 
 const renderLabel = (option) => {
   const typeMap = {
-    0: 'General',
-    1: 'Artist',
-    3: 'Copyright',
-    4: 'Character',
-    5: 'Meta',
+    0: { type: 'General', color: '#0075f8' },
+    1: { type: 'Artist', color: '#c00004' },
+    3: { type: 'Copyright', color: '#a800aa' },
+    4: { type: 'Character', color: '#00ab2c' },
+    5: { type: 'Meta', color: '#007f7f' },
   }
-  return [option.label, ' ', h(NTag, { size: 'small', type: 'info' }, { default: () => typeMap[option.value.category] })]
+  const type = typeMap[option.value.category]
+  return [option.label, ' ', h(NTag, { size: 'small', color: { color: type.color, borderColor: type.color, textColor: 'white' } }, { default: () => type.type })]
 }
 
 watch(keywords, async (nv) => {
