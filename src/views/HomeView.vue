@@ -1,5 +1,5 @@
 <script setup>
-import { onMounted, ref, watch, computed } from 'vue'
+import { onMounted, ref, watch, computed, h } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import PLimit from 'p-limit'
 import { Base64 } from 'js-base64'
@@ -7,9 +7,8 @@ import AppSimpleWaterfall from '@/components/AppSimpleWaterfall/index.vue'
 import AppLoading from '@/components/AppLoading/index.vue'
 import CatalogLayer from '@/views/Layer/CatalogLayer.vue'
 import SInput from '@/components/SInput/index.vue'
-import { NButton, NSelect, NInput, NResult } from 'naive-ui'
+import { NButton, NSelect, NInput, NAutoComplete, NResult, NTag, useMessage } from 'naive-ui'
 import placeholder from '@/assets/images/placeholder.webp'
-import { useMessage } from 'naive-ui'
 
 const showCatalog = ref(false)
 const childItem = ref(null)
@@ -52,8 +51,7 @@ async function onSearch() {
 async function loadList(params) {
   isLoaded.value = false
   results.value = await $native.load(params)
-  if (!results.value || !results.value.length) 
-    window.$message.error(`资源未找到！`)
+  if (!results.value || !results.value.length) window.$message.error(`资源未找到！`)
   isLoaded.value = true
 }
 const base64ToBlob = (base64, type) => {
@@ -92,21 +90,50 @@ async function handleImage(items) {
 }
 function openChild(item) {
   childItem.value = item
-  console.log(childItem.value);
+  console.log(childItem.value)
   showCatalog.value = true
-  
-  console.log(showCatalog.value);
+
+  console.log(showCatalog.value)
 }
 const siteOptions = computed(() => sites.value && sites.value.length && sites.value.map((site) => ({ label: site.name, value: site.id })))
+
+const keywordsOptions = ref([])
+
+const renderLabel = (option) => {
+  const typeMap = {
+    0: 'General',
+    1: 'Artist',
+    3: 'Copyright',
+    4: 'Character',
+    5: 'Meta',
+  }
+  return [option.label, ' ', h(NTag, { size: 'small', type: 'info' }, { default: () => typeMap[option.value.category] })]
+}
+
+watch(keywords, async (nv) => {
+  keywordsOptions.value = []
+  if (nv) {
+    const kwds = nv.split(' ')
+    const next = kwds[kwds.length - 1]
+    if (next) {
+      const tags = await (await fetch(`https://danbooru.donmai.us/tags.json?search[name_matches]=${next}*`)).json()
+      const label = tags.map((tag) => ({
+        label: nv.replace(next, '') + tag.name,
+        value: tag,
+      }))
+      keywordsOptions.value = label
+    }
+  }
+})
 </script>
 
 <template lang="pug">
 #home
   header
     NSelect(v-model:value="currentSiteId" :options="siteOptions")
-    NInput(v-model:value="keywords" type="text" placeholder="Enter keywords" @keyup.enter="onSearch")
+    NAutoComplete(v-model:value="keywords" :options="keywordsOptions" :render-label="renderLabel" type="text" placeholder="Enter keywords" @keyup.enter="onSearch")
       template(#suffix)
-        i.mdi.mdi-magnify(@click="onSearch" ) 
+        i.mdi.mdi-magnify(@click="onSearch" )
   main
     AppSimpleWaterfall(v-if="isLoaded && results && results.length" :items="results" :handleImage="handleImage" image-key="coverUrl" :item-width="200" @loaded="onLoaded" @loading="isLoaded = false")
       template(v-slot="{item, index}")
@@ -136,6 +163,9 @@ const siteOptions = computed(() => sites.value && sites.value.length && sites.va
     .n-input {
       width: 12rem;
       margin: 0 0.5rem;
+    }
+    .n-auto-complete {
+      margin-right: 0.5rem;
     }
     i {
       // transition: 0.25s ease-out;
