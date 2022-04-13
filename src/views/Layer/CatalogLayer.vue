@@ -21,6 +21,7 @@ import SLayer from '@/components/SLayer/index.vue'
 import { NButton, NResult, NImage, NImageGroup, useThemeVars } from 'naive-ui'
 
 import { Base64 } from 'js-base64'
+import native from '@/composables/native.js'
 import AppLoading from '@/components/AppLoading/index.vue'
 export default defineComponent({
   components: {
@@ -54,15 +55,15 @@ export default defineComponent({
           if (this.item) {
             this.isLoaded = false
             if (this.item.$children) {
-              this.resultSet = await $native.loadChild(JSON.stringify({ item: this.item }))
+              this.resultSet = await native.loadChild({ item: this.item })
             } else {
               this.resultSet = [this.item]
             }
             if (this.resultSet.length === 1) {
-              const once =this.resultSet[0]
-              const { data, type } = await $native.request(JSON.stringify({ url: once.originUrl || once.largerUrl || once.sampleUrl, options: { headers: once.spider.site.headers } }))
+              const once = this.resultSet[0]
+              const { data, type } = await native.request({ url: once.originUrl || once.largerUrl || once.sampleUrl, options: { headers: once.spider.site.headers } })
               const src = URL.createObjectURL(this.base64ToBlob(data, type))
-              console.log("SRC", src);
+              console.log('SRC', src)
               once._src = src
             }
           }

@@ -31,8 +31,12 @@
       "main/**/*"
     ],
     "directories": {
-      "buildResources": "assets",
+      "buildResources": "public",
       "output": "dist_electron"
+    },
+    "extraFiles": {
+      "from": "./static/",
+      "to": "static"
     }
   },
   "dependencies": {
@@ -41,6 +45,7 @@
     "cheerio": "~1.0.0-rc.10",
     "delay": "^5.0.0",
     "electron-acrylic-window": "~0.5.11",
+    "electron-log": "~4.4.6",
     "get-proxy-settings": "~0.1.13",
     "https-proxy-agent": "~5.0.0",
     "js-base64": "^3.7.2",

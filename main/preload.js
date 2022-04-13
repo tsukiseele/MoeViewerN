@@ -3,11 +3,6 @@
 // All of the Node.js APIs are available in the preload process.
 // It has the same sandbox as a Chrome extension.
 
-// import SiteLoader from './libs/site-loader.js'
-// import Sakurawler from './libs/sakurawler.js'
-// import fetch from './libs/proxy-fetch.js'
-// import fs from 'fs/promises'
-
 // const remote = require('electron/remote')
 const { contextBridge, ipcRenderer } = require('electron')
 
@@ -24,17 +19,17 @@ window.addEventListener('DOMContentLoaded', () => {
 })
 // bridge
 contextBridge.exposeInMainWorld('$native', {
-  async load(query) {
-    return JSON.parse(await ipcRenderer.invoke('load', query))
+  async load(params) {
+    return await ipcRenderer.invoke('load', JSON.parse(params))
   },
   async loadChild(params) {
-    return JSON.parse(await ipcRenderer.invoke('loadChild', params))
+    return await ipcRenderer.invoke('loadChild', JSON.parse(params))
   },
   async request(params) {
-    return await ipcRenderer.invoke('request', params)
+    return await ipcRenderer.invoke('request', JSON.parse(params))
   },
-  async getSiteList(query) {
-    return await ipcRenderer.invoke('getSiteList', query)
+  async getSiteList() {
+    return await ipcRenderer.invoke('getSiteList')
   },
 })
 

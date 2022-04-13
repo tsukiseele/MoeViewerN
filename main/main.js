@@ -1,4 +1,9 @@
 const { ipcMain, BrowserWindow } = require('electron')
+const log = require('electron-log');
+// By default, it writes logs to the following locations:
+// on Linux: ~/.config/{app name}/logs/{process type}.log
+// on macOS: ~/Library/Logs/{app name}/{process type}.log
+// on Windows: %USERPROFILE%\AppData\Roaming\{app name}\logs\{process type}.log
 const SiteLoader = require('./libs/site-loader.js')
 const Sakurawler = require('./libs/sakurawler.js')
 // const delay = require('delay')
@@ -25,16 +30,14 @@ ipcMain.on('close', () => {
 ipcMain.handle('getSiteList', async (event, query) => {
   return await SiteLoader.loadSites(`${process.cwd()}/static/rules`)
 })
-ipcMain.handle('request', async (event, _params) => {
-  const params = JSON.parse(_params)
+ipcMain.handle('request', async (event, params) => {
   const response = await fetch(params.url, { method: 'GET', ...params.options })
   const blob = await response.blob()
   const buffer = await blob.arrayBuffer()
   const base64 = Buffer.from(buffer).toString('base64')
   return { data: base64, type: blob.type }
 })
-ipcMain.handle('loadChild', async (event, _params) => {
-  const params = JSON.parse(_params)
+ipcMain.handle('loadChild', async (event, params) => {
   if (params.item && params.item.$children) {
     const request = async (url, options) => {
       options.header = params.item.spider.site.headers
@@ -47,9 +50,9 @@ ipcMain.handle('loadChild', async (event, _params) => {
   return []
 })
 ipcMain.handle('load', async (event, query) => {
-  console.log('query', query)
   if (!query || !query.siteId) return []
-
+  try {
+    
   const sites = await SiteLoader.loadSites(`${process.cwd()}/static/rules`)
   const site = sites.find((site) => site.id == query.siteId)
   const request = async (url, options) => {
@@ -61,6 +64,10 @@ ipcMain.handle('load', async (event, query) => {
   const [resultSet] = await sakurawler.parseSite()
 
   return JSON.stringify(resultSet)
+  } catch (error) {
+    log.error(error);
+  }
+  return  []
   /*
   const dir = `${process.cwd()}/download`
 

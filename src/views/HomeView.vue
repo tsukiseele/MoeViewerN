@@ -10,7 +10,9 @@ import SInput from '@/components/SInput/index.vue'
 import { NButton, NSelect, NInput, NAutoComplete, NResult, NTag, useMessage } from 'naive-ui'
 import placeholder from '@/assets/images/placeholder.webp'
 import _ from 'lodash'
+import native from '@/composables/native.js'
 
+console.log("NATIVEEEEEEEEEEEEEEEEEEEEEEEEEEEEE", native);
 const showCatalog = ref(false)
 const childItem = ref(null)
 const router = useRouter()
@@ -30,11 +32,11 @@ const isLoaded = ref(false)
 window.$message = useMessage()
 
 onMounted(async () => {
-  sites.value = await $native.getSiteList()
+  sites.value = await native.getSiteList()
   currentSiteId.value = sites && sites.value.length ? sites.value[25].id : 923
-  currentSite.value = sites && sites.value.length ? sites.value[25] : null
+  currentSite.value = sites && sites.value.length ? sites.value[25] : null 
   query.value.siteId = currentSiteId.value
-  loadList({ ...query.value })
+  loadList(query.value)
 })
 
 function onLoaded() {
@@ -46,13 +48,14 @@ async function onSearch() {
     query.value.keywords = keywords.value
     query.value.siteId = currentSiteId.value
     currentSite.value = sites.value.find((site) => site.id == query.value.siteId)
-    loadList({ ...query.value })
+    loadList(query.value)
   }
 }
 async function loadList(params) {
   isLoaded.value = false
-  results.value = await $native.load(params)
-  if (!results.value || !results.value.length) window.$message.error(`资源未找到！`)
+  console.log('params: ', params);
+  results.value = await native.load(params)
+  if (!results.value || !results.value.length) $message.error(`资源未找到！`)
   isLoaded.value = true
 }
 const base64ToBlob = (base64, type) => {
@@ -76,7 +79,7 @@ async function handleImage(items) {
     const success = await Promise.allSettled(
       this.items.map((item) =>
         pLimit(async (item) => {
-          const { data, type } = await $native.request(JSON.stringify({ url: item.coverUrl, options: { headers: currentSite.value.headers, timeout: 5000 } }))
+          const { data, type } = await native.request({ url: item.coverUrl, options: { headers: currentSite.value.headers, timeout: 5000 } })
           const src = URL.createObjectURL(base64ToBlob(data, type))
           item._src = src
           // const { width, height } = getImageSize(src)
@@ -130,7 +133,7 @@ const getKeywordsOptions =
     }
   }, 300)
 
-watch(keywords, nv => getKeywordsOptions(nv))
+watch(keywords, getKeywordsOptions)
 </script>
 
 <template lang="pug">
