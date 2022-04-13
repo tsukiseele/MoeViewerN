@@ -1,9 +1,9 @@
-const { app, BrowserWindow } = require('electron')
-const path = require('path')
+import  { app, BrowserWindow } from 'electron'
+import path from 'path'
 // const { BrowserWindow: AcrylicBrowserWindow, setVibrancy } = require('electron-acrylic-window')
 const isDev = process.env.IS_DEV == 'true' ? true : false
 
-require('./main.js')
+import './main.js'
 
 function createWindow() {
   // see https://www.npmjs.com/package/electron-acrylic-window

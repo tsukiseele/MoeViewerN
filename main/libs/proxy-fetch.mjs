@@ -9,7 +9,7 @@ import delay from 'delay'
 import pRetry from 'p-retry'
 import pTimeout from './p-timeout.mjs'
 import log from 'electron-log'
-/*
+
 let _fetch = null
 
 const load = async () => {
@@ -28,13 +28,13 @@ const load = async () => {
     console.warn('Failed to get proxy configuration: ', error)
     log.warn('Failed to get proxy configuration: ', error)
   }
-  return (_fetch = async (...args) => {
+  return async (...args) => {
     args[1] = args[1] || {}
     args[1].agent = args[1].agent || globalThis.proxyAgent || null
     args[1].retries = args[1].retries || 3
     args[1]._timeout = args[1].timeout || 10000
     args[1].timeout = null
-    return await pRetry(
+    return pRetry(
       async () => {
         try {
           console.log('request: ', args[0])
@@ -62,7 +62,7 @@ const load = async () => {
         },
       }
     )
-  })
+  }
 }
 
 const fetch = async () => {
@@ -70,57 +70,11 @@ const fetch = async () => {
   // log.info('fetch before', _fetch)
   // const ft = _fetch || (await load())
   // log.info('fetch', ft)
-  return _fetch || (await load())
-}*/
-
-try {
-  const proxy = await ProxySettings.getProxySettings()
-
-  if (proxy) {
-    const setting = proxy.https || proxy.http
-    const proxyAgent = new HttpsProxyAgent(setting.toString())
-    globalThis.proxy = proxy
-    globalThis.proxyAgent = proxyAgent
-    console.log('Use proxy: ', setting.toString())
-    log.info('Use proxy: ', setting.toString())
+  if (!_fetch) {
+    _fetch = await(await load())
+    console.log('FETCHHHHHHHHHHHHHHHHHHHHH', _fetch)
   }
-} catch (error) {
-  console.warn('Failed to get proxy configuration: ', error)
-  log.warn('Failed to get proxy configuration: ', error)
+  return _fetch // || (await load())
 }
-const fetch = async (...args) => {
-  args[1] = args[1] || {}
-  args[1].agent = args[1].agent || globalThis.proxyAgent || null
-  args[1].retries = args[1].retries || 3
-  args[1]._timeout = args[1].timeout || 10000
-  args[1].timeout = null
-  return await pRetry(
-    async () => {
-      try {
-        console.log('request: ', args[0])
-        log.info('request: ', args[0])
-        const abortController = new AbortController()
-        const onTimeout = () => {
-          abortController.abort()
-          throw new TimeoutError(`Promise timed out after ${args[1]._timeout} milliseconds`)
-        }
-        const response = await pTimeout(nodeFetch(...args), args[1]._timeout, onTimeout, abortController.signal)
-        if (response && response.status === 404) {
-          throw new AbortError(response.statusText)
-        }
-      } catch (error) {
-        console.error(error)
-        log.error(error)
-      }
-      return response
-    },
-    {
-      retries: args[1].retries,
-      onFailedAttempt: async (error) => {
-        console.log('Waiting for 1~3 second before retrying')
-        await delay(1000 + Math.random() * 2000)
-      },
-    }
-  )
-}
+
 export default fetch

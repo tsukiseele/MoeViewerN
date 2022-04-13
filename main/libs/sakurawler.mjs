@@ -175,6 +175,7 @@ export default class Sakurawler {
         },
         this.timeout
       )
+      console.log(response);
       return await response.text()
     } catch (e) {
       console.log(e)

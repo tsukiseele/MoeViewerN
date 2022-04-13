@@ -2,24 +2,18 @@ import { ipcMain, BrowserWindow } from 'electron'
 import SiteLoader from './libs/site-loader.mjs'
 
 import Sakurawler from './libs/sakurawler.mjs'
-import log from 'electron-log'
-// const { ipcMain, BrowserWindow } = require('electron')
 // By default, it writes logs to the following locations:
 // on Linux: ~/.config/{app name}/logs/{process type}.log
 // on macOS: ~/Library/Logs/{app name}/{process type}.log
 // on Windows: %USERPROFILE%\AppData\Roaming\{app name}\logs\{process type}.log
-// const SiteLoader = require('./libs/site-loader.js')
-// const Sakurawler = require('./libs/sakurawler.js')
-// const delay = require('delay')
-import fetch from 'node-fetch'//'./libs/proxy-fetch.mjs'
-// let fetch = null
+import log from 'electron-log'
 
-// // import async module
-// ;(async () => {
-//   fetch = await require('./libs/proxy-fetch.js')()
-// })()
-
-global.childItem = null
+let fetch = null;
+  (async () => {
+    fetch = (await import('./libs/proxy-fetch.mjs')).default
+    console.log("FFFFFFFFFFFFFFFFFFFFFFFF", fetch);
+})()
+// import fetch from './libs/proxy-fetch.mjs' //'node-fetch'//'./libs/proxy-fetch.mjs'
 
 ipcMain.on('minimize', () => {
   BrowserWindow.getFocusedWindow().minimize()

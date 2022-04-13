@@ -1,4 +1,4 @@
 require = require("esm")(module, {
-  "await":true
+  await: true
 })
-module.exports = require("./esm.js")
+module.exports = require("./electron.js")
