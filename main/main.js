@@ -1,18 +1,23 @@
-const { ipcMain, BrowserWindow } = require('electron')
-const log = require('electron-log');
+import { ipcMain, BrowserWindow } from 'electron'
+import SiteLoader from './libs/site-loader.mjs'
+
+import Sakurawler from './libs/sakurawler.mjs'
+import log from 'electron-log'
+// const { ipcMain, BrowserWindow } = require('electron')
 // By default, it writes logs to the following locations:
 // on Linux: ~/.config/{app name}/logs/{process type}.log
 // on macOS: ~/Library/Logs/{app name}/{process type}.log
 // on Windows: %USERPROFILE%\AppData\Roaming\{app name}\logs\{process type}.log
-const SiteLoader = require('./libs/site-loader.js')
-const Sakurawler = require('./libs/sakurawler.js')
+// const SiteLoader = require('./libs/site-loader.js')
+// const Sakurawler = require('./libs/sakurawler.js')
 // const delay = require('delay')
-let fetch = null
+import fetch from 'node-fetch'//'./libs/proxy-fetch.mjs'
+// let fetch = null
 
-// import async module
-;(async () => {
-  fetch = await require('./libs/proxy-fetch.js')()
-})()
+// // import async module
+// ;(async () => {
+//   fetch = await require('./libs/proxy-fetch.js')()
+// })()
 
 global.childItem = null
 
@@ -52,22 +57,27 @@ ipcMain.handle('loadChild', async (event, params) => {
 ipcMain.handle('load', async (event, query) => {
   if (!query || !query.siteId) return []
   try {
-    
-  const sites = await SiteLoader.loadSites(`${process.cwd()}/static/rules`)
-  const site = sites.find((site) => site.id == query.siteId)
-  const request = async (url, options) => {
-    options.header = site.headers
-    options.timeout = 5000
-    return await fetch(url, options)
-  }
-  const sakurawler = new Sakurawler(site, query.page || 1, query.keywords || '', request)
-  const [resultSet] = await sakurawler.parseSite()
+    log.info('query', query)
+    log.info('loadSite', `${process.cwd()}/static/rules`)
+    const sites = await SiteLoader.loadSites(`${process.cwd()}/static/rules`)
+    const site = sites.find((site) => site.id == query.siteId)
+    const request = async (url, options) => {
+      options.header = site.headers
+      options.timeout = 5000
+      log.info('request', url, options)
+      const resp = await fetch(url, options)
+      log.info('RRRRRRRRRRRRRESP', resp)
+      return resp
+    }
 
-  return JSON.stringify(resultSet)
+    const sakurawler = new Sakurawler(site, query.page || 1, query.keywords || '', request)
+    const [resultSet] = await sakurawler.parseSite()
+    log.info('resultSet', resultSet)
+    return JSON.stringify(resultSet)
   } catch (error) {
-    log.error(error);
+    log.error(error)
   }
-  return  []
+  return []
   /*
   const dir = `${process.cwd()}/download`
 

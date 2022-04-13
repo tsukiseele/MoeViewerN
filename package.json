@@ -14,7 +14,7 @@
     "electron:build": "yarn build:for:electron && electron-builder",
     "preview": "vite preview --port 5050"
   },
-  "main": "./main/electron.js",
+  "main": "./main/esm-loader.js",
   "build": {
     "appId": "com.tsukiseele.moeviewern",
     "productName": "MoeViewerN",
@@ -46,6 +46,7 @@
     "delay": "^5.0.0",
     "electron-acrylic-window": "~0.5.11",
     "electron-log": "~4.4.6",
+    "esm": "^3.2.25",
     "get-proxy-settings": "~0.1.13",
     "https-proxy-agent": "~5.0.0",
     "js-base64": "^3.7.2",
@@ -53,7 +54,7 @@
     "naive-ui": "^2.27.0",
     "node-fetch": "~2.6.7",
     "p-limit": "~4.0.0",
-    "p-retry": "~5.1.0",
+    "p-retry": "3",
     "p-timeout": "~5.0.2",
     "pinia": "~2.0.11",
     "vue": "~3.2.31",
