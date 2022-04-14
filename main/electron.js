@@ -4,13 +4,14 @@ import './main.js'
 // const { BrowserWindow: AcrylicBrowserWindow, setVibrancy } = require('electron-acrylic-window')
 const isDev = process.env.IS_DEV == 'true' ? true : false
 
-function createWindow() {
+async function createWindow() {
   // see https://www.npmjs.com/package/electron-acrylic-window
   let AcrylicBrowserWindow
   try {
-    const eaw = require('electron-acrylic-window')
+    const eaw = await import('electron-acrylic-window')
     if (eaw) AcrylicBrowserWindow = eaw.BrowserWindow
-  } catch (error) {}
+  } catch (error) { }
+  
   const mainWindow = new (AcrylicBrowserWindow || BrowserWindow)({
     width: 1080,
     height: 720,

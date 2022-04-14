@@ -9,20 +9,20 @@ SLayer(:show="show" :title="resultSet && resultSet[0].title && resultSet[0].tags
         NImage(v-for="item in resultSet"  :src="item.originUrl || item.largerUrl || item.sampleUrl || item.cover" object-fit="contain")
 
         img(:src="item.coverUrl")
-    NResult(v-else status="404" title="资源未找到" description="可能因素：目标未命中，网络不可用，防火墙拦截（尤其是在中国大陆）")
-  AppLoading(:show="!isLoaded")
+    NResult(v-else status="404" title="Resource Not Found" description="可能因素：目标未命中，网络不可用，防火墙拦截（尤其是在中国大陆）")
+  SLoading(:show="!isLoaded")
   template(#footer)
-    NButton(@click="onSearch") 重新加载
+    NButton(@click="onSearch") Reload
 </template>
 
 <script>
-import { defineComponent, computed } from '@vue/runtime-core'
-import SLayer from '@/components/SLayer/index.vue'
-import { NButton, NResult, NImage, NImageGroup, useThemeVars } from 'naive-ui'
-
 import { Base64 } from 'js-base64'
+import { defineComponent, computed } from '@vue/runtime-core'
+import { NButton, NResult, NImage, NImageGroup, useThemeVars } from 'naive-ui'
+import SLayer from '@/components/SLayer/index.vue'
+import SLoading from '@/components/SLoading/index.vue'
 import native from '@/composables/native.js'
-import AppLoading from '@/components/AppLoading/index.vue'
+
 export default defineComponent({
   components: {
     SLayer,
@@ -30,7 +30,7 @@ export default defineComponent({
     NResult,
     NImage,
     NImageGroup,
-    AppLoading,
+    SLoading,
   },
   props: {
     item: {
@@ -63,11 +63,9 @@ export default defineComponent({
               const once = this.resultSet[0]
               const { data, type } = await native.request({ url: once.originUrl || once.largerUrl || once.sampleUrl, options: { headers: once.spider.site.headers } })
               const src = URL.createObjectURL(this.base64ToBlob(data, type))
-              console.log('SRC', src)
               once._src = src
             }
           }
-          console.log(this.resultSet.length, 'LENGTH')
         } catch (error) {
           console.log(error)
         } finally {

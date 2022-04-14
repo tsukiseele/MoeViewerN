@@ -1,7 +1,7 @@
 {
   "name": "moe-viewer-n",
   "author": "TsukiSeele",
-  "description": "a booru browser",
+  "description": "Such a lovely web gallery browser",
   "license": "GPL-3.0",
   "version": "0.0.1",
   "scripts": {
@@ -14,7 +14,7 @@
     "electron:build": "yarn build:for:electron && electron-builder",
     "preview": "vite preview --port 5050"
   },
-  "main": "./main/esm-loader.js",
+  "main": "./main/electron-esm.js",
   "build": {
     "appId": "com.tsukiseele.moeviewern",
     "productName": "MoeViewerN",
@@ -44,6 +44,7 @@
     "abortcontroller-polyfill": "~1.7.3",
     "cheerio": "~1.0.0-rc.10",
     "delay": "~5.0.0",
+    "electron-acrylic-window": "~0.5.11",
     "electron-log": "~4.4.6",
     "esm": "~3.2.25",
     "get-proxy-settings": "~0.1.13",

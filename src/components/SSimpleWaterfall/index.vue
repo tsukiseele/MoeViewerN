@@ -1,10 +1,11 @@
 <template lang="pug">
-.waterfall
-  slot(name="header")
-  .waterfall--list
-    .waterfall--list-item(v-for="(item, index) in items" :key="index" @click="$emit('click', item)")
-      slot(:item='item' :index='index')
-  slot(name="footer")
+.waterfall-wrapper
+  .waterfall
+    slot(name="header")
+    .waterfall--list
+      .waterfall--list-item(v-for="(item, index) in items" :key="index" @click="$emit('click', item)")
+        slot(:item='item' :index='index')
+    slot(name="footer")
 </template>
 
 <script>
@@ -43,6 +44,7 @@ export default {
       default: null,
     },
   },
+  emits: ['loading', 'loaded', 'scroll-bottom'],
   data: () => ({
     column: 0,
     resizeObserver: null,
@@ -51,10 +53,10 @@ export default {
   watch: {
     items: {
       handler(nv, ov) {
-        if (nv && ov && nv.length != ov.length) {
+        if (nv != ov && nv.length != ov.length) {
           this.$emit('loading')
           try {
-            this.init()
+            this.refresh()
           } catch (error) {
             console.log(error)
           }
@@ -68,8 +70,21 @@ export default {
   },
   methods: {
     init() {
-      this.getImageSize()
-      this.responsive()
+      this.refresh()
+      this.listenLayoutChanged()
+      this.$el.addEventListener('scroll', this.onScroll)
+    },
+    refresh() {
+      this.$nextTick(() => {
+        this.getImageSize()
+        this.responsive()
+      })
+    },
+    onScroll(e) {
+      const { scrollTop, clientHeight, scrollHeight } = this.$el
+      if (scrollTop + clientHeight === scrollHeight) {
+        this.$emit('scroll-bottom')
+      }
     },
     responsive() {
       if (this.timer) return
@@ -80,8 +95,9 @@ export default {
       }, 250)
     },
     fall() {
+      const container = this.$el.children[0]
       // 获取当前页面的宽度
-      const containerWidth = this.$el.offsetWidth
+      const containerWidth = container.offsetWidth
       // 若传入列数，则使用，否则自动计算：实际列数 = 页面宽度 / (图片宽度 + 间距)
       this.column = Math.floor(containerWidth / (this.itemWidth + this.gap))
       this.column = this.maxColumn && this.column > this.maxColumn ? this.maxColumn : this.column
@@ -119,13 +135,13 @@ export default {
         itemEl.style.left = left + 'px'
         itemEl.style.opacity = 1
       })
-      this.$el.style.height = this.height ? this.height : Math.max(...heightArr) + 'px'
+      container.style.height = this.height ? this.height : Math.max(...heightArr) + 'px'
     },
     async getImageSize() {
-      if (this.handleImage) {
-        await this.handleImage(this.items)
-      } else {
-        if (this.items && this.items.length) {
+      if (this.items && this.items.length) {
+        if (this.handleImage) {
+          await this.handleImage(this.items)
+        } else {
           await Promise.allSettled(
             this.items.map(
               (item) =>
@@ -155,11 +171,7 @@ export default {
     },
   },
   mounted() {
-    this.$nextTick(async () => {
-      await this.getImageSize()
-      this.responsive()
-    })
-    this.listenLayoutChanged()
+    this.init()
   },
   beforeDestroy() {
     this.resizeObserver && this.resizeObserver.disconnect()

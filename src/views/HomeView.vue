@@ -1,16 +1,15 @@
 <script setup>
-import { onMounted, ref, watch, computed, h } from 'vue'
-import { useRouter, useRoute } from 'vue-router'
-import PLimit from 'p-limit'
 import { Base64 } from 'js-base64'
-import AppSimpleWaterfall from '@/components/AppSimpleWaterfall/index.vue'
-import AppLoading from '@/components/AppLoading/index.vue'
+import { onMounted, ref, watch, computed, h } from 'vue'
+import { useRouter } from 'vue-router'
+import { NButton, NSelect, NInputNumber, NAutoComplete, NResult, NTag, useMessage } from 'naive-ui'
+import SSimpleWaterfall from '@/components/SSimpleWaterfall/index.vue'
+import SLoading from '@/components/SLoading/index.vue'
 import CatalogLayer from '@/views/Layer/CatalogLayer.vue'
-import SInput from '@/components/SInput/index.vue'
-import { NButton, NSelect, NInput, NAutoComplete, NResult, NTag, useMessage } from 'naive-ui'
-import placeholder from '@/assets/images/placeholder.webp'
 import _ from 'lodash'
+import PLimit from 'p-limit'
 import native from '@/composables/native.js'
+import placeholder from '@/assets/images/placeholder.webp'
 
 const showCatalog = ref(false)
 const childItem = ref(null)
@@ -18,7 +17,6 @@ const router = useRouter()
 const results = ref(() => [])
 const keywords = ref('')
 const currentSiteId = ref(() => ({}))
-const page = ref(1)
 const query = ref({
   page: 1,
   keywords: 'namori',
@@ -33,7 +31,7 @@ window.$message = useMessage()
 onMounted(async () => {
   sites.value = await native.getSiteList()
   currentSiteId.value = sites && sites.value.length ? sites.value[25].id : 923
-  currentSite.value = sites && sites.value.length ? sites.value[25] : null 
+  currentSite.value = sites && sites.value.length ? sites.value[25] : null
   query.value.siteId = currentSiteId.value
   loadList(query.value)
 })
@@ -52,10 +50,17 @@ async function onSearch() {
 }
 async function loadList(params) {
   isLoaded.value = false
-  console.log('params: ', params);
+  console.log('params: ', params)
   results.value = await native.load(params)
   // if (!results.value || !results.value.length) $message.error(`资源未找到！`)
   isLoaded.value = true
+}
+async function loadNext(params) {
+  console.log('params: ', params)
+  const next = await native.load(params)
+  console.log("NEXT", next);
+  results.value.push({...next})
+  console.log(  results.value);
 }
 const base64ToBlob = (base64, type) => {
   return new Blob([Base64.toUint8Array(base64)], { type: type })
@@ -91,12 +96,13 @@ async function handleImage(items) {
     return success
   }
 }
+function onScrollBottom() {
+  query.value.page++
+  loadNext(query.value)
+}
 function openChild(item) {
   childItem.value = item
-  console.log(childItem.value)
   showCatalog.value = true
-
-  console.log(showCatalog.value)
 }
 const siteOptions = computed(() => sites.value && sites.value.length && sites.value.map((site) => ({ label: site.name, value: site.id })))
 
@@ -114,23 +120,22 @@ const renderLabel = (option) => {
   return [`${option.value.value}`, ` ${option.value.antecedent ? `→ ${option.value.antecedent} ` : ' '}`, h(NTag, { size: 'small', color: { color: type.color, borderColor: type.color, textColor: 'white' } }, { default: () => type.type })]
 }
 
-const getKeywordsOptions = 
-  _.throttle(async (nv) => {
-    keywordsOptions.value = []
-    if (nv) {
-      const kwds = nv.split(' ')
-      const word = kwds[kwds.length - 1]
+const getKeywordsOptions = _.throttle(async (nv) => {
+  keywordsOptions.value = []
+  if (nv) {
+    const kwds = nv.split(' ')
+    const word = kwds[kwds.length - 1]
 
-      if (word) {
-        const tags = await (await fetch(`https://danbooru.donmai.us/autocomplete.json?search[query]=${word}&search[type]=tag_query&limit=10`)).json()
-        const label = tags.map((tag) => ({
-          label: nv.replace(word, '') + tag.value,
-          value: tag,
-        }))
-        keywordsOptions.value = label
-      }
+    if (word) {
+      const tags = await (await fetch(`https://danbooru.donmai.us/autocomplete.json?search[query]=${word}&search[type]=tag_query&limit=10`)).json()
+      const label = tags.map((tag) => ({
+        label: nv.replace(word, '') + tag.value,
+        value: tag,
+      }))
+      keywordsOptions.value = label
     }
-  }, 300)
+  }
+}, 300)
 
 watch(keywords, getKeywordsOptions)
 </script>
@@ -139,21 +144,21 @@ watch(keywords, getKeywordsOptions)
 #home
   header
     NSelect(v-model:value="currentSiteId" :options="siteOptions")
+    NInputNumber(v-model:value="query.page" min="1")
     NAutoComplete(v-model:value="keywords" :options="keywordsOptions" :render-label="renderLabel" type="text" placeholder="Enter keywords" @keyup.enter="onSearch" :input-props="{'spellcheck': false}")
       template(#suffix)
         i.mdi.mdi-magnify(@click="onSearch" )
   main
-    AppSimpleWaterfall(v-if="isLoaded && results && results.length" :items="results" :handleImage="handleImage" image-key="coverUrl" :item-width="200" @loaded="onLoaded" @loading="isLoaded = false")
+    SSimpleWaterfall(v-if="isLoaded && results && results.length" :items="results" :handleImage="handleImage" image-key="coverUrl" :item-width="200" @loaded="onLoaded" @loading="isLoaded = false" @scroll-bottom="onScrollBottom")
       template(v-slot="{item, index}")
         .list-item(v-if="item" @click="openChild(item)")
           img.item-image(:src="item._src || placeholder")
           .item-title {{ item.title }}
-    NResult(v-else-if="isLoaded" status="404" title="资源未找到" description="可能因素：目标未命中，网络不可用，防火墙拦截（尤其是在中国大陆）")
+    NResult(v-else-if="isLoaded" status="404" title="Resource Not Found" description="可能因素：目标未命中，网络不可用，防火墙拦截（尤其是在中国大陆）")
       template(#footer)
-        NButton(@click="onSearch") 重新加载
-    AppLoading(:show="!isLoaded")
+        NButton(@click="onSearch") Reload
+    SLoading(:show="!isLoaded")
   CatalogLayer(v-model:show="showCatalog" :item="childItem")
-    //- h1.no-data(v-show="isLoaded && (!results || !results.length)") 没有数据
 </template>
 
 <style lang="scss" scoped>
@@ -167,29 +172,35 @@ watch(keywords, getKeywordsOptions)
     justify-content: flex-end;
     align-items: center;
     height: 3rem;
-    .n-select,
-    .n-input {
-      width: 12rem;
-      margin: 0 0.5rem;
+    > * {
+      margin-right: 0.5rem;
+      &:first-of-type {
+        margin-left: 0.5rem;
+      }
+    }
+    .n-select {
+      width: 16rem;
+    }
+    .n-input-number {
+      width: 10rem;
     }
     .n-auto-complete {
-      margin-right: 0.5rem;
-    }
-    i {
-      // transition: 0.25s ease-out;
-      cursor: pointer;
-      user-select: none;
-      border-radius: 50%;
-      width: 2rem;
-      height: 2rem;
-      text-align: center;
-      transition: 0.25s ease-out;
-      &:hover {
-        color: teal;
-      }
-      &:focus,
-      &:active {
-        background-color: #eee;
+      i {
+        // transition: 0.25s ease-out;
+        cursor: pointer;
+        user-select: none;
+        border-radius: 50%;
+        width: 2rem;
+        height: 2rem;
+        text-align: center;
+        transition: 0.25s ease-out;
+        &:hover {
+          color: teal;
+        }
+        &:focus,
+        &:active {
+          background-color: #eee;
+        }
       }
     }
   }
