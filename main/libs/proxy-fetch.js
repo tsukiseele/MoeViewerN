@@ -6,7 +6,7 @@ const { fetch: nodeFetch } = abortableFetch(require('node-fetch'))
 const HttpsProxyAgent = require('https-proxy-agent')
 const ProxySettings = require('get-proxy-settings')
 const delay = require('delay')
-// const { pTimeout, TimeoutError } = require('./p-timeout.js')
+const { pTimeout, TimeoutError } = require('./p-timeout.js')
 
 let pTimeout = null
 let pRetry = null
@@ -36,28 +36,29 @@ const load = async () => {
     args[1].retries = args[1].retries || 3
     args[1]._timeout = args[1].timeout || 10000
     args[1].timeout = null
-    return await pRetry(
-      async () => {
-        console.log('request: ', args[0])
-        // const abortController = new AbortController()
-        // const onTimeout = () => {
-        //   abortController.abort()
-        //   throw new TimeoutError(`Promise timed out after ${args[1]._timeout} milliseconds`)
-        // }
-        const response = await pTimeout(nodeFetch(...args), args[1]._timeout /*, onTimeout, abortController.signal*/)
-        if (response && response.status === 404) {
-          throw new AbortError(response.statusText)
-        }
-        return response
-      },
-      {
-        retries: args[1].retries,
-        onFailedAttempt: async (error) => {
-          console.log('Waiting for 1~3 second before retrying')
-          await delay(1000 + Math.random() * 2000)
-        },
-      }
-    )
+    return await pTimeout(nodeFetch(...args), args[1]._timeout /*, onTimeout, abortController.signal*/)
+    // await pRetry(
+    //   async () => {
+    //     console.log('request: ', args[0])
+    //     // const abortController = new AbortController()
+    //     // const onTimeout = () => {
+    //     //   abortController.abort()
+    //     //   throw new TimeoutError(`Promise timed out after ${args[1]._timeout} milliseconds`)
+    //     // }
+    //     const response = await pTimeout(nodeFetch(...args), args[1]._timeout /*, onTimeout, abortController.signal*/)
+    //     if (response && response.status === 404) {
+    //       throw new AbortError(response.statusText)
+    //     }
+    //     return response
+    //   },
+    //   {
+    //     retries: args[1].retries,
+    //     onFailedAttempt: async (error) => {
+    //       console.log('Waiting for 1~3 second before retrying')
+    //       await delay(1000 + Math.random() * 2000)
+    //     },
+    //   }
+    // )
   })
 }
 

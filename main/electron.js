@@ -1,9 +1,8 @@
 import  { app, BrowserWindow } from 'electron'
 import path from 'path'
+import './main.js'
 // const { BrowserWindow: AcrylicBrowserWindow, setVibrancy } = require('electron-acrylic-window')
 const isDev = process.env.IS_DEV == 'true' ? true : false
-
-import './main.js'
 
 function createWindow() {
   // see https://www.npmjs.com/package/electron-acrylic-window

@@ -1,19 +1,12 @@
 import { ipcMain, BrowserWindow } from 'electron'
 import SiteLoader from './libs/site-loader.mjs'
-
 import Sakurawler from './libs/sakurawler.mjs'
+import fetch from './libs/proxy-fetch.mjs'
+import log from 'electron-log'
 // By default, it writes logs to the following locations:
 // on Linux: ~/.config/{app name}/logs/{process type}.log
 // on macOS: ~/Library/Logs/{app name}/{process type}.log
 // on Windows: %USERPROFILE%\AppData\Roaming\{app name}\logs\{process type}.log
-import log from 'electron-log'
-
-let fetch = null;
-  (async () => {
-    fetch = (await import('./libs/proxy-fetch.mjs')).default
-    console.log("FFFFFFFFFFFFFFFFFFFFFFFF", fetch);
-})()
-// import fetch from './libs/proxy-fetch.mjs' //'node-fetch'//'./libs/proxy-fetch.mjs'
 
 ipcMain.on('minimize', () => {
   BrowserWindow.getFocusedWindow().minimize()
@@ -27,6 +20,7 @@ ipcMain.on('close', () => {
 })
 
 ipcMain.handle('getSiteList', async (event, query) => {
+  log.info('loadSite', `${process.cwd()}/static/rules`)
   return await SiteLoader.loadSites(`${process.cwd()}/static/rules`)
 })
 ipcMain.handle('request', async (event, params) => {
@@ -51,46 +45,19 @@ ipcMain.handle('loadChild', async (event, params) => {
 ipcMain.handle('load', async (event, query) => {
   if (!query || !query.siteId) return []
   try {
-    log.info('query', query)
-    log.info('loadSite', `${process.cwd()}/static/rules`)
     const sites = await SiteLoader.loadSites(`${process.cwd()}/static/rules`)
     const site = sites.find((site) => site.id == query.siteId)
     const request = async (url, options) => {
       options.header = site.headers
       options.timeout = 5000
-      log.info('request', url, options)
-      const resp = await fetch(url, options)
-      log.info('RRRRRRRRRRRRRESP', resp)
-      return resp
+      return await fetch(url, options)
     }
 
     const sakurawler = new Sakurawler(site, query.page || 1, query.keywords || '', request)
     const [resultSet] = await sakurawler.parseSite()
-    log.info('resultSet', resultSet)
     return JSON.stringify(resultSet)
   } catch (error) {
     log.error(error)
   }
   return []
-  /*
-  const dir = `${process.cwd()}/download`
-
-  fs.mkdir(dir, { recursive: true })
-  fs.mkdir(`${dir}/peko`, { recursive: true })
-  // 测试
-  resultSet.forEach(async (item) => {
-    ;(await item.spider.parseNext(item)).forEach(async (child) => {
-      const url = child.largerUrl || child.sampleUrl
-      if (url) {
-        const filename = decodeURI(url.substring(url.lastIndexOf('/') + 1, url.length))
-        const buffer = await (await fetch(url)).arrayBuffer()
-        fs.writeFile(`${dir}/peko/${filename}`, Buffer.from(buffer))
-      }
-    })
-    if (item.coverUrl) {
-      const filename = item.coverUrl.substring(item.coverUrl.lastIndexOf('/') + 1, item.coverUrl.length)
-      const buffer = await (await fetch(item.coverUrl)).arrayBuffer()
-      fs.writeFile(`${dir}/${filename}`, Buffer.from(buffer))
-    }
-  })*/
 })
