@@ -53,7 +53,7 @@ export default {
   watch: {
     items: {
       handler(nv, ov) {
-        if (nv != ov && nv.length != ov.length) {
+        if (nv && ov && nv.length != ov.length) {
           this.$emit('loading')
           try {
             this.refresh()
