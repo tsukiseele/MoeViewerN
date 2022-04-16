@@ -4,7 +4,8 @@
   .waterfall--list-item {
     position: absolute;
     opacity: 0;
-    transition: top 0.25s ease, left 0.25s ease, opacity .25s ease-out, height .25s ease;
+    transform: translateZ(0);
+    transition: transform .25s, opacity .25s ease-out, height .25s ease; //top 0.25s ease, left 0.25s ease, opacity .25s ease-out, height .25s ease;
     :deep(img) {
       width: 100%;
       height: 100%;

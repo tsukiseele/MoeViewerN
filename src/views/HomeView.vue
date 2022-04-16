@@ -6,7 +6,7 @@ import { NButton, NSelect, NInputNumber, NAutoComplete, NResult, NTag, useMessag
 import SSimpleWaterfall from '@/components/SSimpleWaterfall/index.vue'
 import SLoading from '@/components/SLoading/index.vue'
 import CatalogLayer from '@/views/Layer/CatalogLayer.vue'
-import _ from 'lodash'
+import _, { result } from 'lodash'
 import PLimit from 'p-limit'
 import native from '@/composables/native.js'
 import placeholder from '@/assets/images/placeholder.webp'
@@ -25,7 +25,7 @@ const query = ref({
 const sites = ref([])
 const currentSite = ref(() => ({}))
 const isLoaded = ref(false)
-
+const waterfall = ref(null)
 window.$message = useMessage()
 
 onMounted(async () => {
@@ -76,46 +76,18 @@ async function getImageSize(src) {
     }
   })
 }
-async function handleImage(items) {
-  console.log('ITEMS', items)
-  // if (this.items && this.items.length) {
-  //   const pLimit = PLimit(10)
-  //   const success = await Promise.allSettled(
-  //     this.items.map((item) =>
-  //       pLimit(async (item) => {
-  //         const { data, type } = await native.request({ url: item.coverUrl, options: { headers: currentSite.value.headers, timeout: 5000 } })
-  //         const src = URL.createObjectURL(base64ToBlob(data, type))
-  //         item._src = src
-  //         // const { width, height } = getImageSize(src)
-  //         // if (width > 0 && height > 0) {
-  //         //   item._height = height
-  //         // }
-  //       }, item)
-  //     )
-  //   )
-  //   return success
-  // }
-}
 function onImgLoaded(e, item) {
   console.log(e, item);
   const el = e.path[0]
   !el.loaded && loadImage(el, item)
 }
+const loadedCount = ref(0)
 async function loadImage(el, item) {
     if (item._src) return
-
-    console.log("item._src", item._src);
-    console.log('onLoad', item.coverUrl)
     const { data, type } = await native.request({ url: item.coverUrl, options: { headers: currentSite.value.headers, timeout: 5000 } })
     el.loaded = true
     item._src = URL.createObjectURL(base64ToBlob(data, type))
-
-    // }
-
-  // // const { width, height } = getImageSize(src)
-  // if (width > 0 && height > 0) {
-  //   item._height = height
-  // }
+    loadedCount.value = loadedCount.value ? loadedCount.value + 1 : 1
 }
 function onScrollBottom() {
   query.value.page++
@@ -170,7 +142,7 @@ watch(keywords, getKeywordsOptions)
       template(#suffix)
         i.mdi.mdi-magnify(@click="onSearch" )
   main
-    SSimpleWaterfall(v-if="isLoaded && results && results.length" :items="results" :handleImage="handleImage" image-key="coverUrl" :item-width="200" @loaded="onLoaded" @loading="isLoaded = false" @scroll-bottom="onScrollBottom")
+    SSimpleWaterfall(v-if="isLoaded && results && results.length" :items="results" :loadedCount="loadedCount" :handleImage="handleImage" image-key="coverUrl" :item-width="200" @loaded="onLoaded" @loading="isLoaded = false" @scroll-bottom="onScrollBottom")
       template(v-slot="{item, index}")
         .list-item(v-if="item" @click="openChild(item)")
           img.item-image(:src="item._src || placeholder" @load="(e) => onImgLoaded(e, item)")
