@@ -14,7 +14,7 @@ import placeholder from '@/assets/images/placeholder.webp'
 const showCatalog = ref(false)
 const childItem = ref(null)
 const router = useRouter()
-const results = ref(() => [])
+const results = ref([])
 const keywords = ref('')
 const currentSiteId = ref(() => ({}))
 const query = ref({
@@ -58,9 +58,9 @@ async function loadList(params) {
 async function loadNext(params) {
   console.log('params: ', params)
   const next = await native.load(params)
-  console.log("NEXT", next);
-  results.value.push({...next})
-  console.log(  results.value);
+  console.log('NEXT', next)
+  results.value.push(...next)
+  console.log(results.value)
 }
 const base64ToBlob = (base64, type) => {
   return new Blob([Base64.toUint8Array(base64)], { type: type })
@@ -78,23 +78,44 @@ async function getImageSize(src) {
 }
 async function handleImage(items) {
   console.log('ITEMS', items)
-  if (this.items && this.items.length) {
-    const pLimit = PLimit(10)
-    const success = await Promise.allSettled(
-      this.items.map((item) =>
-        pLimit(async (item) => {
-          const { data, type } = await native.request({ url: item.coverUrl, options: { headers: currentSite.value.headers, timeout: 5000 } })
-          const src = URL.createObjectURL(base64ToBlob(data, type))
-          item._src = src
-          // const { width, height } = getImageSize(src)
-          // if (width > 0 && height > 0) {
-          //   item._height = height
-          // }
-        }, item)
-      )
-    )
-    return success
-  }
+  // if (this.items && this.items.length) {
+  //   const pLimit = PLimit(10)
+  //   const success = await Promise.allSettled(
+  //     this.items.map((item) =>
+  //       pLimit(async (item) => {
+  //         const { data, type } = await native.request({ url: item.coverUrl, options: { headers: currentSite.value.headers, timeout: 5000 } })
+  //         const src = URL.createObjectURL(base64ToBlob(data, type))
+  //         item._src = src
+  //         // const { width, height } = getImageSize(src)
+  //         // if (width > 0 && height > 0) {
+  //         //   item._height = height
+  //         // }
+  //       }, item)
+  //     )
+  //   )
+  //   return success
+  // }
+}
+function onImgLoaded(e, item) {
+  console.log(e, item);
+  const el = e.path[0]
+  !el.loaded && loadImage(el, item)
+}
+async function loadImage(el, item) {
+    if (item._src) return
+
+    console.log("item._src", item._src);
+    console.log('onLoad', item.coverUrl)
+    const { data, type } = await native.request({ url: item.coverUrl, options: { headers: currentSite.value.headers, timeout: 5000 } })
+    el.loaded = true
+    item._src = URL.createObjectURL(base64ToBlob(data, type))
+
+    // }
+
+  // // const { width, height } = getImageSize(src)
+  // if (width > 0 && height > 0) {
+  //   item._height = height
+  // }
 }
 function onScrollBottom() {
   query.value.page++
@@ -152,7 +173,7 @@ watch(keywords, getKeywordsOptions)
     SSimpleWaterfall(v-if="isLoaded && results && results.length" :items="results" :handleImage="handleImage" image-key="coverUrl" :item-width="200" @loaded="onLoaded" @loading="isLoaded = false" @scroll-bottom="onScrollBottom")
       template(v-slot="{item, index}")
         .list-item(v-if="item" @click="openChild(item)")
-          img.item-image(:src="item._src || placeholder")
+          img.item-image(:src="item._src || placeholder" @load="(e) => onImgLoaded(e, item)")
           .item-title {{ item.title }}
     NResult(v-else-if="isLoaded" status="404" title="Resource Not Found" description="可能因素：目标未命中，网络不可用，防火墙拦截（尤其是在中国大陆）")
       template(#footer)
@@ -208,7 +229,7 @@ watch(keywords, getKeywordsOptions)
   main {
     flex: 1;
     height: 0;
-    overflow: auto;
+    // overflow: auto;
     padding: 1rem 0;
   }
   .n-result {

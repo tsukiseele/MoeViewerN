@@ -81,8 +81,8 @@ export default {
       })
     },
     onScroll(e) {
-      const { scrollTop, clientHeight, scrollHeight } = this.$el
-      if (scrollTop + clientHeight === scrollHeight) {
+      const { scrollTop, clientHeight, scrollHeight } = e.target
+      if (scrollTop + clientHeight- scrollHeight>=-1) {
         this.$emit('scroll-bottom')
       }
     },
