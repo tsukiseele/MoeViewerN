@@ -4,14 +4,14 @@
  * @license MIT
  * 该 Fetch 模块修补了 中断控制器，连接超时（真实中断连接而非丢弃），连接重试，获取本机代理，屏蔽了NodeFetch2的超时功能。
  */
-import AbortPolyfill from 'abortcontroller-polyfill/dist/cjs-ponyfill'
+import AbortPolyfill from 'abortcontroller-polyfill/dist/cjs-ponyfill.js'
 import _nodeFetch from 'node-fetch'
 import HttpsProxyAgent from 'https-proxy-agent'
 import ProxySettings from 'get-proxy-settings'
 import delay from 'delay'
 import pRetry from 'p-retry'
 import pTimeout from './p-timeout.mjs'
-import log from 'electron-log'
+import { TimeoutError } from './p-timeout.mjs'
 
 const { AbortController, abortableFetch } = AbortPolyfill
 const { fetch: nodeFetch } = abortableFetch(_nodeFetch)
@@ -22,18 +22,18 @@ const { fetch: nodeFetch } = abortableFetch(_nodeFetch)
     if (proxy) {
       const setting = proxy.https || proxy.http
       const proxyAgent = new HttpsProxyAgent(setting.toString())
-      globalThis.proxy = proxy
-      globalThis.proxyAgent = proxyAgent
-      log.info('Use proxy: ', setting.toString())
+      global.proxy = proxy
+      global.proxyAgent = proxyAgent
+      console.info('Use proxy: ', setting.toString())
     }
   } catch (error) {
-    log.warn('Failed to get proxy configuration: ', error)
+    console.warn('Failed to get proxy configuration: ', error)
   }
 })()
 
 export default async (...args) => {
   args[1] = args[1] || {}
-  args[1].agent = args[1].agent || globalThis.proxyAgent || null
+  args[1].agent = args[1].agent || global.proxyAgent || null
   args[1].retries = args[1].retries || 3
   args[1]._timeout = args[1].timeout || 10000
   args[1].timeout = null

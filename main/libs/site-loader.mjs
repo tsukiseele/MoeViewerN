@@ -86,7 +86,6 @@ function reuseRules(site) {
  * 设置默认的请求头
  * @param site
  */
-
 async function setDefaultHeaders(site) {
   if (!site) return
   const headers = site.headers || {}
@@ -103,29 +102,6 @@ async function setDefaultHeaders(site) {
   }
   site.headers = headers
 }
-/*
-export async function setDefaultHeaders(site) {
-  if (!site) return;
-  const headers = site.requestHeaders || {};
-  if (!headers.hasOwnProperty("User-Agent")) {
-    headers["User-Agnet"] =
-      "Mozilla/5.0 (Windows NT 6.2; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/27.0.1453.94 Safari/537.36";
-  }
-  if (
-    !headers.hasOwnProperty("Referer") &&
-    site.homeSection &&
-    site.homeSection.indexUrl
-  ) {
-    const match = new RegExp("https?://.+?/").exec(site.homeSection.indexUrl);
-    if (match && match[0]) headers["Referer"] = match[0];
-    headers["Referrer"] = match[0];
-  }
-  if (headers.hasOwnProperty("Cookie")) {
-    headers["Cookie"] = headers["Cookie"] + "SameSite=None; Secure;";
-  }
-  site.requestHeaders = headers;
-}
-*/
 /**
  * 设置Cookies到会话
  * @param site
@@ -136,32 +112,14 @@ function setCookiesToSession(site) {
   const cookie = site.headers['cookie'] || site.headers['Cookie']
   if (match && match[0] && cookie) {
     const domain = match[0]
-    /*
-            const p = /https?:\/\/(.*?\.).+?\..+?\//g.exec(domain)
-            if (p && p[1]) {
-              domain = domain.replace(p[1], "*.");
-            }
-            domain = domain.replace(/https?:\/\//, "*://") || domain*/
-    // ipcRenderer.send('setCookies', domain, cookie)
+    // const p = /https?:\/\/(.*?\.).+?\..+?\//g.exec(domain)
+    // if (p && p[1]) {
+    //   domain = domain.replace(p[1], '*.')
+    // }
+    // domain = domain.replace(/https?:\/\//, '*://') || domain
+    ipcRenderer.send('setCookies', domain, cookie)
   }
 }
-/*
-export function setCookiesToSession(site) {
-  if (
-    !site ||
-    !site.requestHeaders ||
-    !site.homeSection ||
-    !site.homeSection.indexUrl
-  )
-    return;
-  const match = new RegExp("https?://.+?/").exec(site.homeSection.indexUrl);
-  const cookie = site.requestHeaders["cookie"] || site.requestHeaders["Cookie"];
-  if (match && match[0] && cookie) {
-    const domain = match[0];
-    ipcRenderer.send("setCookies", domain, cookie);
-  }
-}
-*/
 export default {
   setCookiesToSession,
   setDefaultHeaders,
