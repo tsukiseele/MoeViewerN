@@ -60,7 +60,9 @@ async function loadSites(dir) {
       if (checkSite(site)) {
         resultSet.push(site)
       }
-    } catch (e) {}
+    } catch (e) {
+      console.log(e);
+    }
   }
   return resultSet
 }

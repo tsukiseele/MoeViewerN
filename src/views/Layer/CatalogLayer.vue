@@ -1,24 +1,30 @@
 <template lang="pug">
 SLayer(:show="show" :title="resultSet && resultSet[0].title && resultSet[0].tags" @update:show="(show) => $emit('update:show', show)")
-  template(v-if="isLoaded")
-    section(v-if="resultSet && resultSet.length === 1")
-      NImageGroup(:theme-overrides="imageGroupThemeOverrides" show-toolbar-tooltip)
-        NImage(:src="resultSet[0]._src" object-fit="contain")
-    section(v-else-if="resultSet && resultSet.length")
-      NImageGroup(:theme-overrides="imageGroupThemeOverrides" show-toolbar-tooltip)
-        NImage(v-for="item in resultSet"  :src="item.originUrl || item.largerUrl || item.sampleUrl || item.cover" object-fit="contain")
+  .container
+    main
+      .image-wrapper(v-if="isLoaded")
+        section(v-if="resultSet && resultSet.length === 1")
+          NImageGroup(:theme-overrides="imageGroupThemeOverrides" show-toolbar-tooltip)
+            NImage(:src="resultSet[0]._src" object-fit="contain")
+        section(v-else-if="resultSet && resultSet.length")
+          NImageGroup(:theme-overrides="imageGroupThemeOverrides" show-toolbar-tooltip)
+            NImage(v-for="item in resultSet"  :src="item.originUrl || item.largerUrl || item.sampleUrl || item.cover" object-fit="contain")
+            img(:src="item.coverUrl")
 
-        img(:src="item.coverUrl")
-    NResult(v-else status="404" title="Resource Not Found" description="可能因素：目标未命中，网络不可用，防火墙拦截（尤其是在中国大陆）")
-  SLoading(:show="!isLoaded")
-  template(#footer)
-    NButton(@click="onSearch") Reload
+    SLoading(:show="!isLoaded")
+    NResult(v-if="isLoaded && !(resultSet && resultSet.length)" status="404" title="Resource Not Found" description="可能因素：目标未命中，网络不可用，防火墙拦截（尤其是在中国大陆）")
+      template(#footer)
+        NButton(@click="onSearch") Reload
+    aside.aside(v-if="tags && tags.length")
+      .gallery-tags
+        NTag(type="info" v-for="tag in tags" :key="tag") {{ tag }}
+        
 </template>
 
 <script>
 import { Base64 } from 'js-base64'
 import { defineComponent, computed } from '@vue/runtime-core'
-import { NButton, NResult, NImage, NImageGroup, useThemeVars } from 'naive-ui'
+import { NButton, NResult, NImage, NImageGroup, NTag, useThemeVars } from 'naive-ui'
 import SLayer from '@/components/SLayer/index.vue'
 import SLoading from '@/components/SLoading/index.vue'
 import native from '@/composables/native.js'
@@ -26,11 +32,12 @@ import native from '@/composables/native.js'
 export default defineComponent({
   components: {
     SLayer,
+    SLoading,
     NButton,
     NResult,
     NImage,
     NImageGroup,
-    SLoading,
+    NTag,
   },
   props: {
     item: {
@@ -46,6 +53,7 @@ export default defineComponent({
   data: () => ({
     isLoaded: false,
     resultSet: null,
+    tags: [],
     scale: 1.0,
   }),
   watch: {
@@ -59,6 +67,8 @@ export default defineComponent({
             } else {
               this.resultSet = [this.item]
             }
+            this.tags = this.tags || (this.resultSet && this.resultSet.length && this.resultSet[0].tags && this.resultSet[0].tags.split(' '))
+            console.log('this.tags', this.tags)
             if (this.resultSet.length === 1) {
               const once = this.resultSet[0]
               const { data, type } = await native.request({ url: once.originUrl || once.largerUrl || once.sampleUrl, options: { headers: once.spider.site.headers } })
@@ -69,13 +79,16 @@ export default defineComponent({
         } catch (error) {
           console.log(error)
         } finally {
+          this.$forceUpdate()
           this.isLoaded = true
         }
       } else {
       }
     },
   },
+  computed: {},
   async mounted() {
+    this.tags = this.item && this.item.tags && this.item.tags.split(' ') || null
     // document.addEventListener('wheel', this.onWheel, false)
   },
   methods: {
@@ -119,6 +132,33 @@ export default defineComponent({
 </script>
 
 <style lang="scss" scoped>
+.container {
+  display: flex;
+
+  main {
+    flex: 1;
+    width: 0;
+    overflow: hidden;
+  }
+  .aside {
+    flex: 0 0 256px;
+    width: 0;
+    display: flex;
+    flex-direction: column;
+    .gallery-tags {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-evenly;
+      flex-direction: row;
+      flex-wrap: wrap;
+      width: 100%;
+
+      .n-tag {
+        margin: .25rem 0;
+      }
+    }
+  }
+}
 section {
   display: flex;
   align-items: center;

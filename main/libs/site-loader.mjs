@@ -50,16 +50,19 @@ async function loadSites(dir) {
   for (const json of await listFiles(dir, ['.json'])) {
     try {
       const site = JSON.parse((await loadSite(json)).toString())
+      
       // 注入默认请求头
       await setDefaultHeaders(site)
       // 设置Cookies到会话
-      setCookiesToSession(site)
+      // setCookiesToSession(site)
       // 重用规则
       reuseRules(site)
       if (checkSite(site)) {
         resultSet.push(site)
       }
-    } catch (e) {}
+    } catch (e) {
+      console.log(e);
+    }
   }
   return resultSet
 }

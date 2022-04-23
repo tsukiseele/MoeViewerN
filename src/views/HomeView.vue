@@ -16,8 +16,6 @@ const showCatalog = ref(false)
 const childItem = ref(null)
 const router = useRouter()
 const results = ref([])
-const keywords = ref('')
-const currentSiteId = ref(() => ({}))
 const query = ref({
   page: 1,
   keywords: 'namori',
@@ -26,15 +24,16 @@ const query = ref({
 const sites = ref([])
 const currentSite = ref(() => ({}))
 const isLoaded = ref(false)
-const waterfall = ref(null)
+const keywordsOptions = ref([])
+
 window.$message = useMessage()
 
 onMounted(async () => {
   sites.value = await native.getSiteList()
-  currentSiteId.value = sites && sites.value.length ? sites.value[25].id : 923
-  currentSite.value = sites && sites.value.length ? sites.value[25] : null
-  query.value.siteId = currentSiteId.value
-  loadList(query.value)
+  console.log(sites.value);
+  if (sites.value && sites.value.length) {
+    onSearch()
+  }
 })
 
 function onLoaded() {
@@ -42,12 +41,9 @@ function onLoaded() {
 }
 
 async function onSearch() {
-  if (currentSiteId != query.value.siteId || keywords.value != query.value.keywords) {
-    query.value.keywords = keywords.value
-    query.value.siteId = currentSiteId.value
-    currentSite.value = sites.value.find((site) => site.id == query.value.siteId)
-    loadList(query.value)
-  }
+  query.value.page = 1
+  currentSite.value = sites.value.find((site) => site.id == query.value.siteId)
+  loadList(query.value)
 }
 async function loadList(params) {
   isLoaded.value = false
@@ -78,7 +74,6 @@ async function getImageSize(src) {
   })
 }
 function onImgLoaded(e, item) {
-  console.log(e, item)
   const el = e.path[0]
   !el.loaded && loadImage(el, item)
 }
@@ -92,7 +87,7 @@ async function loadImage(el, item) {
     el.loaded = true
     item._src = URL.createObjectURL(base64ToBlob(data, type))
     loadedCount.value = loadedCount.value ? loadedCount.value + 1 : 1
-    console.log('queue.size', queue.size);
+    console.log('queue.size', queue.size)
   })
 }
 function onScrollBottom() {
@@ -105,7 +100,6 @@ function openChild(item) {
 }
 const siteOptions = computed(() => sites.value && sites.value.length && sites.value.map((site) => ({ label: site.name, value: site.id })))
 
-const keywordsOptions = ref([])
 
 const renderLabel = (option) => {
   const typeMap = {
@@ -136,15 +130,15 @@ const getKeywordsOptions = _.throttle(async (nv) => {
   }
 }, 300)
 
-watch(keywords, getKeywordsOptions)
+watch('query.value.keywords', getKeywordsOptions)
 </script>
 
 <template lang="pug">
 #home
   header
-    NSelect(v-model:value="currentSiteId" :options="siteOptions")
+    NSelect(v-model:value="query.siteId" :options="siteOptions")
     NInputNumber(v-model:value="query.page" min="1")
-    NAutoComplete(v-model:value="keywords" :options="keywordsOptions" :render-label="renderLabel" type="text" placeholder="Enter keywords" @keyup.enter="onSearch" :input-props="{'spellcheck': false}")
+    NAutoComplete(v-model:value="query.keywords" :options="keywordsOptions" :render-label="renderLabel" type="text" placeholder="Enter keywords" @keyup.enter="onSearch" :input-props="{'spellcheck': false}")
       template(#suffix)
         i.mdi.mdi-magnify(@click="onSearch" )
   main
