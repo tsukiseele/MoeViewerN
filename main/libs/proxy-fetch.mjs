@@ -39,21 +39,20 @@ export default async (...args) => {
   args[1].timeout = null
   return await pRetry(
     async () => {
-      try {
+      // try {
         const abortController = new AbortController()
         const onTimeout = () => {
           abortController.abort()
-          throw new TimeoutError(`Promise timed out after ${args[1]._timeout} milliseconds`)
+          throw new /*Timeout*/Error(`Promise timed out after ${args[1]._timeout} milliseconds`)
         }
         const response = await pTimeout(nodeFetch(...args), args[1]._timeout, onTimeout, abortController.signal)
         if (response && response.status === 404) {
           throw new AbortError(response.statusText)
         }
         return response
-      } catch (error) {
-        console.error(error)
-      }
-      return null
+      // } catch (error) {
+      //   console.error(error)
+      // }
     },
     {
       retries: args[1].retries,

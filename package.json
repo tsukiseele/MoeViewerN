@@ -54,6 +54,7 @@
     "naive-ui": "~2.27.0",
     "node-fetch": "~2.6.7",
     "p-limit": "~4.0.0",
+    "p-queue": "^7.2.0",
     "p-retry": "~4.6.1",
     "p-timeout": "~5.0.2",
     "pinia": "~2.0.11",

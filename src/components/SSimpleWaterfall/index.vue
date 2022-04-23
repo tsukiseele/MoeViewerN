@@ -43,10 +43,6 @@ export default {
       type: Number || String,
       default: null,
     },
-    handleImage: {
-      type: Function,
-      default: null,
-    },
   },
   emits: ['loading', 'loaded', 'scroll-bottom'],
   data: () => ({

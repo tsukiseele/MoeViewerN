@@ -10,6 +10,7 @@ import _, { result } from 'lodash'
 import PLimit from 'p-limit'
 import native from '@/composables/native.js'
 import placeholder from '@/assets/images/placeholder.webp'
+import pQueue from 'p-queue'
 
 const showCatalog = ref(false)
 const childItem = ref(null)
@@ -77,17 +78,22 @@ async function getImageSize(src) {
   })
 }
 function onImgLoaded(e, item) {
-  console.log(e, item);
+  console.log(e, item)
   const el = e.path[0]
   !el.loaded && loadImage(el, item)
 }
 const loadedCount = ref(0)
+
+const queue = new pQueue({ concurrency: 16 })
 async function loadImage(el, item) {
-    if (item._src) return
-    const { data, type } = await native.request({ url: item.coverUrl, options: { headers: currentSite.value.headers, timeout: 5000 } })
+  if (item._src) return
+  queue.add(async () => {
+    const { data, type } = await native.request({ url: item.coverUrl, options: { headers: currentSite.value.headers, timeout: 5000, retries: 5 } })
     el.loaded = true
     item._src = URL.createObjectURL(base64ToBlob(data, type))
     loadedCount.value = loadedCount.value ? loadedCount.value + 1 : 1
+    console.log('queue.size', queue.size);
+  })
 }
 function onScrollBottom() {
   query.value.page++
@@ -142,7 +148,7 @@ watch(keywords, getKeywordsOptions)
       template(#suffix)
         i.mdi.mdi-magnify(@click="onSearch" )
   main
-    SSimpleWaterfall(v-if="isLoaded && results && results.length" :items="results" :loadedCount="loadedCount" :handleImage="handleImage" image-key="coverUrl" :item-width="200" @loaded="onLoaded" @loading="isLoaded = false" @scroll-bottom="onScrollBottom")
+    SSimpleWaterfall(v-if="isLoaded && results && results.length" :items="results" :loadedCount="loadedCount" image-key="coverUrl" :item-width="200" @loaded="onLoaded" @loading="isLoaded = false" @scroll-bottom="onScrollBottom")
       template(v-slot="{item, index}")
         .list-item(v-if="item" @click="openChild(item)")
           img.item-image(:src="item._src || placeholder" @load="(e) => onImgLoaded(e, item)")
