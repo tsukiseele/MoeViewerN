@@ -130,7 +130,7 @@ const getKeywordsOptions = _.throttle(async (nv) => {
   }
 }, 300)
 
-watch('query.value.keywords', getKeywordsOptions)
+watch(() => query.value.keywords, getKeywordsOptions)
 </script>
 
 <template lang="pug">
