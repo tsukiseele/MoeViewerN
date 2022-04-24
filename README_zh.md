@@ -4,7 +4,7 @@
 这个模板应该可以帮助你开始在 Vite 中使用 Vue 3 进行开发。 
 
 ## 预览
-![](./sample/preview_1.webp)
+![](./sample/preview_2.webp)
 
 ## 推荐的 IDE 设置 
 

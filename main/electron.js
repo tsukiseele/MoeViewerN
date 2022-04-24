@@ -34,7 +34,7 @@ async function createWindow() {
   mainWindow.loadURL(isDev ? 'http://localhost:3000' : `file://${path.join(__dirname, '../dist/index.html')}`)
   // Open the DevTools.
   if (isDev) {
-    mainWindow.webContents.openDevTools()
+    // mainWindow.webContents.openDevTools()
   }
 }
 // This method will be called when Electron has finished

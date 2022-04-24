@@ -3,7 +3,7 @@
 This template should help get you started developing with Vue 3 in Vite.
 
 ## Sample
-![](./sample/preview_1.webp)
+![](./sample/preview_2.webp)
 
 ## Recommended IDE Setup
 

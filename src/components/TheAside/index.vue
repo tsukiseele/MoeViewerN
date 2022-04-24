@@ -7,11 +7,10 @@ aside.aside
     li.material-icons(@click="$router.push('/settings')") tune
     li.material-icons(@click="$router.push('/download')") download
     li.material-icons(@click="$router.push('/about')") info
+  
 </template>
 
 <script>
-import { ipcRenderer } from 'electron'
-
 export default {
   methods: {}
 }
@@ -20,10 +19,11 @@ export default {
 <style lang="scss" scoped>
 .aside {
   display: flex;
-  width: 3rem;
+  flex: 0 0 3rem;
+  width: 0;
   flex-direction: column;
   background: rgba(96, 96, 128, 1);
-  height: calc(100vh - var(--frame-height));
+  overflow: hidden;
   ul {
     list-style: none;
     li {
