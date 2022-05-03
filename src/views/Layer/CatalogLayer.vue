@@ -8,7 +8,7 @@ SLayer(:show="show" :title="resultSet && resultSet[0].title && resultSet[0].tags
             NImage(:src="resultSet[0]._src" object-fit="contain")
         section(v-else-if="resultSet && resultSet.length")
           NImageGroup(:theme-overrides="imageGroupThemeOverrides" show-toolbar-tooltip)
-            NImage(v-for="item in resultSet"  :src="item.originUrl || item.largerUrl || item.sampleUrl || item.cover" object-fit="contain")
+            NImage(v-for="item in resultSet"  :src="item.originUrl || item.largerUrl || item.sampleUrl || item.coverUrl" object-fit="cover")
             img(:src="item.coverUrl")
 
     SLoading(:show="!isLoaded")
@@ -60,6 +60,7 @@ export default defineComponent({
     async show(nv) {
       if (nv) {
         try {
+          this.tags = (this.item && this.item.tags && this.item.tags.split(' ')) || null
           if (this.item) {
             this.isLoaded = false
             if (this.item.$children) {
@@ -79,6 +80,7 @@ export default defineComponent({
         } catch (error) {
           console.log(error)
         } finally {
+          console.log('resultSet', this.resultSet)
           this.$forceUpdate()
           this.isLoaded = true
         }
@@ -88,7 +90,7 @@ export default defineComponent({
   },
   computed: {},
   async mounted() {
-    this.tags = this.item && this.item.tags && this.item.tags.split(' ') || null
+    this.tags = (this.item && this.item.tags && this.item.tags.split(' ')) || null
     // document.addEventListener('wheel', this.onWheel, false)
   },
   methods: {
@@ -154,26 +156,37 @@ export default defineComponent({
       width: 100%;
 
       .n-tag {
-        margin: .25rem 0;
+        margin: 0.25rem 0;
       }
     }
   }
 }
 section {
   display: flex;
+  flex-wrap: wrap;
+  // justify-content: center;
   align-items: center;
-  justify-content: center;
   height: 100%;
-  width: 100%;
-  // img {
-  //   // width: 100%;
-  //   // height: 100%;
-  //   object-fit: contain;
-  // }
   .n-image {
-    width: 100%;
-    height: 100%;
+    display: flex;
+    align-items: center;
     justify-content: center;
+    width: 0;
+    height: 250px;
+    flex: 0 0 23%;
+    margin: 0.5rem;
+
+    // img {
+    //   // width: 100%;
+    //   // height: 100%;
+    //   object-fit: contain;
+    // }
+    :deep(img) {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center;
+    }
   }
 }
 
