@@ -12,42 +12,40 @@
   "sections": {
     "home": {
       "index": "https://www.sakugabooru.com/post?page={page:}",
-      "rules": [
-        {
-          "title": {
-            "selector": "$(ul#post-list-posts > li).attr(id)",
-            "capture": "(?<=p)(.*)",
-            "replacement": "Sakugabooru $1"
-          },
-          "coverUrl": {
-            "selector": "$(div.inner > a.thumb > img).attr(src)"
-          },
-          "$children": {
-            "selector": "$(div.inner > a).attr(href)",
-            "capture": "(.*)",
-            "replacement": "https://www.sakugabooru.com$1"
-          }
+      "rules": {
+        "title": {
+          "selector": "$(ul#post-list-posts > li).attr(id)",
+          "capture": "(?<=p)(.*)",
+          "replacement": "Sakugabooru $1"
         },
-        {
-          "title": {
-            "selector": "$(title).text()"
-          },
-          "tags": {
-            "selector": "$(textarea#post_tags).text()"
-          },
-          "sampleUrl": {
-            "selector": "$(video source).attr(src)"
-          },
-          "originUrl": {
-            "selector": "$(a#highres).attr(href)"
-          },
-          "datetime": {
-            "selector": "$(script#forum-posts-latest).html()",
-            "capture": "(\\d{4}-\\d{2}-\\d{2})T(\\d{2}:\\d{2}:\\d{2})",
-            "replacement": "$1 $2"
+        "coverUrl": {
+          "selector": "$(div.inner > a.thumb > img).attr(src)"
+        },
+        "$children": {
+          "selector": "$(div.inner > a).attr(href)",
+          "capture": "(.*)",
+          "replacement": "https://www.sakugabooru.com$1",
+          "rules": {
+            "title": {
+              "selector": "$(title).text()"
+            },
+            "tags": {
+              "selector": "$(textarea#post_tags).text()"
+            },
+            "sampleUrl": {
+              "selector": "$(video source).attr(src)"
+            },
+            "originUrl": {
+              "selector": "$(a#highres).attr(href)"
+            },
+            "datetime": {
+              "selector": "$(script#forum-posts-latest).html()",
+              "capture": "(\\d{4}-\\d{2}-\\d{2})T(\\d{2}:\\d{2}:\\d{2})",
+              "replacement": "$1 $2"
+            }
           }
         }
-      ]
+      }
     },
     "search": {
       "index": "https://www.sakugabooru.com/post?page={page:}&tags={keywords:}",

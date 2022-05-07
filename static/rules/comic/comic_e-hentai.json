@@ -13,44 +13,42 @@
   "sections": {
     "home": {
       "index": "https://e-hentai.org/?page={page:-1}",
-      "rules": [
-        {
-          "title": {
-            "selector": "$(.gl4t.glname).text()"
-          },
-          "coverUrl": {
-            "selector": "$(.gl3t a img).attr(src)"
-          },
-          "$children": {
-            "selector": "$(.gl3t a).attr(href)",
-            "capture": ".*",
-            "replacement": "$0?inline_set=ts_l&p={page:0}"
-          }
+      "rules": {
+        "title": {
+          "selector": "$(.gl4t.glname).text()"
         },
-        {
-          "title": {
-            "selector": "$(div.gdtl a img).attr(alt)",
-            "capture": "(.*)",
-            "replacement": "$1"
-          },
-          "tags": {
-            "selector": "$(meta[name=description]).attr(content)",
-            "capture": "-\\sTags:(.*)",
-            "replacement": "$1"
-          },
-          "coverUrl": {
-            "selector": "$(.gdtl > a > img).attr(src)"
-          },
-          "$children": {
-            "selector": "$(.gdtl > a).attr(href)"
-          }
+        "coverUrl": {
+          "selector": "$(.gl3t a img).attr(src)"
         },
-        {
-          "originUrl": {
-            "selector": "$(#img).attr(src)"
+        "$children": {
+          "selector": "$(.gl3t a).attr(href)",
+          "capture": ".*",
+          "replacement": "$0?inline_set=ts_l&p={page:0}",
+          "rules": {
+            "title": {
+              "selector": "$(div.gdtl a img).attr(alt)",
+              "capture": "(.*)",
+              "replacement": "$1"
+            },
+            "tags": {
+              "selector": "$(meta[name=description]).attr(content)",
+              "capture": "-\\sTags:(.*)",
+              "replacement": "$1"
+            },
+            "coverUrl": {
+              "selector": "$(.gdtl > a > img).attr(src)"
+            },
+            "$children": {
+              "selector": "$(.gdtl > a).attr(href)",
+              "rules": {
+                "originUrl": {
+                  "selector": "$(#img).attr(src)"
+                }
+              }
+            }
           }
         }
-      ]
+      }
     },
     "search": {
       "index": "https://e-hentai.org/?f_search={keywords:}&page={page:-1}",

@@ -10,39 +10,37 @@
   "sections": {
     "home": {
       "index": "https://safebooru.org/index.php?page=post&s=list&pid={page:-1,40}",
-      "rules": [
-        {
-          "title": {
-            "selector": "$(.thumb > a).attr(id)",
-            "capture": "p(.*)",
-            "replacement": "SafeBooru $1"
-          },
-          "tags": {
-            "selector": "$(.thumb img).attr(alt)"
-          },
-          "$children": {
-            "selector": "$(.thumb a).attr(href)",
-            "capture": ".*",
-            "replacement": "https://safebooru.org/$0"
-          },
-          "coverUrl": {
-            "selector": "$(.thumb img).attr(src)"
+      "rules": {
+        "title": {
+          "selector": "$(.thumb > a).attr(id)",
+          "capture": "p(.*)",
+          "replacement": "SafeBooru $1"
+        },
+        "tags": {
+          "selector": "$(.thumb img).attr(alt)"
+        },
+        "$children": {
+          "selector": "$(.thumb a).attr(href)",
+          "capture": ".*",
+          "replacement": "https://safebooru.org/$0",
+          "rules": {
+            "title": {
+              "selector": "$(head > title).text()"
+            },
+            "originUrl": {
+              "selector": "$(body).html()",
+              "capture": "(https?:)?(//safebooru.org//?images/\\d+?/.*?\\.(jpg|png|jpeg))",
+              "replacement": "https:$2"
+            },
+            "sampleUrl": {
+              "selector": "$(#image).attr(src)"
+            }
           }
         },
-        {
-          "title": {
-            "selector": "$(head > title).text()"
-          },
-          "originUrl": {
-            "selector": "$(body).html()",
-            "capture": "(https?:)?(//safebooru.org//?images/\\d+?/.*?\\.(jpg|png|jpeg))",
-            "replacement": "https:$2"
-          },
-          "sampleUrl": {
-            "selector": "$(#image).attr(src)"
-          }
+        "coverUrl": {
+          "selector": "$(.thumb img).attr(src)"
         }
-      ]
+      }
     },
     "search": {
       "index": "https://safebooru.org/index.php?tags={keywords:}&page=post&s=list&pid={page:-1,40}",

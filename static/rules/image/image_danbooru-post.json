@@ -10,33 +10,31 @@
   "sections": {
     "home": {
       "index": "https://danbooru.donmai.us/posts?page={page:0}",
-      "rules": [
-        {
-          "title": {
-            "selector": "$(#posts .post-preview).attr(data-id)",
-            "capture": ".*",
-            "replacement": "Danbooru $0"
-          },
-          "originUrl": {
-            "selector": "$(div#posts > div > article).attr(data-file-url)"
-          },
-          "sampleUrl": {
-            "selector": "$(div#posts > div > article).attr(data-large-file-url)"
-          },
-          "coverUrl": {
-            "selector": "$(#posts .post-preview .post-preview-image).attr(src)"
-          },
-          "tags": {
-            "selector": "$(div#posts > div > article).attr(data-tags)"
-          },
-          "source_url": {
-            "selector": "$(div#posts > div > article).attr(data-source)"
-          },
-          "info": {
-            "selector": "$(div#posts > div > article).attr(data-pixiv-id)"
-          }
+      "rules": {
+        "title": {
+          "selector": "$(#posts .post-preview).attr(data-id)",
+          "capture": ".*",
+          "replacement": "Danbooru $0"
+        },
+        "originUrl": {
+          "selector": "$(div#posts > div > article).attr(data-file-url)"
+        },
+        "sampleUrl": {
+          "selector": "$(div#posts > div > article).attr(data-large-file-url)"
+        },
+        "coverUrl": {
+          "selector": "$(#posts .post-preview .post-preview-image).attr(src)"
+        },
+        "tags": {
+          "selector": "$(div#posts > div > article).attr(data-tags)"
+        },
+        "source_url": {
+          "selector": "$(div#posts > div > article).attr(data-source)"
+        },
+        "info": {
+          "selector": "$(div#posts > div > article).attr(data-pixiv-id)"
         }
-      ]
+      }
     },
     "search": {
       "index": "https://danbooru.donmai.us/posts?page={page:}&tags={keywords:}",

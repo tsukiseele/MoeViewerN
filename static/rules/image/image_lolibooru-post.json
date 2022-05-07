@@ -10,21 +10,19 @@
   "sections": {
     "home": {
       "index": "https://lolibooru.moe/post?page={page:0}",
-      "rules": [
-        {
-          "title": {
-            "selector": "$(ul#post-list-posts > li).attr(id)",
-            "capture": "(?<=p).*",
-            "replacement": "Lolibooru $0"
-          },
-          "originUrl": {
-            "selector": "$(ul#post-list-posts > li > a[href]).attr(href)"
-          },
-          "coverUrl": {
-            "selector": "$(div > a.thumb > img).attr(src)"
-          }
+      "rules": {
+        "title": {
+          "selector": "$(ul#post-list-posts > li).attr(id)",
+          "capture": "(?<=p).*",
+          "replacement": "Lolibooru $0"
+        },
+        "originUrl": {
+          "selector": "$(ul#post-list-posts > li > a[href]).attr(href)"
+        },
+        "coverUrl": {
+          "selector": "$(div > a.thumb > img).attr(src)"
         }
-      ]
+      }
     },
     "search": {
       "index": "https://lolibooru.moe/post?tags={keywords:}&page={page:}",

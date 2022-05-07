@@ -2,12 +2,6 @@
 aside.aside
   ul
     li(v-for="link in links" :key="link.to").material-icons(@click="$router.push(link.to)") {{ link.icon }}
-    //- li.material-icons(@click="$router.push('/favorites')") loyalty
-    //- li.material-icons(@click="$router.push('/subscribes')") code
-    //- li.material-icons(@click="$router.push('/settings')") tune
-    //- li.material-icons(@click="$router.push('/download')") download
-    //- li.material-icons(@click="$router.push('/about')") info
-  
 </template>
 
 <script>

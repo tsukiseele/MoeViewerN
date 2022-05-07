@@ -31,6 +31,11 @@ const { fetch: nodeFetch } = abortableFetch(_nodeFetch)
   }
 })()
 
+/**
+ * 默认使用系统代理
+ * 默认超时时间：10s
+ * 默认重试次数：3次
+ */
 export default async (...args) => {
   args[1] = args[1] || {}
   args[1].agent = args[1].agent || global.proxyAgent || null

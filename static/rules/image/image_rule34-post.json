@@ -20,38 +20,38 @@
           "tags": {
             "selector": "$(span.thumb > a > img).attr(alt)"
           },
-          "$children": {
-            "selector": "$(span.thumb > a).attr(href)",
-            "capture": ".*",
-            "replacement": "https://rule34.xxx/$0"
-          },
           "coverUrl": {
             "selector": "$(span.thumb > a > img).attr(src)",
             "capture": "(https:)?(.*)",
             "replacement": "https:$2"
-          }
-        },
-        {
-          "title": {
-            "selector": "$(head > title).text()"
           },
-          "tags": {
-            "selector": "$(img#image).attr(alt)"
-          },
-          "originUrl": {
-            "selector": "$(body).html()",
-            "capture": "(https?:)?(//(img.)?rule34.xxx//?images/\\d+?/.*?\\.(jpg|png|jpeg))",
-            "replacement": "https:$2"
-          },
-          "sampleUrl": {
-            "selector": "$(img#image).attr(src)",
-            "capture": "(https:)?(.*)",
-            "replacement": "https:$2"
-          },
-          "coverUrl": {
-            "selector": "$(img#image).attr(src)",
-            "capture": "(https:)?(.*)",
-            "replacement": "https:$2"
+          "$children": {
+            "selector": "$(span.thumb > a).attr(href)",
+            "capture": ".*",
+            "replacement": "https://rule34.xxx/$0",
+            "rules": {
+              "title": {
+                "selector": "$(head > title).text()"
+              },
+              "tags": {
+                "selector": "$(img#image).attr(alt)"
+              },
+              "originUrl": {
+                "selector": "$(body).html()",
+                "capture": "(https?:)?(//(img.)?rule34.xxx//?images/\\d+?/.*?\\.(jpg|png|jpeg))",
+                "replacement": "https:$2"
+              },
+              "sampleUrl": {
+                "selector": "$(img#image).attr(src)",
+                "capture": "(https:)?(.*)",
+                "replacement": "https:$2"
+              },
+              "coverUrl": {
+                "selector": "$(img#image).attr(src)",
+                "capture": "(https:)?(.*)",
+                "replacement": "https:$2"
+              }
+            }
           }
         }
       ]

@@ -10,35 +10,33 @@
   "sections": {
     "home": {
       "index": "https://gelbooru.com/index.php?page=post&s=list&pid={page:-1,42}",
-      "rules": [
-        {
-          "title": {
-            "selector": "$(.thumbnail-preview a).attr(id)",
-            "capture": "(?<=p).*",
-            "replacement": "Gelbooru $0"
-          },
-          "coverUrl": {
-            "selector": "$(.thumbnail-preview img).attr(src)"
-          },
-          "next": {
-            "selector": "$(.thumbnail-preview a).attr(href)"
-          }
+      "rules": {
+        "title": {
+          "selector": "$(.thumbnail-preview a).attr(id)",
+          "capture": "(?<=p).*",
+          "replacement": "Gelbooru $0"
         },
-        {
-          "title": {
-            "selector": "$(title).text()"
-          },
-          "tags": {
-            "selector": "$(#tags).text()"
-          },
-          "sampleUrl": {
-            "selector": "$(#image).attr(src)"
-          },
-          "originUrl": {
-            "selector": "$([rel=noopener]).attr(href)"
+        "coverUrl": {
+          "selector": "$(.thumbnail-preview img).attr(src)"
+        },
+        "$children": {
+          "selector": "$(.thumbnail-preview a).attr(href)",
+          "rules": {
+            "title": {
+              "selector": "$(title).text()"
+            },
+            "tags": {
+              "selector": "$(#tags).text()"
+            },
+            "sampleUrl": {
+              "selector": "$(#image).attr(src)"
+            },
+            "originUrl": {
+              "selector": "$([rel=noopener]).attr(href)"
+            }
           }
         }
-      ]
+      }
     },
     "search": {
       "index": "https://gelbooru.com/index.php?page=post&s=list&tags={keywords:}&pid={page:-1, 42}",

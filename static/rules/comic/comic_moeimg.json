@@ -11,30 +11,28 @@
   "sections": {
     "home": {
       "index": "http://moeimg.net/page/{page:}",
-      "rules": [
-        {
-          "title": {
-            "selector": "$(.thumbnail_image).attr(alt)"
-          },
-          "$children": {
-            "selector": "$(.box.list > a).attr(href)"
-          },
-          "coverUrl": {
-            "selector": "$(.thumbnail_image).attr(src)"
-          },
-          "tags": {
-            "selector": "$(div.tag).text()"
-          }
+      "rules": {
+        "title": {
+          "selector": "$(.thumbnail_image).attr(alt)"
         },
-        {
-          "originUrl": {
-            "selector": "$(.thumbnail_image).attr(src)"
-          },
-          "coverUrl": {
-            "selector": "$(.thumbnail_image).attr(src)"
+        "coverUrl": {
+          "selector": "$(.thumbnail_image).attr(src)"
+        },
+        "tags": {
+          "selector": "$(div.tag).text()"
+        },
+        "$children": {
+          "selector": "$(.box.list > a).attr(href)",
+          "rules": {
+            "originUrl": {
+              "selector": "$(.thumbnail_image).attr(src)"
+            },
+            "coverUrl": {
+              "selector": "$(.thumbnail_image).attr(src)"
+            }
           }
         }
-      ]
+      }
     },
     "search": {
       "index": "http://moeimg.net/tag/{keywords:}/page/{page:}",

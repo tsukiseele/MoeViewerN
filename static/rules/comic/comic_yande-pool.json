@@ -11,52 +11,50 @@
   "sections": {
     "home": {
       "index": "https://yande.re/pool?page={page:0}",
-      "rules": [
-        {
-          "title": {
-            "selector": "$(.even a,.odd a).text()"
-          },
-          "coverUrl": {
-            "regex": "\"preview_url\":\"(.*?)\""
-          },
-          "$children": {
-            "selector": "$(.even a,.odd a).attr(href)",
-            "capture": "(.*)",
-            "replacement": "https://yande.re$1"
-          }
+      "rules": {
+        "title": {
+          "selector": "$(.even a,.odd a).text()"
         },
-        {
-          "title": {
-            "selector": "$(.thumb).attr(href)",
-            "capture": "(\\d+)",
-            "replacement": "$1"
-          },
-          "tags": {
-            "selector": "$(.preview).attr(alt)",
-            "capture": "Tags\\: (.*?) User\\:",
-            "replacement": "$1"
-          },
-          "coverUrl": {
-            "selector": "$(.preview).attr(src)"
-          },
-          "$children": {
-            "selector": "$(.thumb).attr(href)",
-            "capture": "(.*)",
-            "replacement": "https://yande.re/$1"
-          }
+        "coverUrl": {
+          "regex": "\"preview_url\":\"(.*?)\""
         },
-        {
-          "sampleUrl": {
-            "selector": "$(#image).attr(src)"
-          },
-          "largerUrl": {
-            "selector": "$(#highres).attr(href)"
-          },
-          "originUrl": {
-            "selector": "$(#png).attr(href)"
+        "$children": {
+          "selector": "$(.even a,.odd a).attr(href)",
+          "capture": "(.*)",
+          "replacement": "https://yande.re$1",
+          "rules": {
+            "title": {
+              "selector": "$(.thumb).attr(href)",
+              "capture": "(\\d+)",
+              "replacement": "$1"
+            },
+            "tags": {
+              "selector": "$(.preview).attr(alt)",
+              "capture": "Tags\\: (.*?) User\\:",
+              "replacement": "$1"
+            },
+            "coverUrl": {
+              "selector": "$(.preview).attr(src)"
+            },
+            "$children": {
+              "selector": "$(.thumb).attr(href)",
+              "capture": "(.*)",
+              "replacement": "https://yande.re/$1",
+              "rules": {
+                "sampleUrl": {
+                  "selector": "$(#image).attr(src)"
+                },
+                "largerUrl": {
+                  "selector": "$(#highres).attr(href)"
+                },
+                "originUrl": {
+                  "selector": "$(#png).attr(href)"
+                }
+              }
+            }
           }
         }
-      ]
+      }
     },
     "search": {
       "index": "https://yande.re/pool?page={page:0}&query={keywords:}&commit=Search",

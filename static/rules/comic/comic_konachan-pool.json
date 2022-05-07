@@ -14,64 +14,62 @@
   "sections": {
     "home": {
       "index": "https://konachan.com/pool?page={page:0}",
-      "rules": [
-        {
-          "title": {
-            "selector": "$(.even td a, .odd td a).text()"
-          },
-          "coverUrl": {
-            "regex": "\"preview_url\":\"(.*?)\""
-          },
-          "sampleUrl": {
-            "regex": "\"sample_url\":\"(.*?)\""
-          },
-          "largerUrl": {
-            "regex": "\"jpeg_url\":\"(.*?)\""
-          },
-          "originUrl": {
-            "regex": "\"file_url\":\"(.*?)\""
-          },
-          "$children": {
-            "regex": "hover_row\\s=\\s\\$\\(\"p(\\d+)\"\\)",
-            "capture": "(.*)",
-            "replacement": "https://konachan.com/pool/show/$1"
-          }
+      "rules": {
+        "title": {
+          "selector": "$(.even td a, .odd td a).text()"
         },
-        {
-          "title": {
-            "selector": "$(#post-list-posts > li).attr(id)",
-            "capture": "p(.+)",
-            "replacement": "$1"
-          },
-          "tags": {
-            "selector": "$(#image).attr(alt)"
-          },
-          "coverUrl": {
-            "selector": "$(.preview).attr(src)"
-          },
-          "datetime": {
-            "selector": "$(script#forum-posts-latest).html()",
-            "capture": "(\\d{4}-\\d{2}-\\d{2})T(\\d{2}:\\d{2}:\\d{2})",
-            "replacement": "$1 $2"
-          },
-          "$children": {
-            "selector": "$(.thumb).attr(href)",
-            "capture": "(.+)",
-            "replacement": "https://konachan.com$1"
-          }
+        "coverUrl": {
+          "regex": "\"preview_url\":\"(.*?)\""
         },
-        {
-          "sampleUrl": {
-            "selector": "$(#image).attr(src)"
-          },
-          "largerUrl": {
-            "selector": "$(a#highres).attr(href)"
-          },
-          "originUrl": {
-            "selector": "$(a#png).attr(href)"
+        "sampleUrl": {
+          "regex": "\"sample_url\":\"(.*?)\""
+        },
+        "largerUrl": {
+          "regex": "\"jpeg_url\":\"(.*?)\""
+        },
+        "originUrl": {
+          "regex": "\"file_url\":\"(.*?)\""
+        },
+        "$children": {
+          "regex": "hover_row\\s=\\s\\$\\(\"p(\\d+)\"\\)",
+          "capture": "(.*)",
+          "replacement": "https://konachan.com/pool/show/$1",
+          "rules": {
+            "title": {
+              "selector": "$(#post-list-posts > li).attr(id)",
+              "capture": "p(.+)",
+              "replacement": "$1"
+            },
+            "tags": {
+              "selector": "$(#image).attr(alt)"
+            },
+            "coverUrl": {
+              "selector": "$(.preview).attr(src)"
+            },
+            "datetime": {
+              "selector": "$(script#forum-posts-latest).html()",
+              "capture": "(\\d{4}-\\d{2}-\\d{2})T(\\d{2}:\\d{2}:\\d{2})",
+              "replacement": "$1 $2"
+            },
+            "$children": {
+              "selector": "$(.thumb).attr(href)",
+              "capture": "(.+)",
+              "replacement": "https://konachan.com$1",
+              "rules": {
+                "sampleUrl": {
+                  "selector": "$(#image).attr(src)"
+                },
+                "largerUrl": {
+                  "selector": "$(a#highres).attr(href)"
+                },
+                "originUrl": {
+                  "selector": "$(a#png).attr(href)"
+                }
+              }
+            }
           }
         }
-      ]
+      }
     },
     "search": {
       "index": "https://konachan.com/post?page={page:0}&tags={keywords:}",

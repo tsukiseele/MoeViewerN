@@ -13,40 +13,38 @@
   "sections": {
     "home": {
       "index": "https://e-hentai.org/lofi/?page={page:-1}",
-      "rules": [
-        {
-          "title": {
-            "selector": "$(table.it tr:eq(0)).text()"
-          },
-          "$children": {
-            "selector": "$(td.ii > a).attr(href)",
-            "capture": ".*",
-            "replacement": "$0/{page:0}"
-          },
-          "coverUrl": {
-            "selector": "$(td.ii > a > img).attr(src)"
-          }
+      "rules": {
+        "title": {
+          "selector": "$(table.it tr:eq(0)).text()"
         },
-        {
-          "title": {
-            "selector": "$(div#gt h1).text()"
-          },
-          "coverUrl": {
-            "selector": "$(div#gh div.gi a img).attr(src)"
-          },
-          "tags": {
-            "selector": "$(tbody > tr:eq(3) > td:eq(1)).text()"
-          },
-          "$children": {
-            "selector": "$(div#gh div.gi a).attr(href)"
-          }
+        "coverUrl": {
+          "selector": "$(td.ii > a > img).attr(src)"
         },
-        {
-          "originUrl": {
-            "selector": "$(div#sd a img#sm).attr(src)"
+        "$children": {
+          "selector": "$(td.ii > a).attr(href)",
+          "capture": ".*",
+          "replacement": "$0/{page:0}",
+          "rules": {
+            "title": {
+              "selector": "$(div#gt h1).text()"
+            },
+            "coverUrl": {
+              "selector": "$(div#gh div.gi a img).attr(src)"
+            },
+            "tags": {
+              "selector": "$(tbody > tr:eq(3) > td:eq(1)).text()"
+            },
+            "$children": {
+              "selector": "$(div#gh div.gi a).attr(href)",
+              "rules": {
+                "originUrl": {
+                  "selector": "$(div#sd a img#sm).attr(src)"
+                }
+              }
+            }
           }
         }
-      ]
+      }
     },
     "search": {
       "index": "https://e-hentai.org/lofi/?f_search={keywords:}&page={page:-1}",

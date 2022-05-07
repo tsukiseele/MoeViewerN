@@ -41,20 +41,38 @@ export default class MoeSpider {
    * @param {Number} deep 解析深度
    * @returns {Promise<Array<Array<Object>>>} 一个deep+1维数组的Promise
    */
-  async parseSection(section, deep = 1) {
+  async parseSection(section, isParseChildren = false) {
     // 复用规则
     if (section.reuse) {
       section.rules = this.site.sections[section.reuse].rules
     }
     const data = []
-    let next = null
-    for (const rule of section.rules) {
-      if (--deep < 0) return data
-      const result = await this.parseRules(next || section.index, rule)
-      next = result.next
-      data.push(result)
+
+    const result = await this.parseRules(next || section.index, rules)
+
+    if (isParseChildren) {
+      return await Promise.allSettled(result.map(item => parseChildren(item, rules)))
+    } else {
+      return data
     }
-    return data
+    // let next = null
+    // for (const rule of section.rules) {
+    //   if (--deep < 0) return data
+    //   const result = await this.parseRules(next || section.index, rule)
+    //   next = result.next
+    //   data.push(result)
+    // }
+    // return data
+  }
+
+  async parseChildren(item, rules) {
+    if (item.$children && rules.$children) {
+      const children = await this.parseRules(item.$children, rules.$children, 1, '')
+      if (children && children.length) {
+        children.forEach(item => parseChildren(item, rules.$children))
+      }  
+      item.children = children
+    }
   }
 
   /**
@@ -63,10 +81,10 @@ export default class MoeSpider {
    * @param {Number} keywords 关键字
    * @returns {Promise<Array<Object>>}
    */
-  async parseRules(url, rule, nextUrl = null, page = this.page, keywords = this.keywords) {
+  async parseRules(url, rule, page = this.page, keywords = this.keywords) {
     if (!rule) return []
     // 生成URL
-    const url = nextUrl || this.replaceUrlTemplate(url, page, keywords)
+    const url = this.replaceUrlTemplate(url, page, keywords)
     // 发送请求
     const html = await this.requestText(url, this.site.headers)
     // 检查无效响应

@@ -10,35 +10,33 @@
   "sections": {
     "home": {
       "index": "https://www.zerochan.net/?p={page:0}",
-      "rules": [
-        {
-          "title": {
-            "selector": "$(#thumbs2 img).attr(title)"
-          },
-          "coverUrl": {
-            "selector": "$(#thumbs2 img).attr(src)"
-          },
-          "$children": {
-            "selector": "$(#thumbs2 li > a).attr(href)",
-            "capture": ".*",
-            "replacement": "https://www.zerochan.net$0"
-          }
+      "rules": {
+        "title": {
+          "selector": "$(#thumbs2 img).attr(title)"
         },
-        {
-          "title": {
-            "selector": "$(.preview).attr(title)"
-          },
-          "tags": {
-            "selector": "$(.preview img).attr(alt)"
-          },
-          "coverUrl": {
-            "selector": "$(.preview img).attr(src)"
-          },
-          "originUrl": {
-            "selector": "$(.preview).attr(href)"
+        "coverUrl": {
+          "selector": "$(#thumbs2 img).attr(src)"
+        },
+        "$children": {
+          "selector": "$(#thumbs2 li > a).attr(href)",
+          "capture": ".*",
+          "replacement": "https://www.zerochan.net$0",
+          "rules": {
+            "title": {
+              "selector": "$(.preview).attr(title)"
+            },
+            "tags": {
+              "selector": "$(.preview img).attr(alt)"
+            },
+            "coverUrl": {
+              "selector": "$(.preview img).attr(src)"
+            },
+            "originUrl": {
+              "selector": "$(.preview).attr(href)"
+            }
           }
         }
-      ]
+      }
     },
     "search": {
       "index": "https://www.zerochan.net/{keywords:}?p={page:0}",

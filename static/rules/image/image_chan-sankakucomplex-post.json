@@ -14,52 +14,50 @@
   "sections": {
     "home": {
       "index": "https://chan.sankakucomplex.com/post?page={page:0}",
-      "rules": [
-        {
-          "title": {
-            "selector": "$(.content > div > span.thumb).attr(id)",
-            "capture": "(?<=p)(.*)",
-            "replacement": "Sankaku $1"
-          },
-          "coverUrl": {
-            "selector": "$(.content > div > span.thumb > a > img.preview).attr(src)",
-            "capture": "(.*)",
-            "replacement": "https:$1"
-          },
-          "tags": {
-            "selector": "$(.content > div > span.thumb > a > img.preview).attr(title)",
-            "capture": ".*(?=\\sRating)",
-            "replacement": "$0"
-          },
-          "$children": {
-            "selector": "$(.content > div > span.thumb > a).attr(href)",
-            "capture": "(.*)",
-            "replacement": "https://chan.sankakucomplex.com$1"
-          }
+      "rules": {
+        "title": {
+          "selector": "$(.content > div > span.thumb).attr(id)",
+          "capture": "(?<=p)(.*)",
+          "replacement": "Sankaku $1"
         },
-        {
-          "sampleUrl": {
-            "selector": "$(img#image).attr(src)",
-            "capture": "(.*)",
-            "replacement": "https:$1"
-          },
-          "largerUrl": {
-            "selector": "$(li > a#highres).attr(href)",
-            "capture": "(.*)",
-            "replacement": "https:$1"
-          },
-          "originUrl": {
-            "selector": "$(li > a#png).attr(href)",
-            "capture": "(.*)",
-            "replacement": "https:$1"
-          },
-          "datetime": {
-            "selector": "$(script#forum-posts-latest).html()",
-            "capture": "(\\d{4}-\\d{2}-\\d{2})T(\\d{2}:\\d{2}:\\d{2})",
-            "replacement": "$1 $2"
+        "coverUrl": {
+          "selector": "$(.content > div > span.thumb > a > img.preview).attr(src)",
+          "capture": "(.*)",
+          "replacement": "https:$1"
+        },
+        "tags": {
+          "selector": "$(.content > div > span.thumb > a > img.preview).attr(title)",
+          "capture": ".*(?=\\sRating)",
+          "replacement": "$0"
+        },
+        "$children": {
+          "selector": "$(.content > div > span.thumb > a).attr(href)",
+          "capture": "(.*)",
+          "replacement": "https://chan.sankakucomplex.com$1",
+          "rules": {
+            "sampleUrl": {
+              "selector": "$(img#image).attr(src)",
+              "capture": "(.*)",
+              "replacement": "https:$1"
+            },
+            "largerUrl": {
+              "selector": "$(li > a#highres).attr(href)",
+              "capture": "(.*)",
+              "replacement": "https:$1"
+            },
+            "originUrl": {
+              "selector": "$(li > a#png).attr(href)",
+              "capture": "(.*)",
+              "replacement": "https:$1"
+            },
+            "datetime": {
+              "selector": "$(script#forum-posts-latest).html()",
+              "capture": "(\\d{4}-\\d{2}-\\d{2})T(\\d{2}:\\d{2}:\\d{2})",
+              "replacement": "$1 $2"
+            }
           }
         }
-      ]
+      }
     },
     "search": {
       "index": "https://chan.sankakucomplex.com/post?page={page:0}&tags={keywords:}",

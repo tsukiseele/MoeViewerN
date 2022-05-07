@@ -15,43 +15,41 @@
       "index": "https://exhentai.org/?page={page:-1}",
       "name": "主页",
       "details": "主页详情",
-      "rules": [
-        {
-          "title": {
-            "selector": "$(.gl4t.glname).text()"
-          },
-          "coverUrl": {
-            "selector": "$(.gl3t a img).attr(src)"
-          },
-          "$children": {
-            "selector": "$(.gl3t a).attr(href)",
-            "capture": ".*",
-            "replacement": "$0?inline_set=ts_l&p={page:0}"
-          }
+      "rules": {
+        "title": {
+          "selector": "$(.gl4t.glname).text()"
         },
-        {
-          "title": {
-            "selector": "$(div.gdtl a img).attr(alt)",
-            "capture": "(.*)",
-            "replacement": "$1"
-          },
-          "tags": {
-            "selector": "$(#taglist tr > td:eq(1) > div).text()",
-            "isCommon": true
-          },
-          "coverUrl": {
-            "selector": "$(.gdtl > a > img).attr(src)"
-          },
-          "$children": {
-            "selector": "$(.gdtl > a).attr(href)"
-          }
+        "coverUrl": {
+          "selector": "$(.gl3t a img).attr(src)"
         },
-        {
-          "originUrl": {
-            "selector": "$(#img).attr(src)"
+        "$children": {
+          "selector": "$(.gl3t a).attr(href)",
+          "capture": ".*",
+          "replacement": "$0?inline_set=ts_l&p={page:0}",
+          "rules": {
+            "title": {
+              "selector": "$(div.gdtl a img).attr(alt)",
+              "capture": "(.*)",
+              "replacement": "$1"
+            },
+            "tags": {
+              "selector": "$(#taglist tr > td:eq(1) > div).text()",
+              "isCommon": true
+            },
+            "coverUrl": {
+              "selector": "$(.gdtl > a > img).attr(src)"
+            },
+            "$children": {
+              "selector": "$(.gdtl > a).attr(href)",
+              "rules": {
+                "originUrl": {
+                  "selector": "$(#img).attr(src)"
+                }
+              }
+            }
           }
         }
-      ]
+      }
     },
     "search": {
       "index": "https://exhentai.org/?page={page:-1}&f_search={keywords:}",
