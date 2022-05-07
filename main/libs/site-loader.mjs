@@ -61,7 +61,7 @@ async function loadSites(dir) {
         resultSet.push(site)
       }
     } catch (e) {
-      console.log(e);
+      console.log(`JSON load failed: ${json}, Cause: ${e.message}`)
     }
   }
   return resultSet

@@ -7,7 +7,6 @@ import SSimpleWaterfall from '@/components/SSimpleWaterfall/index.vue'
 import SLoading from '@/components/SLoading/index.vue'
 import CatalogLayer from '@/views/Layer/CatalogLayer.vue'
 import _, { result } from 'lodash'
-import PLimit from 'p-limit'
 import native from '@/composables/native.js'
 import placeholder from '@/assets/images/placeholder.webp'
 import pQueue from 'p-queue'
@@ -16,21 +15,20 @@ const showCatalog = ref(false)
 const childItem = ref(null)
 const router = useRouter()
 const results = ref([])
-const query = ref({
-  page: 1,
-  keywords: 'namori',
-  siteId: 923,
-})
+const query = ref({ page: 1, keywords: 'namori', siteId: 923 })
 const sites = ref([])
-const currentSite = ref(() => ({}))
+const currentSite = ref({})
 const isLoaded = ref(false)
 const keywordsOptions = ref([])
+const loadedCount = ref(0)
+const queue = new pQueue({ concurrency: 16 })
+const siteOptions = computed(() => sites.value && sites.value.length && sites.value.map((site) => ({ label: site.name, value: site.id })))
 
 window.$message = useMessage()
 
 onMounted(async () => {
   sites.value = await native.getSiteList()
-  console.log(sites.value);
+  console.log(sites.value)
   if (sites.value && sites.value.length) {
     onSearch()
   }
@@ -77,9 +75,6 @@ function onImgLoaded(e, item) {
   const el = e.path[0]
   !el.loaded && loadImage(el, item)
 }
-const loadedCount = ref(0)
-
-const queue = new pQueue({ concurrency: 16 })
 async function loadImage(el, item) {
   if (item._src) return
   queue.add(async () => {
@@ -98,9 +93,6 @@ function openChild(item) {
   childItem.value = item
   showCatalog.value = true
 }
-const siteOptions = computed(() => sites.value && sites.value.length && sites.value.map((site) => ({ label: site.name, value: site.id })))
-
-
 const renderLabel = (option) => {
   const typeMap = {
     0: { type: 'General', color: '#0075f8' },
