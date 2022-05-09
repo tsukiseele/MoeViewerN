@@ -100,9 +100,9 @@ async function setDefaultHeaders(site) {
     if (match && match[0]) headers['Referer'] = match[0]
     headers['Referrer'] = match[0]
   }
-  if (headers.hasOwnProperty('Cookie')) {
-    headers['Cookie'] = headers['Cookie'] + 'SameSite=None; Secure;'
-  }
+  // if (headers.hasOwnProperty('Cookie')) {
+  //   headers['Cookie'] = headers['Cookie'] + 'SameSite=None; Secure;'
+  // }
   site.headers = headers
 }
 /**

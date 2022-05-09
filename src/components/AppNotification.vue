@@ -1,8 +1,7 @@
 <template lang="pug">
 .notification
-  template(v-for="notification in notificationQueue")
-    .notification-item(:key='notification.timestamp' :class="notification.show ? 'notification-content-show': 'notification-content-hide'")
-      .notification-content {{ notification.message }}
+  .notification-item(v-for="notification in notificationQueue" :key='notification.timestamp' :class="notification.show ? 'notification-content-show': 'notification-content-hide'")
+    .notification-content {{ notification.message }}
 </template>
 
 <script>

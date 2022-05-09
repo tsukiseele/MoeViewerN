@@ -48,16 +48,19 @@ ipcMain.handle('load', async (event, query) => {
     const sites = await SiteLoader.loadSites(`${process.cwd()}/static/rules`)
     const site = sites.find((site) => site.id == query.siteId)
     const requestAsText = async (url, options) => {
+      console.log('REQUEST', url);
       options.header = site.headers
       options.timeout = 5000
-      return await (await fetch(url, options)).text()
+      const html = await (await fetch(url, options)).text()
+      console.log(html);
+      return html
     }
 
     const kumoko = new Kumoko(site, query.page || 1, query.keywords || '', requestAsText)
     const resultSet = await kumoko.parseSite()
-    console.log("RRRRRRRRRRRRRRRRRRRRRR", resultSet);
     return JSON.stringify(resultSet)
   } catch (error) {
+    console.error(error);
     log.error(error)
   }
   return []

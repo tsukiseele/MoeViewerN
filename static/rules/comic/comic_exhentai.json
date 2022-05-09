@@ -4,7 +4,7 @@
   "version": 1,
   "author": "TsukiSeele",
   "rating": "S",
-  "details": "E绅士，最大的本子交流网站，这里是里站。不需要梯子，但是需要使用Cookie登录才能访问",
+  "details": "E绅士，最大的本子交流网站，这里是里站。不需要梯子，但是需要登录才能访问",
   "type": "comic",
   "icon": "https://e-hentai.org/favicon.ico",
   "headers": {
@@ -33,8 +33,7 @@
               "replacement": "$1"
             },
             "tags": {
-              "selector": "$(#taglist tr > td:eq(1) > div).text()",
-              "isCommon": true
+              "selector": "$(#taglist tr > td:eq(1) > div).text()"
             },
             "coverUrl": {
               "selector": "$(.gdtl > a > img).attr(src)"

@@ -1,7 +1,7 @@
 <template lang="pug">
 aside.aside
   ul
-    li(v-for="link in links" :key="link.to").material-icons(@click="$router.push(link.to)") {{ link.icon }}
+    li.material-icons(v-for="link in links" :key="link.to" @click="$router.push(link.to)") {{ link.icon }}
 </template>
 
 <script>

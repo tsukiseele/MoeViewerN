@@ -42,6 +42,7 @@ export default async (...args) => {
   args[1].retries = args[1].retries || 3
   args[1]._timeout = args[1].timeout || 10000
   args[1].timeout = null
+  console.log(args);
   return await pRetry(
     async () => {
       const abortController = new AbortController()
@@ -58,7 +59,7 @@ export default async (...args) => {
     {
       retries: args[1].retries,
       onFailedAttempt: async (error) => {
-        console.info(`${error.name}: Waiting for 1~3 second before retrying`)
+        console.info(`${error.message}: Waiting for 1~3 second before retrying`)
         await delay(1000 + Math.random() * 2000)
       },
     }

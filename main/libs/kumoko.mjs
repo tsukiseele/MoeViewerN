@@ -224,7 +224,8 @@ export default class Kumoko {
       const m = new RegExp(capture).exec(text)
       return m && m[0] ? m[0] : text
     }
-    new RegExp(capture).exec(text).forEach((item, index) => (replacement = replacement.replace(new RegExp('\\$' + index, 'g'), item)))
+    const result = new RegExp(capture).exec(text);
+    result && result.forEach((item, index) => (replacement = replacement.replace(new RegExp('\\$' + index, 'g'), item)))
     return replacement
   }
 
