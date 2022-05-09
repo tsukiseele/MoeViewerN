@@ -57,7 +57,7 @@ export default class Kumoko {
     return result
   }
   async parseChildrenOfList(list, section) {
-    await Promise.allSettled(list.map((item) => this.parseChildren(item, section.rules)))
+    await Promise.allSettled(list.map((item) => this.parseChildrenConcurrency(item, section.rules)))
   }
   /**
    * 解析Children，自动检测末尾，自动继承父级，自动拉平单项子级
