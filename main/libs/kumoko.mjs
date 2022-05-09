@@ -1,27 +1,30 @@
 import * as cheerio from 'cheerio'
 import fetch from 'node-fetch'
 
+const REG_PAGE_TEMPLATE = /\{page\s*?:\s*?(-?\d*)[,\s]*?(-?\d*?)\}/i
+const REG_PAGE_MATCH = /\{page\s*?:.*?\}/i
+const REG_KEYWORD_TEMPLATE = /\{keywords\s*?:\s*?(.*?)\}/i
+const REG_KEYWORD_MATCH = /\{keywords\s*?:.*?\}/i
+const REG_SELECTOR_TEMPLATE = /\$\((.*?)\)\.(\w+?)\((.*?)\)/
 /**
  * @author tsukiseele
  * @date 2021.11.25
  *
  */
-export default class MoeSpider {
+export default class Kumoko {
   // 当前站点抓取规则
   site = null
   // 当前分页值
-  page = 1
+  page = 0
   // 搜索关键字
   keywords = null
-  // 当前抓取板块
-  currentSection = null
   /**
    * 通过配置构造一个爬虫对象
    * @param {Site} site 规则
    * @param {Number} page 当前页
    * @param {String} keywords 关键字
    */
-  constructor(site, page = 1, keywords = null, request) {
+  constructor(site, page = 0, keywords = null, request) {
     this.site = site
     this.page = page
     this.keywords = keywords
@@ -29,49 +32,58 @@ export default class MoeSpider {
   }
   /**
    * 解析Site对象，返回结果集
-   * @returns {Promise<Array<Array<Object>>...>}
+   * @returns {Promise<Array<Object>>}
    */
-  async parseSite() {
-    return await this.parseSection(this.getCurrentSection())
+  async parseSite(isParseChildren = false) {
+    return await this.parseSection(this.getCurrentSection(), isParseChildren)
   }
 
   /**
    * 解析Section对象，返回结果集
    * @param {Section} section 站点板块
    * @param {Number} deep 解析深度
-   * @returns {Promise<Array<Array<Object>>>} 一个deep+1维数组的Promise
+   * @return {Promise<Array<Object>>}
    */
   async parseSection(section, isParseChildren = false) {
     // 复用规则
     if (section.reuse) {
       section.rules = this.site.sections[section.reuse].rules
     }
-    const data = []
-
-    const result = await this.parseRules(next || section.index, rules)
-
-    if (isParseChildren) {
-      return await Promise.allSettled(result.map(item => parseChildren(item, rules)))
-    } else {
-      return data
+    const result = await this.parseRules(section.index, section.rules)
+    console.log(result);
+    if (isParseChildren && section.rules.$children) {
+      await this.parseChildrenOfList(result, section)
     }
-    // let next = null
-    // for (const rule of section.rules) {
-    //   if (--deep < 0) return data
-    //   const result = await this.parseRules(next || section.index, rule)
-    //   next = result.next
-    //   data.push(result)
-    // }
-    // return data
+    return result
   }
-
-  async parseChildren(item, rules) {
+  async parseChildrenOfList(list, section) {
+    await Promise.allSettled(list.map((item) => this.parseChildren(item, section.rules)))
+  }
+  /**
+   * 解析Children，自动检测末尾，自动继承父级，自动拉平单项子级
+   * @param {*} item
+   * @param {*} rules
+   */
+  async parseChildrenConcurrency(item, rules, extend = true) {
     if (item.$children && rules.$children) {
-      const children = await this.parseRules(item.$children, rules.$children, 1, '')
-      if (children && children.length) {
-        children.forEach(item => parseChildren(item, rules.$children))
-      }  
-      item.children = children
+      let histroy = null
+      let page = 0
+      do {
+        const children = await this.parseRules(item.$children, rules.$children.rules, page++, null)
+        if (children && histroy && children.length && histroy.length && children.length === histroy.length && this.objectEquals(children[0], histroy[0])) break
+        histroy = JSON.parse(JSON.stringify(children))
+        if (children && children.length) {
+          await Promise.allSettled(children.map((child) => this.parseChildrenConcurrency(child, rules.$children.rules)))
+          if (rules.$children.flat) {
+            Object.assign(item, children[0])
+            break
+          } else {
+            extend && children.forEach((child) => Object.assign(child, item, child))
+            item.children ? item.children.push(...children) : (item.children = children)
+            break
+          }
+        }
+      } while (histroy && histroy.length)
     }
   }
 
@@ -81,10 +93,10 @@ export default class MoeSpider {
    * @param {Number} keywords 关键字
    * @returns {Promise<Array<Object>>}
    */
-  async parseRules(url, rule, page = this.page, keywords = this.keywords) {
+  async parseRules(_url, rule, page = this.page, keywords = this.keywords) {
     if (!rule) return []
     // 生成URL
-    const url = this.replaceUrlTemplate(url, page, keywords)
+    const url = this.replaceUrlTemplate(_url, page, keywords)
     // 发送请求
     const html = await this.requestText(url, this.site.headers)
     // 检查无效响应
@@ -100,7 +112,7 @@ export default class MoeSpider {
         // 匹配选择器内容
         if (exp.selector) {
           // 此处的选择器只应选择一个元素，否则result会被刷新为最后一个
-          this.selectEach($, exp.selector, result => (context = result))
+          this.selectEach($, exp.selector, (result) => (context = result))
         } else {
           context = $('html')
         }
@@ -121,9 +133,6 @@ export default class MoeSpider {
           resultSet[index] || resultSet.push({})
           resultSet[index][k] = this.replaceRegex(result, exp.capture, exp.replacement)
         })
-      }
-      for (const res of resultSet) {
-        res.spider = this
       }
     }
     return resultSet
@@ -149,7 +158,7 @@ export default class MoeSpider {
   async requestText(url, options) {
     // 如果已有传入请求，则使用传入的
     if (this.request) {
-      return this.request(url, options)
+      return await this.request(url, options)
     }
     const resp = await fetch(url, options)
     if (resp.ok) {
@@ -178,7 +187,7 @@ export default class MoeSpider {
    * @param {Function} each
    */
   selectEach($, selector, each) {
-    const match = /\$\((.*?)\)\.(\w+?)\((.*?)\)/.exec(selector)
+    const match = REG_SELECTOR_TEMPLATE.exec(selector) ///\$\((.*?)\)\.(\w+?)\((.*?)\)/.exec(selector)
     if (!match) return
     const s = {
       select: match[1],
@@ -227,14 +236,44 @@ export default class MoeSpider {
    * @returns {String} 真实URL
    */
   replaceUrlTemplate(template, page, keywords) {
-    const pageMatch = /\{page\s*?:\s*?(-?\d*)[,\s]*?(-?\d*?)\}/i.exec(template)
-    const keywordMatch = /\{keywords\s*?:\s*?(.*?)\}/i.exec(template)
+    const pageMatch = REG_PAGE_TEMPLATE.exec(template)
+    const keywordMatch = REG_KEYWORD_TEMPLATE.exec(template)
     // 获取默认keywords
     const _keywords = keywordMatch && keywordMatch[1] ? keywordMatch[1] : ''
     // 计算真实分页值
     page = pageMatch && pageMatch[1] ? page + parseInt(pageMatch[1]) : page
     page = pageMatch && pageMatch[2] ? page * parseInt(pageMatch[2]) : page
     // 生成真实URL
-    return template.replace(/\{page\s*?:.*?\}/i, page.toString()).replace(/\{keywords\s*?:.*?\}/i, keywords || _keywords)
+    return template.replace(REG_PAGE_MATCH, page.toString()).replace(REG_KEYWORD_MATCH, keywords || _keywords)
+  }
+  /**
+   * 对象比较
+   * @param {*} x
+   * @param {*} y
+   * @returns
+   */
+  objectEquals(x, y) {
+    if (x === y) return true
+    // if both x and y are null or undefined and exactly the same
+    if (!(x instanceof Object) || !(y instanceof Object)) return false
+    // if they are not strictly equal, they both need to be Objects
+    if (x.constructor !== y.constructor) return false
+    // they must have the exact same prototype chain, the closest we can do is
+    // test there constructor.
+    for (var p in x) {
+      if (!x.hasOwnProperty(p)) continue
+      // other properties were tested using x.constructor === y.constructor
+      if (!y.hasOwnProperty(p)) return false
+      // allows to compare x[ p ] and y[ p ] when set to undefined
+      if (x[p] === y[p]) continue
+      // if they have the same strict value or identity then they are equal
+      if (typeof x[p] !== 'object') return false
+      // Numbers, Strings, Functions, Booleans must be strictly equal
+      // if ( ! objectEquals( x[ p ],  y[ p ] ) ) return false;
+      // Objects and Arrays must be tested recursively
+    }
+    for (p in y) if (y.hasOwnProperty(p) && !x.hasOwnProperty(p)) return false
+    // allows x[ p ] to be set to undefined
+    return true
   }
 }

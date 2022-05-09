@@ -36,6 +36,7 @@
             },
             "$children": {
               "selector": "$(div#gh div.gi a).attr(href)",
+              "flat": true,
               "rules": {
                 "originUrl": {
                   "selector": "$(div#sd a img#sm).attr(src)"

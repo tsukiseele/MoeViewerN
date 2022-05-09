@@ -1,6 +1,6 @@
 import { ipcMain, BrowserWindow } from 'electron'
 import SiteLoader from './libs/site-loader.mjs'
-import Sakurawler from './libs/sakurawler.mjs'
+import Kumoko from './libs/kumoko.mjs'
 import fetch from './libs/proxy-fetch.mjs'
 import log from 'electron-log'
 // By default, it writes logs to the following locations:
@@ -37,7 +37,7 @@ ipcMain.handle('loadChild', async (event, params) => {
       options.timeout = 5000
       return await fetch(url, options)
     }
-    const spider = new Sakurawler(params.item.spider.site, params.item.spider.page, params.item.spider.keywords, request)
+    const spider = new Kumoko(params.item.spider.site, params.item.spider.page, params.item.spider.keywords, request)
     return JSON.stringify(await spider.parseNext(params.item))
   }
   return []
@@ -47,14 +47,15 @@ ipcMain.handle('load', async (event, query) => {
   try {
     const sites = await SiteLoader.loadSites(`${process.cwd()}/static/rules`)
     const site = sites.find((site) => site.id == query.siteId)
-    const request = async (url, options) => {
+    const requestAsText = async (url, options) => {
       options.header = site.headers
       options.timeout = 5000
-      return await fetch(url, options)
+      return await (await fetch(url, options)).text()
     }
 
-    const sakurawler = new Sakurawler(site, query.page || 1, query.keywords || '', request)
-    const [resultSet] = await sakurawler.parseSite()
+    const kumoko = new Kumoko(site, query.page || 1, query.keywords || '', requestAsText)
+    const resultSet = await kumoko.parseSite()
+    console.log("RRRRRRRRRRRRRRRRRRRRRR", resultSet);
     return JSON.stringify(resultSet)
   } catch (error) {
     log.error(error)
