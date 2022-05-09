@@ -50,7 +50,7 @@ export default class Kumoko {
       section.rules = this.site.sections[section.reuse].rules
     }
     const result = await this.parseRules(section.index, section.rules)
-    console.log(result);
+    console.log(result)
     if (isParseChildren && section.rules.$children) {
       await this.parseChildrenOfList(result, section)
     }
@@ -248,11 +248,14 @@ export default class Kumoko {
   }
   /**
    * 对象比较
+   * see https://stackoverflow.com/a/6713782 
+   * @author Jean Vincent
    * @param {*} x
    * @param {*} y
+   * @param {*} deep deep equals
    * @returns
    */
-  objectEquals(x, y) {
+  objectEquals(x, y, deep = false) {
     if (x === y) return true
     // if both x and y are null or undefined and exactly the same
     if (!(x instanceof Object) || !(y instanceof Object)) return false
@@ -269,7 +272,7 @@ export default class Kumoko {
       // if they have the same strict value or identity then they are equal
       if (typeof x[p] !== 'object') return false
       // Numbers, Strings, Functions, Booleans must be strictly equal
-      // if ( ! objectEquals( x[ p ],  y[ p ] ) ) return false;
+      if (deep && !objectEquals(x[p], y[p], deep)) return false
       // Objects and Arrays must be tested recursively
     }
     for (p in y) if (y.hasOwnProperty(p) && !x.hasOwnProperty(p)) return false
