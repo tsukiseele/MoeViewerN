@@ -45,17 +45,13 @@ async function onSearch() {
 }
 async function loadList(params) {
   isLoaded.value = false
-  console.log('params: ', params)
   results.value = await native.load(params)
   // if (!results.value || !results.value.length) $message.error(`资源未找到！`)
   isLoaded.value = true
 }
 async function loadNext(params) {
-  console.log('params: ', params)
   const next = await native.load(params)
-  console.log('NEXT', next)
   results.value.push(...next)
-  console.log(results.value)
 }
 const base64ToBlob = (base64, type) => {
   return new Blob([Base64.toUint8Array(base64)], { type: type })

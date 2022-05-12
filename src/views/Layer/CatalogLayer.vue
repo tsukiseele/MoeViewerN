@@ -109,7 +109,6 @@ export default defineComponent({
         el.style.transition = '.25s ease'
         el.style.transform = el.style.transform.replace(/scale\(.*\)/g, '')
         el.style.transform += ` scale(${this.scale})`
-        console.log(v)
       }
     },
   },

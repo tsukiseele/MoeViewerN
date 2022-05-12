@@ -50,7 +50,7 @@ export default class Kumoko {
       section.rules = this.site.sections[section.reuse].rules
     }
     const result = await this.parseRules(section.index, section.rules)
-    console.log(result)
+    // console.log(result)
     if (isParseChildren && section.rules.$children) {
       await this.parseChildrenOfList(result, section)
     }

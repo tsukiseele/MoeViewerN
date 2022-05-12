@@ -42,7 +42,6 @@ export default async (...args) => {
   args[1].retries = args[1].retries || 3
   args[1]._timeout = args[1].timeout || 10000
   args[1].timeout = null
-  console.log(args);
   return await pRetry(
     async () => {
       const abortController = new AbortController()
