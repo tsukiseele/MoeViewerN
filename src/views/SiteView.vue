@@ -1,8 +1,14 @@
 <template>
-  <div class="about">
-    <h1>This is an about page</h1>
-    <ul>
-      <li v-for="site in sites">{{ site.name}}</li>
+  <div id="sites">
+    <!-- <h1>This is an about page</h1> -->
+    <ul class="site-list">
+      <li class="site-list-item" v-for="site in sites">
+        <img class="site-icon" :src="site.icon" alt="" />
+        <div class="site-info">
+          <div class="site-name">{{ site.name }}</div>
+          <div class="site-details">{{ site.details }}</div>
+        </div>
+      </li>
     </ul>
   </div>
 </template>
@@ -14,25 +20,47 @@ import { defineComponent } from 'vue'
 export default defineComponent({
   name: 'subscribes',
   data: () => ({
-    sites: []
+    sites: [],
   }),
-  methods: {
-
-  },
+  methods: {},
   async mounted() {
-    setTimeout(async () => {
-      this.sites = await native.getSiteList()
-      // console.log(this.sites);
-      this.sites.forEach(site => console.log(site))
-      this.$forceUpdate()
-    }, 3000);
-  }
+    this.sites = await native.getSiteList()
+    console.log(this.sites)
+    // console.log(this.sites);
+    this.sites.forEach((site) => console.log(site))
+    this.$forceUpdate()
+  },
 })
 </script>
 
-<style>
+<style lang="scss" scoped>
+.site-list {
+  width: 100%;
+  .site-list-item {
+    display: flex;
+    // justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 48px;
+    padding: 0.5rem;
+    background-color: rgba(255, 255, 255, 0.5);
+    transition: 0.25s ease-out;
+    cursor: pointer;
+    &:hover {
+      background-color: white;
+    }
+    .site-icon {
+      width: 36px;
+      height: 36px;
+      object-fit: cover;
+    }
+    .site-info {
+      margin-left: 1rem;
+    }
+  }
+}
 @media (min-width: 1024px) {
-  .about {
+  #sites {
     min-height: 100vh;
     display: flex;
     align-items: center;
