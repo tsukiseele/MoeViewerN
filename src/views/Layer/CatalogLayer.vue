@@ -64,7 +64,9 @@ export default defineComponent({
           if (this.item) {
             this.isLoaded = false
             if (this.item.$children) {
-              this.resultSet = await native.loadChild({ item: this.item })
+              await native.loadChildren({ item: this.item, rules: this.item.$rules })
+              this.resultSet = this.item.children
+              console.log('children: ', this.item.children);
             } else {
               this.resultSet = [this.item]
             }

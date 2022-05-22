@@ -139,7 +139,7 @@ watch(() => query.value.keywords, getKeywordsOptions)
       template(#footer)
         NButton(@click="onSearch") Reload
     SLoading(:show="!isLoaded")
-  CatalogLayer(v-model:show="showCatalog" :item="childItem")
+  CatalogLayer(v-model:show="showCatalog" :item="childItem" :rules="currentSite.section")
 </template>
 
 <style lang="scss" scoped>

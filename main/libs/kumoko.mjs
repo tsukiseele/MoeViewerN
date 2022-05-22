@@ -50,14 +50,19 @@ export default class Kumoko {
       section.rules = this.site.sections[section.reuse].rules
     }
     const result = await this.parseRules(section.index, section.rules)
+    result.forEach(item => {
+      item.$section = section
+      item.$site = this.site
+    })
+    // console.log(this.site);
     // console.log(result)
     if (isParseChildren && section.rules.$children) {
-      await this.parseChildrenOfList(result, section)
+      await this.parseChildrenOfList(result, section.rules)
     }
     return result
   }
-  async parseChildrenOfList(list, section) {
-    await Promise.allSettled(list.map((item) => this.parseChildrenConcurrency(item, section.rules)))
+  async parseChildrenOfList(list, rules) {
+    await Promise.allSettled(list.map((item) => this.parseChildrenConcurrency(item, rules)))
   }
   /**
    * 解析Children，自动检测末尾，自动继承父级，自动拉平单项子级

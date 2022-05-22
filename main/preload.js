@@ -22,8 +22,8 @@ contextBridge.exposeInMainWorld('$native', {
   async load(params) {
     return await ipcRenderer.invoke('load', JSON.parse(params))
   },
-  async loadChild(params) {
-    return await ipcRenderer.invoke('loadChild', JSON.parse(params))
+  async loadChildren(params) {
+    return await ipcRenderer.invoke('loadChildren', JSON.parse(params))
   },
   async request(params) {
     return await ipcRenderer.invoke('request', JSON.parse(params))

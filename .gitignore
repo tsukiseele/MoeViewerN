@@ -14,6 +14,7 @@ dist-ssr
 dist_electron
 coverage
 *.local
+.history
 
 /cypress/videos/
 /cypress/screenshots/

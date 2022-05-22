@@ -30,17 +30,18 @@ ipcMain.handle('request', async (event, params) => {
   const base64 = Buffer.from(buffer).toString('base64')
   return { data: base64, type: blob.type }
 })
-ipcMain.handle('loadChild', async (event, params) => {
+ipcMain.handle('loadChildren', async (event, params) => {
   if (params.item && params.item.$children) {
     const request = async (url, options) => {
-      options.header = params.item.spider.site.headers
+      options.header = { ...params.item.$site.headers }
       options.timeout = 5000
       return await fetch(url, options)
     }
-    const spider = new Kumoko(params.item.spider.site, params.item.spider.page, params.item.spider.keywords, request)
-    return JSON.stringify(await spider.parseNext(params.item))
+    console.log('PARAMS', params)
+    await new Kumoko(params.item.$site, null, null, request).parseChildrenConcurrency(params.item, params.item.$section.rules)
+    return true // JSON.stringify(await spider.parseNext(params.item))
   }
-  return []
+  return false
 })
 ipcMain.handle('load', async (event, query) => {
   if (!query || !query.siteId) return []
@@ -48,7 +49,7 @@ ipcMain.handle('load', async (event, query) => {
     const sites = await SiteLoader.loadSites(`${process.cwd()}/static/rules`)
     const site = sites.find((site) => site.id == query.siteId)
     const requestAsText = async (url, options) => {
-      options.headers = site.headers
+      options.headers = { ...site.headers }
       options.timeout = 5000
       return await (await fetch(url, options)).text()
     }
@@ -57,7 +58,7 @@ ipcMain.handle('load', async (event, query) => {
     const resultSet = await kumoko.parseSite()
     return JSON.stringify(resultSet)
   } catch (error) {
-    console.error(error);
+    console.error(error)
     log.error(error)
   }
   return []
