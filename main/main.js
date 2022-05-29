@@ -33,12 +33,12 @@ ipcMain.handle('request', async (event, params) => {
 ipcMain.handle('loadChildren', async (event, params) => {
   if (params.item && params.item.$children) {
     const request = async (url, options) => {
-      options.header = { ...params.item.$site.headers }
+      options.header = { ...params.headers }
       options.timeout = 5000
       return await fetch(url, options)
     }
     console.log('PARAMS', params)
-    await new Kumoko(params.item.$site, null, null, request).parseChildrenConcurrency(params.item, params.item.$section.rules)
+    await new Kumoko(params.item, null, null, request).parseChildrenConcurrency(params.item, params.item.$section.rules)
     return true // JSON.stringify(await spider.parseNext(params.item))
   }
   return false
