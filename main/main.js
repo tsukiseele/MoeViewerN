@@ -31,17 +31,18 @@ ipcMain.handle('request', async (event, params) => {
   return { data: base64, type: blob.type }
 })
 ipcMain.handle('loadChildren', async (event, params) => {
+  console.log(params.item.$site.headers);
   if (params.item && params.item.$children) {
-    const request = async (url, options) => {
-      options.header = { ...params.headers }
+    const requestAsText = async (url, options) => {
+      options.headers = { ...params.item.$site.headers }
       options.timeout = 5000
-      return await fetch(url, options)
+      return await (await fetch(url, options)).text()
     }
     console.log('PARAMS', params)
-    await new Kumoko(params.item, null, null, request).parseChildrenConcurrency(params.item, params.item.$section.rules)
-    return true // JSON.stringify(await spider.parseNext(params.item))
+    return JSON.stringify(await new Kumoko(params.item, null, null, requestAsText).parseChildrenConcurrency(params.item, params.item.$section.rules))
+    
+    // JSON.stringify(await spider.parseNext(params.item))
   }
-  return false
 })
 ipcMain.handle('load', async (event, query) => {
   if (!query || !query.siteId) return []

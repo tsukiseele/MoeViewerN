@@ -50,7 +50,7 @@ export default class Kumoko {
       section.rules = this.site.sections[section.reuse].rules
     }
     const result = await this.parseRules(section.index, section.rules)
-    result.forEach(item => {
+    result.forEach((item) => {
       item.$section = section
       item.$site = this.site
     })
@@ -78,18 +78,25 @@ export default class Kumoko {
         if (children && histroy && children.length && histroy.length && children.length === histroy.length && this.objectEquals(children[0], histroy[0])) break
         histroy = JSON.parse(JSON.stringify(children))
         if (children && children.length) {
-          await Promise.allSettled(children.map((child) => this.parseChildrenConcurrency(child, rules.$children.rules)))
+          // 解析下级子节点
+          if (children[0].$children) {
+            await Promise.allSettled(children.map((child) => this.parseChildrenConcurrency(child, rules.$children.rules)))
+          }
+          console.log('CCCCCCCCCCCCCCCC', children);
+          // 判断是否拉平子节点，否则追加到子节点下
           if (rules.$children.flat) {
             Object.assign(item, children[0])
             break
           } else {
-            extend && children.forEach((child) => Object.assign(child, item, child))
+            // 判断并继承父节点字段
+            extend && children.forEach((child, index) => (children[index] = Object.assign({}, item, child)))
             item.children ? item.children.push(...children) : (item.children = children)
             break
           }
         }
       } while (histroy && histroy.length)
     }
+    return item
   }
 
   /**
@@ -163,7 +170,7 @@ export default class Kumoko {
   async requestText(url, options) {
     // 如果已有传入请求，则使用传入的
     if (this.request) {
-      return await this.request(url, options)
+      return await this.request(url, options || {})
     }
     const resp = await fetch(url, options)
     if (resp.ok) {
@@ -229,7 +236,7 @@ export default class Kumoko {
       const m = new RegExp(capture).exec(text)
       return m && m[0] ? m[0] : text
     }
-    const result = new RegExp(capture).exec(text);
+    const result = new RegExp(capture).exec(text)
     result && result.forEach((item, index) => (replacement = replacement.replace(new RegExp('\\$' + index, 'g'), item)))
     return replacement
   }
@@ -254,7 +261,7 @@ export default class Kumoko {
   }
   /**
    * 对象比较
-   * see https://stackoverflow.com/a/6713782 
+   * see https://stackoverflow.com/a/6713782
    * @author Jean Vincent
    * @param {*} x
    * @param {*} y

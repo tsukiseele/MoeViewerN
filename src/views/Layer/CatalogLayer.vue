@@ -2,14 +2,13 @@
 SLayer(:show="show" :title="resultSet && resultSet[0].title && resultSet[0].tags" @update:show="(show) => $emit('update:show', show)")
   .container
     main
-      .image-wrapper(v-if="isLoaded")
-        section(v-if="resultSet && resultSet.length === 1")
+      .images-wrapper(v-if="isLoaded")
+        section.single(v-if="resultSet && resultSet.length == 1")
           NImageGroup(:theme-overrides="imageGroupThemeOverrides" show-toolbar-tooltip)
             NImage(:src="resultSet[0]._src" object-fit="contain")
-        section(v-else-if="resultSet && resultSet.length")
+        section.multiple(v-else-if="resultSet && resultSet.length")
           NImageGroup(:theme-overrides="imageGroupThemeOverrides" show-toolbar-tooltip)
-            NImage(v-for="item in resultSet"  :src="item.originUrl || item.largerUrl || item.sampleUrl || item.coverUrl" object-fit="cover")
-            img(:src="item.coverUrl")
+            NImage(v-for="item in resultSet"  :src="  item.coverUrl|| item.sampleUrl|| item.largerUrl|| item.originUrl" object-fit="cover")
 
     SLoading(:show="!isLoaded")
     NResult(v-if="isLoaded && !(resultSet && resultSet.length)" status="404" title="Resource Not Found" description="可能因素：目标未命中，网络不可用，防火墙拦截（尤其是在中国大陆）")
@@ -64,9 +63,14 @@ export default defineComponent({
           if (this.item) {
             this.isLoaded = false
             if (this.item.$children) {
-              await native.loadChildren({ item: this.item, rules: this.item.$rules })
-              this.resultSet = this.item.children
-              console.log('children: ', this.item.children);
+              const tree = await native.loadChildren({ item: this.item })
+              if (tree && tree.children && tree.children.length) {
+                this.resultSet = tree.children
+                console.log('children: ', tree.children)
+              } else {
+                this.resultSet = [this.item]
+                console.log('ITEM: ', this.item)
+              }
             } else {
               this.resultSet = [this.item]
             }
@@ -74,9 +78,20 @@ export default defineComponent({
             console.log('this.tags', this.tags)
             if (this.resultSet.length === 1) {
               const once = this.resultSet[0]
-              const { data, type } = await native.request({ url: once.originUrl || once.largerUrl || once.sampleUrl, options: { headers: once.spider.site.headers } })
+              const { data, type } = await native.request({ url: once.originUrl || once.largerUrl || once.sampleUrl })
               const src = URL.createObjectURL(this.base64ToBlob(data, type))
               once._src = src
+              console.log('_src, ', src)
+            } else {
+              Promise.all(
+                this.resultSet.map(async (item) => {
+                  const once = item
+                  const { data, type } = await native.request({ url: once.coverUrl || once.sampleUrl || once.largerUrl || once.originUrl })
+                  const src = URL.createObjectURL(this.base64ToBlob(data, type))
+                  once._src = src
+                  console.log('_src, ', src)
+                })
+              )
             }
           }
         } catch (error) {
@@ -137,11 +152,56 @@ export default defineComponent({
 <style lang="scss" scoped>
 .container {
   display: flex;
+  width: 100%;
+  height: 100%;
 
   main {
     flex: 1;
     width: 0;
+    height: 100%;
     overflow: hidden;
+    .images-wrapper {
+      width: 100%;
+      height: 100%;
+      .single,
+      .multiple {
+        display: flex;
+        flex-wrap: wrap;
+        // justify-content: center;
+        align-items: center;
+        height: 100%;
+      }
+      .single {
+        .n-image {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          width: 100%;
+          height: 100%;
+          object-fit: contain;
+          object-position: center;
+        }
+      }
+      .multiple {
+      overflow: auto;
+        .n-image {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          width: 0;
+          height: 250px;
+          flex: 0 0 23%;
+          margin: 0.5rem;
+        }
+      }
+
+      :deep(img) {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        object-position: center;
+      }
+    }
   }
   .aside {
     flex: 0 0 256px;
@@ -162,46 +222,18 @@ export default defineComponent({
     }
   }
 }
-section {
-  display: flex;
-  flex-wrap: wrap;
-  // justify-content: center;
-  align-items: center;
-  height: 100%;
-  .n-image {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 0;
-    height: 250px;
-    flex: 0 0 23%;
-    margin: 0.5rem;
 
-    // img {
-    //   // width: 100%;
-    //   // height: 100%;
-    //   object-fit: contain;
-    // }
-    :deep(img) {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      object-position: center;
-    }
-  }
-}
-
-ul {
-  margin: 0;
-  padding: 0;
-  list-style: none;
-  li {
-    display: flex;
-    flex-direction: column;
-    img {
-      height: 100%;
-      object-fit: contain;
-    }
-  }
-}
+// ul {
+//   margin: 0;
+//   padding: 0;
+//   list-style: none;
+//   li {
+//     display: flex;
+//     flex-direction: column;
+//     img {
+//       height: 100%;
+//       object-fit: contain;
+//     }
+//   }
+// }
 </style>
