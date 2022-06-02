@@ -78,7 +78,7 @@ function reuseRules(site) {
   if (site && site.sections) {
     Object.entries(site.sections).forEach(([, section]) => {
       if (section.reuse && site.sections[section.reuse]) {
-        section.rule = site.sections[section.reuse].rules
+        section.rules = site.sections[section.reuse].rules
       }
     })
   }

@@ -31,14 +31,12 @@ ipcMain.handle('request', async (event, params) => {
   return { data: base64, type: blob.type }
 })
 ipcMain.handle('loadChildren', async (event, params) => {
-  console.log(params.item.$site.headers);
   if (params.item && params.item.$children) {
     const requestAsText = async (url, options) => {
       options.headers = { ...params.item.$site.headers }
       options.timeout = 5000
       return await (await fetch(url, options)).text()
     }
-    console.log('PARAMS', params)
     return JSON.stringify(await new Kumoko(params.item, null, null, requestAsText).parseChildrenConcurrency(params.item, params.item.$section.rules))
     
     // JSON.stringify(await spider.parseNext(params.item))

@@ -82,7 +82,6 @@ export default class Kumoko {
           if (children[0].$children) {
             await Promise.allSettled(children.map((child) => this.parseChildrenConcurrency(child, rules.$children.rules)))
           }
-          console.log('CCCCCCCCCCCCCCCC', children);
           // 判断是否拉平子节点，否则追加到子节点下
           if (rules.$children.flat) {
             Object.assign(item, children[0])
