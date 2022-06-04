@@ -15,6 +15,8 @@ dist_electron
 coverage
 *.local
 .history
+.zip
+yarn.lock
 
 /cypress/videos/
 /cypress/screenshots/
