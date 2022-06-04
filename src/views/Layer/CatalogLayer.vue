@@ -9,13 +9,15 @@ SLayer(:show="show" :title="resultSet && resultSet[0].title && resultSet[0].tags
         section.multiple(v-else-if="resultSet && resultSet.length")
           NImageGroup(:theme-overrides="imageGroupThemeOverrides" show-toolbar-tooltip)
             NImage(v-for="item in resultSet"  :src="  item.coverUrl|| item.sampleUrl|| item.largerUrl|| item.originUrl" object-fit="cover")
-
-    SLoading(:show="!isLoaded")
+        NProgress(type="line" :percentage="percentage" processing :indicator-placement="'inside'" :border-radius="4" :class="{done: percentage === 100}")
+    
+    //- SLoading(:show="!isLoaded")
+    
     NResult(v-if="isLoaded && !(resultSet && resultSet.length)" status="404" title="Resource Not Found" description="可能因素：目标未命中，网络不可用，防火墙拦截（尤其是在中国大陆）")
       template(#footer)
         NButton(@click="onSearch") Reload
-    aside.aside(v-if="tags && tags.length")
-      .gallery-tags
+    aside.aside
+      .gallery-tags(v-if="tags && tags.length")
         NTag(type="info" v-for="tag in tags" :key="tag") {{ tag }}
         
 </template>
@@ -23,7 +25,7 @@ SLayer(:show="show" :title="resultSet && resultSet[0].title && resultSet[0].tags
 <script>
 import { Base64 } from 'js-base64'
 import { defineComponent, computed } from '@vue/runtime-core'
-import { NButton, NResult, NImage, NImageGroup, NTag, useThemeVars } from 'naive-ui'
+import { NButton, NResult, NImage, NImageGroup, NTag, NProgress, useThemeVars } from 'naive-ui'
 import SLayer from '@/components/SLayer/index.vue'
 import SLoading from '@/components/SLoading/index.vue'
 import native from '@/composables/native.js'
@@ -37,6 +39,7 @@ export default defineComponent({
     NImage,
     NImageGroup,
     NTag,
+    NProgress,
   },
   props: {
     item: {
@@ -54,11 +57,13 @@ export default defineComponent({
     resultSet: null,
     tags: [],
     scale: 1.0,
+    percentage: 0,
   }),
   watch: {
     async show(nv) {
       if (nv) {
         try {
+          this.percentage = 0
           this.tags = (this.item && this.item.tags && this.item.tags.split(' ')) || null
           if (this.item) {
             this.isLoaded = false
@@ -78,10 +83,12 @@ export default defineComponent({
             console.log('this.tags', this.tags)
             if (this.resultSet.length === 1) {
               const once = this.resultSet[0]
-              const { data, type } = await native.request({ url: once.originUrl || once.largerUrl || once.sampleUrl })
-              const src = URL.createObjectURL(this.base64ToBlob(data, type))
-              once._src = src
-              console.log('_src, ', src)
+              console.log('OOOOOOOOOOOOOOOOOOO')
+              this.download(once)
+              // const { data, type } = await native.request({ url: once.originUrl || once.largerUrl || once.sampleUrl })
+              //   const src = URL.createObjectURL(this.base64ToBlob(data, type))
+              //   once._src = src
+              //   console.log('_src, ', src)
             } else {
               Promise.all(
                 this.resultSet.map(async (item) => {
@@ -111,6 +118,17 @@ export default defineComponent({
     // document.addEventListener('wheel', this.onWheel, false)
   },
   methods: {
+    async download(once) {
+      const response = await $invoke.requestAsync({ url: once.originUrl || once.largerUrl || once.sampleUrl }, (p) => {
+        console.log(p)
+        this.percentage = Number((p.progress * 100).toFixed(2))
+        if (p.done) {
+          const { data, type } = p.response
+          const src = URL.createObjectURL(this.base64ToBlob(data, type))
+          once._src = src
+        }
+      })
+    },
     base64ToBlob(base64, type) {
       return new Blob([Base64.toUint8Array(base64)], { type: type })
     },
@@ -154,13 +172,23 @@ export default defineComponent({
   display: flex;
   width: 100%;
   height: 100%;
-
+  .n-progress {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    transition: .5s ease-in;
+    &.done {
+      opacity: 0;
+    }
+  }
   main {
     flex: 1;
     width: 0;
     height: 100%;
     overflow: hidden;
     .images-wrapper {
+      position: relative;
       width: 100%;
       height: 100%;
       .single,
@@ -183,7 +211,7 @@ export default defineComponent({
         }
       }
       .multiple {
-      overflow: auto;
+        overflow: auto;
         .n-image {
           display: flex;
           align-items: center;

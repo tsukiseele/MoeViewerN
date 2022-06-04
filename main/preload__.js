@@ -5,12 +5,15 @@
 
 // const remote = require('electron/remote')
 const { contextBridge, ipcRenderer } = require('electron')
+const EventEmitter = require('node:events')
 
-const callbacks = new Map()
-
+const bridgeEvent = new EventEmitter()
 ipcRenderer.on('progress', (event, data) => {
-  callbacks.get(data.uuid)(data.progress)
-  data.progress.done && callbacks.delete(data.uuid)
+  bridgeEvent.emit(data.uuid, data.progress)
+  if (data.progress.done) {
+    bridgeEvent.off(data.uuid, )
+    console.log('OFFFFFFFFF', data.uuid);
+  }
 })
 // DOMLoaded
 window.addEventListener('DOMContentLoaded', () => {
@@ -37,24 +40,15 @@ contextBridge.exposeInMainWorld('$native', {
   async requestAsync(params) {
     return await ipcRenderer.invoke('requestAsync', JSON.parse(params))
   },
-  /**
-   * 获取站点列表数据
-   * @returns 
-   */
   async getSiteList() {
     return await ipcRenderer.invoke('getSiteList')
   },
 })
 contextBridge.exposeInMainWorld('$invoke', {
-  /**
-   * 下载二进制数据，回调下载进度
-   * @param {*} params 
-   * @param {*} callback 
-   */
   async requestAsync(params, callback) {
     if (callback) {
-      params.uuid = Date.now()
-      callbacks.set(params.uuid, callback)
+      params.uuid = `T${Date.now()}`
+      bridgeEvent.on(params.uuid, callback)
     }
     ipcRenderer.send('requestAsync', params)
   },

@@ -65,12 +65,18 @@ export default defineComponent({
       flex: 1;
       width: 0;
       font-size: 1.2rem;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
     i {
       cursor: pointer;
       transition: 0.25s ease-out;
+      padding: 0 .5rem;
+      color: teal;
+      border-radius: 4px;
       &:hover {
-        color: teal;
+        background-color: rgba(0,127,127,.33);
       }
     }
   }

@@ -2,7 +2,9 @@ import { ipcMain, BrowserWindow } from 'electron'
 import SiteLoader from './libs/site-loader.mjs'
 import Kumoko from './libs/kumoko.mjs'
 import fetch from './libs/proxy-fetch.mjs'
+import { Response } from 'node-fetch'
 import log from 'electron-log'
+import _ from 'lodash'
 // By default, it writes logs to the following locations:
 // on Linux: ~/.config/{app name}/logs/{process type}.log
 // on macOS: ~/Library/Logs/{app name}/{process type}.log
@@ -30,18 +32,44 @@ ipcMain.handle('request', async (event, params) => {
   const base64 = Buffer.from(buffer).toString('base64')
   return { data: base64, type: blob.type }
 })
+ipcMain.on('requestAsync', async (event, params) => {
+  const response = await fetch(params.url, { method: 'GET', ...params.options })
+  const total = Number(response.headers.get('content-length'))
+  const type = response.headers.get('content-type')
+  const chunks = []
+  const progress = {}
+  let current = 0
+  const throttled = _.throttle(() => event.reply('progress', {progress, uuid: params.uuid}), 200)
+  response.body.on('data', (chunk) => {
+    current += chunk.length
+    chunks.push(chunk)
+    progress.progress = current / total
+    progress.total = total
+    progress.current = current
+    throttled()
+  })
+
+  response.body.on('end', () => {
+    let chunksAll = new Uint8Array(current)
+    let position = 0
+    for (let chunk of chunks) {
+      chunksAll.set(chunk, position)
+      position += chunk.length
+    }
+    const base64 = Buffer.from(chunksAll).toString('base64')
+    progress.response = { data: base64, type }
+    progress.done = true
+    throttled()
+  })
+})
 ipcMain.handle('loadChildren', async (event, params) => {
-  console.log(params.item.$site.headers);
   if (params.item && params.item.$children) {
     const requestAsText = async (url, options) => {
       options.headers = { ...params.item.$site.headers }
       options.timeout = 5000
       return await (await fetch(url, options)).text()
     }
-    console.log('PARAMS', params)
     return JSON.stringify(await new Kumoko(params.item, null, null, requestAsText).parseChildrenConcurrency(params.item, params.item.$section.rules))
-    
-    // JSON.stringify(await spider.parseNext(params.item))
   }
 })
 ipcMain.handle('load', async (event, query) => {
