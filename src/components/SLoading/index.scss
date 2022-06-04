@@ -1,3 +1,26 @@
+.s-loading {
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  overflow: hidden;
+}
+.line {
+  width: 400%;
+  height: 8px;
+  background-color: teal;
+  background-image: linear-gradient(-45deg, rgba(255, 255, 255, 0.2) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.2) 50%, rgba(255, 255, 255, 0.2) 75%, transparent 75%, transparent);
+  background-size: 5rem 5rem;
+  animation: anim 3s linear infinite;
+  @keyframes anim {
+    0% {
+      background-position: 0 0;
+    }
+    100% {
+      background-position: 5rem 5rem;
+    }
+  }
+}
+
 .spinner-modal {
   position: absolute;
   top: 0;
@@ -8,7 +31,7 @@
   align-items: center;
   justify-content: center;
   z-index: 10;
-  background-color: rgba(0,0,0,.12);
+  background-color: rgba(0, 0, 0, 0.12);
   pointer-events: none;
 }
 .spinner {

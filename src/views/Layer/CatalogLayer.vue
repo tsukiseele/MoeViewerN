@@ -11,7 +11,7 @@ SLayer(:show="show" :title="resultSet && resultSet[0].title && resultSet[0].tags
             NImage(v-for="item in resultSet"  :src="  item.coverUrl|| item.sampleUrl|| item.largerUrl|| item.originUrl" object-fit="cover")
         NProgress(type="line" :percentage="percentage" processing :indicator-placement="'inside'" :border-radius="4" :class="{done: percentage === 100}")
     
-    //- SLoading(:show="!isLoaded")
+    SLoading(:show="!isLoaded")
     
     NResult(v-if="isLoaded && !(resultSet && resultSet.length)" status="404" title="Resource Not Found" description="可能因素：目标未命中，网络不可用，防火墙拦截（尤其是在中国大陆）")
       template(#footer)
@@ -83,12 +83,7 @@ export default defineComponent({
             console.log('this.tags', this.tags)
             if (this.resultSet.length === 1) {
               const once = this.resultSet[0]
-              console.log('OOOOOOOOOOOOOOOOOOO')
               this.download(once)
-              // const { data, type } = await native.request({ url: once.originUrl || once.largerUrl || once.sampleUrl })
-              //   const src = URL.createObjectURL(this.base64ToBlob(data, type))
-              //   once._src = src
-              //   console.log('_src, ', src)
             } else {
               Promise.all(
                 this.resultSet.map(async (item) => {

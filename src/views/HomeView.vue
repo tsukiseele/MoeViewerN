@@ -19,6 +19,7 @@ const query = ref({ page: 1, keywords: 'namori', siteId: 923 })
 const sites = ref([])
 const currentSite = ref({})
 const isLoaded = ref(false)
+const isListLoading = ref(false)
 const keywordsOptions = ref([])
 const loadedCount = ref(0)
 const queue = new pQueue({ concurrency: 16 })
@@ -81,9 +82,18 @@ async function loadImage(el, item) {
     console.log('queue.size', queue.size)
   })
 }
-function onScrollBottom() {
-  query.value.page++
-  loadNext(query.value)
+async function onScrollBottom() {
+  if (isListLoading.value) return
+  isListLoading.value = true
+  try {
+    console.log('QQQQQQQQQQQQQQQQQ');
+    query.value.page++
+    await loadNext(query.value)
+  } catch (error) {
+    console.log(error)
+  } finally {
+    isListLoading.value = false
+  }
 }
 function openChild(item) {
   childItem.value = item
@@ -139,6 +149,8 @@ watch(() => query.value.keywords, getKeywordsOptions)
       template(#footer)
         NButton(@click="onSearch") Reload
     SLoading(:show="!isLoaded")
+
+    SLoading.list-loading(:show="isListLoading" type="line")
   CatalogLayer(v-model:show="showCatalog" :item="childItem" :rules="currentSite.section")
 </template>
 
@@ -187,10 +199,18 @@ watch(() => query.value.keywords, getKeywordsOptions)
   }
   // padding: 1rem;
   main {
+    position: relative;
     flex: 1;
     height: 0;
     // overflow: auto;
     padding: 1rem 0;
+  }
+  .list-loading {
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    height: 8px;
   }
   .n-result {
     height: 100%;

@@ -1,12 +1,15 @@
 <template lang="pug">
 transition(name="fade")
-  .spinner-modal(v-if="show")
-    .spinner
-      .rect1
-      .rect2
-      .rect3
-      .rect4
-      .rect5
+  .s-loading(v-if="show")
+    .line(v-if="type == 'line'")
+
+    .spinner-modal(v-else)
+      .spinner
+        .rect1
+        .rect2
+        .rect3
+        .rect4
+        .rect5
 </template>
 
 <script>
@@ -15,6 +18,10 @@ export default {
     show: {
       type: Boolean,
       default: false
+    },
+    type: {
+      type: String,
+      default: ''
     }
   }
 }
