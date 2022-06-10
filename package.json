@@ -1,7 +1,7 @@
 {
-  "name": "electron-vue-template",
+  "name": "moe-viewer-r",
   "version": "0.1.0",
-  "description": "A minimal Electron + Vue application",
+  "description": "Wow, such a lovely web gallery browser",
   "main": "build/main/main.js",
   "scripts": {
     "dev": "yarn node scripts/dev-server.js",
