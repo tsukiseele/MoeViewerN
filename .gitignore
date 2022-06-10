@@ -1,9 +1,13 @@
 node_modules
 dist
 build
+download
 
 .vscode
 .idea
+.history
 
 package-lock.json
 yarn.lock
+
+*.log
