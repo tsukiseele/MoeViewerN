@@ -1,4 +1,4 @@
-import { app, BrowserWindow, ipcMain } from 'electron'
+import { app, BrowserWindow, ipcMain, shell } from 'electron'
 import { join } from 'path'
 import './handler'
 
@@ -17,7 +17,8 @@ async function createWindow() {
     transparent: true,
     webPreferences: {
       preload: join(__dirname, 'preload.js'),
-      nodeIntegration: true,
+      nodeIntegration: false,
+      contextIsolation: true,
     },
     vibrancy: {
       // 'light', 'dark', 'appearance-based' or '#rrggbbaa'
@@ -29,12 +30,6 @@ async function createWindow() {
       disableOnBlur: true,
     },
   })
-  // mainWindow.loadURL(isDev ? 'http://localhost:3000' : `file://${path.join(__dirname, '../dist/index.html')}`)
-  // // Open the DevTools.
-  // if (isDev) {
-  //   // mainWindow.webContents.openDevTools()
-  // }
-
   if (process.env.NODE_ENV === 'development') {
     const rendererPort = process.argv[2]
     mainWindow.loadURL(`http://localhost:${rendererPort}`)
@@ -42,24 +37,6 @@ async function createWindow() {
     mainWindow.loadFile(join(app.getAppPath(), 'renderer', 'index.html'))
   }
 }
-// function createWindow() {
-//   const mainWindow = new BrowserWindow({
-//     width: 800,
-//     height: 600,
-//     webPreferences: {
-//       preload: join(__dirname, 'preload.js'),
-//       nodeIntegration: false,
-//       contextIsolation: true,
-//     },
-//   })
-
-//   if (process.env.NODE_ENV === 'development') {
-//     const rendererPort = process.argv[2]
-//     mainWindow.loadURL(`http://localhost:${rendererPort}`)
-//   } else {
-//     mainWindow.loadFile(join(app.getAppPath(), 'renderer', 'index.html'))
-//   }
-// }
 
 app.whenReady().then(() => {
   createWindow()
@@ -75,4 +52,17 @@ app.whenReady().then(() => {
 
 app.on('window-all-closed', function () {
   if (process.platform !== 'darwin') app.quit()
+})
+// Listen for web contents being created
+app.on('web-contents-created', (e, contents) => {
+
+  // Check for a webview
+  if (['window', 'webview'].includes(contents.getType())) {
+    // Listen for any new window events
+    contents.setWindowOpenHandler((details) => {
+      e.preventDefault()
+      shell.openExternal(details.url)
+      return { action: "deny" }
+    })
+  }
 })

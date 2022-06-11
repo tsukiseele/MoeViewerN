@@ -22,6 +22,11 @@ const router = createRouter({
       path: '/subscribes',
       name: 'subscribes',
       component: () => import('@/views/SiteView.vue'),
+    },
+    {
+      path: '/download',
+      name: 'download',
+      component: () => import('@/views/DownloadView.vue'),
     }
   ],
 })

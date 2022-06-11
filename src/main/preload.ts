@@ -1,12 +1,12 @@
 import { contextBridge, ipcRenderer } from 'electron'
 
 const callbacks = new Map<number, any>()
+let seed = 0
 
 ipcRenderer.on('progress', (event, data) => {
-  console.log('ON', callbacks);
-  
   const callback = callbacks.get(data.uuid)
   if (!callback) return
+  data.progress.uuid = data.uuid
   callback(data.progress)
   data.progress.done && callbacks.delete(data.uuid)
 })
@@ -14,6 +14,11 @@ ipcRenderer.on('progress', (event, data) => {
  * 上下文桥，隔离Main和Renderer，暴露声明API
  */
 contextBridge.exposeInMainWorld('electron', {
+  io: {
+    writeFile: async (path: string, blob: any) => {
+      ipcRenderer.invoke('writeFile', path, blob)
+    }
+  },
   ipcRenderer: ipcRenderer,
   invoke: ipcRenderer.invoke,
   send: ipcRenderer.send,
@@ -24,7 +29,8 @@ contextBridge.exposeInMainWorld('electron', {
    */
   requestAsync: async (params: any, callback: Function) => {
     if (callback) {
-      params.uuid = Date.now()
+      seed += Date.now()
+      params.uuid = Date.now() + '-' + seed
       callbacks.set(params.uuid, callback)
     }
   console.log('SEND', params);

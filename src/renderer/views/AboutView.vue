@@ -1,19 +1,20 @@
 <template>
   <div class="about">
     <section class="about-item">
-      <h3>Developer</h3>
-      <div class="about-content">TsukiSeele</div>
+      <h3 class="about-title">Developer</h3>
+      <img class="about-avatar" src="../assets/images/github-avatar.webp" alt="">
+      <div class="about-content"><a href="https://github.com/tsukiseele/MoeViewerN" target="_blank">TsukiSeele</a></div>
     </section>
     <section class="about-item">
-      <h3>License</h3>
+      <h3 class="about-title">License</h3>
       <div class="about-content">GPL-v3.0</div>
     </section>
     <section class="about-item">
-      <h3>Support</h3>
+      <h3 class="about-title">Support</h3>
       <div class="about-content">NO QRCode</div>
     </section>
     <section class="about-item">
-      <h3>Thanks</h3>
+      <h3 class="about-title">Thanks</h3>
       <div class="about-content code">
         <ul>
           <li v-for="item in thanks" :key="item.name">{{ item.name }}</li>
@@ -51,8 +52,17 @@ export default defineComponent({
     // padding: .5rem;
     .about-item {
       padding: 0.5rem;
+      .about-title {
+        padding: .5rem;
+      }
       .about-content {
-        margin: 0.5rem;
+        padding: 0.5rem;
+      }
+      .about-avatar {
+        width: 6rem;
+        height: 6rem;
+        overflow: hidden;
+        border-radius: 50%;
       }
     }
 

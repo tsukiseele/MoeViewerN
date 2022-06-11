@@ -3,6 +3,8 @@ import SiteLoader from './libs/site-loader'
 import Kumoko from './libs/kumoko'
 import fetch from './libs/proxy-fetch'
 import _ from 'lodash'
+import fs from 'fs/promises'
+import Base64 from 'js-base64'
 // import log from 'electron-log'
 // By default, it writes logs to the following locations:
 // on Linux: ~/.config/{app name}/logs/{process type}.log
@@ -25,6 +27,16 @@ ipcMain.on('close', () => {
 ipcMain.handle('getSiteList', async (event, query) => {
   // log.info('loadSite', `${process.cwd()}/static/rules`)
   return await SiteLoader.loadSites(`${process.cwd()}/static/rules`)
+})
+
+const getWindowsFileName = (text: string) => {
+  return text.replace(/[\\/:*?"<>|]/g, '_')
+}
+ipcMain.handle('writeFile', async (event, filename, base64) => {
+  const dir = `${process.cwd()}/download`
+  await fs.mkdir(dir, { recursive: true })
+  const r = fs.writeFile(`${dir}/${getWindowsFileName(filename)}`, Base64.toUint8Array(base64))
+  return Boolean(r)
 })
 ipcMain.handle('request', async (event, params) => {
   const response = await fetch(params.url, { method: 'GET', ...params.options })
@@ -72,6 +84,19 @@ ipcMain.on('requestAsync', async (event, params) => {
     throttled()
   })
 })
+
+
+// ipcMain.handle('downloadImages', async (event, params) => {
+//   if (params.item && params.item.$children) {
+//     const requestAsText = async (url, options) => {
+//       options.headers = { ...params.item.$site.headers }
+//       options.timeout = 5000
+//       return await (await fetch(url, options)).text()
+//     }
+//     return JSON.stringify(await new Kumoko(params.item, 0, null, requestAsText).parseChildrenConcurrency(params.item, params.item.$section.rules))
+//   }
+// })
+
 ipcMain.handle('loadChildren', async (event, params) => {
   if (params.item && params.item.$children) {
     const requestAsText = async (url, options) => {

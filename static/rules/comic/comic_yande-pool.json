@@ -40,6 +40,7 @@
               "selector": "$(.thumb).attr(href)",
               "capture": "(.*)",
               "replacement": "https://yande.re/$1",
+              "flat": true,
               "rules": {
                 "sampleUrl": {
                   "selector": "$(#image).attr(src)"

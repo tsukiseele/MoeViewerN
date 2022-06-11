@@ -80,6 +80,8 @@ export default class Kumoko {
         const children = await this.parseRules(item.$children, rules.$children.rules, page++, null)
         if (children && histroy && children.length && histroy.length && children.length === histroy.length && this.objectEquals(children[0], histroy[0])) break
         histroy = JSON.parse(JSON.stringify(children))
+        console.log(children);
+        
         if (children && children.length) {
           // 解析下级子节点
           if (children[0].$children) {

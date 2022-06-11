@@ -1,5 +1,5 @@
 <template lang="pug">
-SLayer(:show="show" :title="resultSet && resultSet[0].title && resultSet[0].tags" @update:show="(show) => $emit('update:show', show)")
+SLayer(:show="show" title="Gallery" @update:show="(show) => $emit('update:show', show)")
   .container
     main
       .images-wrapper(v-if="isLoaded")
@@ -17,30 +17,39 @@ SLayer(:show="show" :title="resultSet && resultSet[0].title && resultSet[0].tags
       template(#footer)
         NButton(@click="onSearch") Reload
     aside.aside
+      .gallery-cover
+        NImage(:src="item.coverUrl|| item.sampleUrl|| item.largerUrl|| item.originUrl" object-fit="cover")
+      .gallery-title {{resultSet && resultSet.length && resultSet[0].title && resultSet[0].tags}}
+      .gallery-options
+        NButton(color="#007f7f" @click="onDownloadGallery") Download
+        NButton(color="#ff69b4") Star
+        NButton(color="#8318df") Reload
       .gallery-tags(v-if="tags && tags.length")
         NTag(type="info" v-for="tag in tags" :key="tag") {{ tag }}
         
 </template>
 
-<script>
+<script lang="ts">
 import { Base64 } from 'js-base64'
 import { defineComponent, computed } from '@vue/runtime-core'
-import { NButton, NResult, NImage, NImageGroup, NTag, NProgress, useThemeVars } from 'naive-ui'
+import { NSpace, NButton, NResult, NImage, NImageGroup, NTag, NProgress, useThemeVars } from 'naive-ui'
 import SLayer from '@/components/SLayer/index.vue'
 import SLoading from '@/components/SLoading/index.vue'
 // import native from '@/composables/native.js'
-import { invoke, invokeAsObject, requestAsync } from '@/electron'
+import { invoke, invokeAsObject, requestAsync, io } from '@/electron'
+import { useDownloadStore } from '@/stores/counter'
 
 export default defineComponent({
   components: {
-    SLayer,
-    SLoading,
+    NSpace,
     NButton,
     NResult,
     NImage,
     NImageGroup,
     NTag,
     NProgress,
+    SLayer,
+    SLoading,
   },
   props: {
     item: {
@@ -55,7 +64,7 @@ export default defineComponent({
   emits: ['update:show'],
   data: () => ({
     isLoaded: false,
-    resultSet: null,
+    resultSet: [],
     tags: [],
     scale: 1.0,
     percentage: 0,
@@ -115,22 +124,48 @@ export default defineComponent({
   },
   methods: {
     async download(once) {
-      const response = await requestAsync({ url: once.originUrl || once.largerUrl || once.sampleUrl }, (p) => {
+      const response = requestAsync({ url: once.originUrl || once.largerUrl || once.sampleUrl }, (p) => {
         console.log(p)
         this.percentage = Number((p.progress * 100).toFixed(2))
         if (p.done) {
           const { data, type } = p.response
           const src = URL.createObjectURL(this.base64ToBlob(data, type))
           once._src = src
-        } 
+        }
       })
+    },
+    onDownloadGallery() {
+      if (this.isLoaded) {
+        if (this.resultSet && this.resultSet.length) {
+          console.log('this.resultSet', this.resultSet);
+          
+          this.resultSet.forEach(async (item) => {
+            const response = requestAsync({ url: item.originUrl || item.largerUrl || item.sampleUrl || item.coverUrl }, (p) => {
+
+              // console.log(p)
+              // // 
+              // this.percentage = Number((p.progress * 100).toFixed(2))
+              // if (p.done) {
+              //   const { data, type } = p.response
+              // }
+              this.downloadStore.update(p.uuid, JSON.parse(JSON.stringify({ ...item, progress: p })))
+              if (p.done) {
+                io.writeFile(`${item.title}-${Date.now()}.${p.response.type.split('/')[1]}`, p.response.data)
+              }
+            })
+          })
+        }
+      } else {
+        alert('请等待列表加载完成！')
+      }
     },
     base64ToBlob(base64, type) {
       return new Blob([Base64.toUint8Array(base64)], { type: type })
     },
-    onWheel(e) {
+    onSearch() {},
+    onWheel(e: MouseEvent) {
       const v = e.deltaY
-      const el = document.querySelector('.n-image-preview-wrapper')
+      const el = document.querySelector('.n-image-preview-wrapper') as HTMLDivElement
       if (el) {
         if (v > 0) {
           this.scale += 0.25
@@ -147,7 +182,9 @@ export default defineComponent({
     // document.removeEventListener('wheel', this.onWheel, false)
   },
   setup() {
+    const downloadStore = useDownloadStore()
     return {
+      downloadStore,
       imageGroupThemeOverrides: computed(() => {
         const { popoverColor, boxShadow2, textColor2, borderRadius } = useThemeVars().value
         const themeOverrides = {
@@ -173,7 +210,7 @@ export default defineComponent({
     top: 0;
     left: 0;
     right: 0;
-    transition: .5s ease-in;
+    transition: 0.5s ease-in;
     &.done {
       opacity: 0;
     }
@@ -218,13 +255,6 @@ export default defineComponent({
           margin: 0.5rem;
         }
       }
-
-      :deep(img) {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-        object-position: center;
-      }
     }
   }
   .aside {
@@ -232,16 +262,41 @@ export default defineComponent({
     width: 0;
     display: flex;
     flex-direction: column;
+    border-left: 1px dashed rgba($color: teal, $alpha: 0.5);
+    padding: 0 0.5rem;
+    .gallery-title {
+      margin-bottom: 0.5rem;
+    }
+    .gallery-cover {
+      margin-bottom: 0.5rem;
+      width: 100%;
+      overflow: hidden;
+      .n-image {
+        width: 100%;
+      }
+    }
+    .gallery-options {
+      margin-bottom: 0.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      .n-button {
+        flex: 1;
+        margin-right: 0.5rem;
+        &:last-of-type {
+          margin-right: 0;
+        }
+      }
+    }
     .gallery-tags {
       display: flex;
       align-items: flex-start;
-      justify-content: space-evenly;
+      justify-content: flex-start;
       flex-direction: row;
       flex-wrap: wrap;
       width: 100%;
-
       .n-tag {
-        margin: 0.25rem 0;
+        margin: 0.25rem;
       }
     }
   }

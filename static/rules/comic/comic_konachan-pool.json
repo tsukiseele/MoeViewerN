@@ -21,13 +21,13 @@
         "coverUrl": {
           "regex": "\"preview_url\":\"(.*?)\""
         },
-        "sampleUrl": {
+        "sampleUrl_": {
           "regex": "\"sample_url\":\"(.*?)\""
         },
-        "largerUrl": {
+        "largerUrl_": {
           "regex": "\"jpeg_url\":\"(.*?)\""
         },
-        "originUrl": {
+        "originUrl_": {
           "regex": "\"file_url\":\"(.*?)\""
         },
         "$children": {
@@ -55,6 +55,7 @@
               "selector": "$(.thumb).attr(href)",
               "capture": "(.+)",
               "replacement": "https://konachan.com$1",
+              "flat": true,
               "rules": {
                 "sampleUrl": {
                   "selector": "$(#image).attr(src)"

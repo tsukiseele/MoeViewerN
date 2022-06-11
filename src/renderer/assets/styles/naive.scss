@@ -1,3 +1,10 @@
 .n-image-preview-toolbar .n-base-icon {
   box-sizing: content-box;
 }
+
+.n-image {
+  img {
+    width: 100%;
+    height: 100%;
+  }
+}

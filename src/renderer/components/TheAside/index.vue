@@ -1,15 +1,24 @@
 <template lang="pug">
 aside.aside
   ul
-    li.material-icons(v-for="link in links" :key="link.to" @click="$router.push(link.to)") {{ link.icon }}
+    li.material-icons(v-for="link in links" :key="link.to" :class="{active: $route.path == link.to}" @click="$router.push(link.to)") {{ link.icon }}
 </template>
 
-<script>
+<script lang="ts" >
 import { defineComponent } from 'vue'
+
+// interface Link {
+//   to: string,
+//   icon: string
+// }
 
 export default defineComponent({
   props: {
-    links: [],
+    links: []
+    // links: {
+    //   type: Link[],
+    //   default: ''
+    // },
   },
   methods: {},
 })
@@ -37,6 +46,9 @@ export default defineComponent({
       background-color: rgba(96, 96, 128, 1);
       transition: 0.25s;
       &:hover {
+        filter: brightness(1.2);
+      }
+      &.active {
         filter: brightness(1.2);
       }
     }

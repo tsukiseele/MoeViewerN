@@ -1,32 +1,29 @@
-<script setup>
+<script setup lang="ts">
 import { Base64 } from 'js-base64'
 import { onMounted, ref, watch, computed, h } from 'vue'
 import { useRouter } from 'vue-router'
 import { NButton, NSelect, NInputNumber, NAutoComplete, NResult, NTag, useMessage } from 'naive-ui'
-import SSimpleWaterfall from '@/components/SSimpleWaterfall/index.vue'
-import SLoading from '@/components/SLoading/index.vue'
+import SSimpleWaterfall from '../components/SSimpleWaterfall/index.vue'
+import SLoading from '../components/SLoading/index.vue'
 import CatalogLayer from '@/views/Layer/CatalogLayer.vue'
-import _, { result } from 'lodash'
-// import native from '@/composables/native.js'
-import { invoke, invokeAsObject } from '@/electron'
+import _ from 'lodash'
+import { invoke, invokeAsObject } from '../electron'
 import placeholder from '@/assets/images/placeholder.webp'
 import pQueue from 'p-queue'
 
 const showCatalog = ref(false)
 const childItem = ref(null)
 const router = useRouter()
-const results = ref([])
-const query = ref({ page: 1, keywords: 'namori', siteId: 923 })
-const sites = ref([])
-const currentSite = ref({})
+const results = ref<any[]>([])
+const query = ref({ page: 1, keywords: '', siteId: 923 })
+const sites = ref<Site[]>([])
+const currentSite = ref<Site>()
 const isLoaded = ref(false)
 const isListLoading = ref(false)
 const keywordsOptions = ref([])
 const loadedCount = ref(0)
 const queue = new pQueue({ concurrency: 16 })
 const siteOptions = computed(() => sites.value && sites.value.length && sites.value.map(site => ({ label: site.name, value: site.id })))
-
-window.$message = useMessage()
 
 onMounted(async () => {
   sites.value = await invoke('getSiteList')
@@ -45,20 +42,20 @@ async function onSearch() {
   currentSite.value = sites.value.find(site => site.id == query.value.siteId)
   loadList(query.value)
 }
-async function loadList(params) {
+async function loadList(params: any) {
   isLoaded.value = false
   results.value = await invokeAsObject('load', params)
   // if (!results.value || !results.value.length) $message.error(`资源未找到！`)
   isLoaded.value = true
 }
-async function loadNext(params) {
+async function loadNext(params: any) {
   const next = await invokeAsObject('load', params)
   results.value.push(...next)
 }
-const base64ToBlob = (base64, type) => {
+const base64ToBlob = (base64: string, type: string) => {
   return new Blob([Base64.toUint8Array(base64)], { type: type })
 }
-async function getImageSize(src) {
+async function getImageSize(src: string) {
   const img = new Image()
   img.src = src
   return await new Promise((resolve, reject) => {
@@ -69,14 +66,17 @@ async function getImageSize(src) {
     }
   })
 }
-function onImgLoaded(e, item) {
+function onImgLoaded(e: Event, item: any) {
+  console.log(e);
+  //@ts-ignore
   const el = e.path[0]
   !el.loaded && loadImage(el, item)
 }
-async function loadImage(el, item) {
+async function loadImage(el: HTMLImageElement, item: any) {
   if (item._src) return
   queue.add(async () => {
-    const { data, type } = await invoke('request', { url: item.coverUrl, options: { headers: currentSite.value.headers, timeout: 5000, retries: 5 } })
+    const { data, type } = await invoke('request', { url: item.coverUrl, options: { headers: currentSite.value?.headers, timeout: 5000, retries: 5 } })
+    //@ts-ignore
     el.loaded = true
     item._src = URL.createObjectURL(base64ToBlob(data, type))
     loadedCount.value = loadedCount.value ? loadedCount.value + 1 : 1
@@ -87,7 +87,6 @@ async function onScrollBottom() {
   if (isListLoading.value) return
   isListLoading.value = true
   try {
-    console.log('QQQQQQQQQQQQQQQQQ')
     query.value.page++
     await loadNext(query.value)
   } catch (error) {
@@ -96,11 +95,11 @@ async function onScrollBottom() {
     isListLoading.value = false
   }
 }
-function openChild(item) {
+function openChild(item: any) {
   childItem.value = item
   showCatalog.value = true
 }
-const renderLabel = option => {
+const renderLabel = (option: any) => {
   const typeMap = {
     0: { type: 'General', color: '#0075f8' },
     1: { type: 'Artist', color: '#c00004' },
@@ -108,10 +107,10 @@ const renderLabel = option => {
     4: { type: 'Character', color: '#00ab2c' },
     5: { type: 'Meta', color: '#007f7f' },
   }
-  const type = typeMap[option.value.category]
+  //@ts-ignore
+  const type = typeMap[option.value.category as number]
   return [`${option.value.value}`, ` ${option.value.antecedent ? `→ ${option.value.antecedent} ` : ' '}`, h(NTag, { size: 'small', color: { color: type.color, borderColor: type.color, textColor: 'white' } }, { default: () => type.type })]
 }
-
 const getKeywordsOptions = _.throttle(async nv => {
   keywordsOptions.value = []
   if (nv) {
@@ -120,7 +119,7 @@ const getKeywordsOptions = _.throttle(async nv => {
 
     if (word) {
       const tags = await (await fetch(`https://danbooru.donmai.us/autocomplete.json?search[query]=${word}&search[type]=tag_query&limit=10`)).json()
-      const label = tags.map(tag => ({
+      const label = tags.map((tag: any) => ({
         label: nv.replace(word, '') + tag.value,
         value: tag,
       }))
@@ -152,7 +151,7 @@ watch(() => query.value.keywords, getKeywordsOptions)
     SLoading(:show="!isLoaded")
 
     SLoading.list-loading(:show="isListLoading" type="line")
-  CatalogLayer(v-model:show="showCatalog" :item="childItem" :rules="currentSite.section")
+  CatalogLayer(v-model:show="showCatalog" :item="childItem")
 </template>
 
 <style lang="scss" scoped>
