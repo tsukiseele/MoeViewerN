@@ -1,6 +1,8 @@
 import LRU from 'lru-cache'
 import { app } from 'electron'
 import fs from 'fs'
+import { writeFile } from "fs/promises";
+
 import Base64 from 'js-base64'
 import hash from './hash'
 
@@ -50,20 +52,23 @@ fs.mkdirSync(cacheDir, { recursive: true })
 // Resume cache status
 if (fs.existsSync(cacheMapPath) && fs.statSync(cacheMapPath).isFile()) {
   try {
-    const data = fs.readFileSync(cacheMapPath).toString()
-    cache.load(JSON.parse(data))
+    cache.load(JSON.parse(fs.readFileSync(cacheMapPath).toString()))
   } catch (error) {
     console.log(error)
   }
+}
+// save cache status
+const saveCacheStatus = () => {
+  fs.writeFileSync(cacheMapPath, JSON.stringify(cache.dump()))
 }
 // Add cache and write file
 const set = (key: string, data: string | Uint8Array, options?: LRU.SetOptions<string, string> | undefined): LRU<string, string> => {
   const value = `${cacheDir}/${hash(key)}.png`
   // console.log('set cache:', value, ', cache size', cache.calculatedSize)
   if (typeof data == 'string') {
-    fs.writeFileSync(value, Base64.toUint8Array(data))
+    writeFile(value, Base64.toUint8Array(data))
   } else if (data instanceof Uint8Array) {
-    fs.writeFileSync(value, data)
+    writeFile(value, data)
   } else {
     throw Error('缓存错误：无法识别的数据类型')
   }
@@ -86,10 +91,5 @@ const get = (key: string, options?: LRU.GetOptions | undefined): Uint8Array | nu
 // Test cache exists
 const has = cache.has
 const remove = cache.delete
-
-// save cache status
-const saveCacheStatus = () => {
-  fs.writeFileSync(cacheMapPath, JSON.stringify(cache.dump()))
-}
 
 export { set, get, has, remove, saveCacheStatus }
