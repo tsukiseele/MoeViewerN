@@ -1,15 +1,15 @@
-import LRU from 'lru-cache'
 import { app } from 'electron'
 import fs from 'fs'
-import { writeFile } from "fs/promises";
-
+import { writeFile } from 'fs/promises'
+import LRU from 'lru-cache'
 import Base64 from 'js-base64'
-import hash from './hash'
+import { cyrb53 } from './hashcode'
+import CryptoJS from 'crypto-js'
 
 const options = {
   max: 500,
   // for use with tracking overall storage size
-  maxSize: 1024 * 1024 * 64,
+  maxSize: 1024 * 1024 * 128,
   sizeCalculation: (value: string, key: string) => {
     try {
       if (fs.existsSync(value)) {
@@ -63,7 +63,9 @@ const saveCacheStatus = () => {
 }
 // Add cache and write file
 const set = (key: string, data: string | Uint8Array, options?: LRU.SetOptions<string, string> | undefined): LRU<string, string> => {
-  const value = `${cacheDir}/${hash(key)}.png`
+  // const value = `${cacheDir}/${cyrb53(key)}.png`
+  const value = `${cacheDir}/${CryptoJS.SHA256(key)}.png`
+  
   // console.log('set cache:', value, ', cache size', cache.calculatedSize)
   if (typeof data == 'string') {
     writeFile(value, Base64.toUint8Array(data))

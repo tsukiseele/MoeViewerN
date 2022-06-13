@@ -1,7 +1,8 @@
 import { contextBridge, ipcRenderer } from 'electron'
+import { random } from 'lodash'
+import { cyrb53 } from './utils/hashcode'
 
 const callbacks = new Map<number, any>()
-let seed = 0
 
 ipcRenderer.on('progress', (event, data) => {
   const callback = callbacks.get(data.uuid)
@@ -17,7 +18,7 @@ contextBridge.exposeInMainWorld('electron', {
   io: {
     writeFile: async (path: string, blob: any) => {
       ipcRenderer.invoke('writeFile', path, blob)
-    }
+    },
   },
   ipcRenderer: ipcRenderer,
   invoke: ipcRenderer.invoke,
@@ -29,12 +30,10 @@ contextBridge.exposeInMainWorld('electron', {
    */
   requestAsync: async (params: any, callback: Function) => {
     if (callback) {
-      seed += Date.now()
-      params.uuid = /*Date.now() + '-' + */seed
+      params.uuid = cyrb53(random(0, Number.MAX_SAFE_INTEGER).toString(), Date.now() % 256)
       callbacks.set(params.uuid, callback)
     }
-  console.log('SEND', params);
-  ipcRenderer.send('requestAsync', params)
+    ipcRenderer.send('requestAsync', params)
   },
 })
 

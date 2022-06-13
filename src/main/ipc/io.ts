@@ -2,8 +2,10 @@ import { ipcMain } from 'electron'
 import fs from 'fs/promises'
 import Base64 from 'js-base64'
 
+const REG_FILENAME = /[\\/:*?"<>|]/g
+
 const getWindowsFileName = (text: string) => {
-  return text.replace(/[\\/:*?"<>|]/g, '_')
+  return text.replace(REG_FILENAME, '_')
 }
 
 ipcMain.handle('writeFile', async (event, filename, base64): Promise<boolean> => {

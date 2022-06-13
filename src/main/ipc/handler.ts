@@ -3,26 +3,13 @@ import SiteLoader from '../libs/site-loader'
 import Kumoko from '../libs/kumoko'
 import fetch from '../libs/proxy-fetch'
 import _ from 'lodash'
-import * as cache from './disk-lru'
+import * as cache from '../utils/disk-lru'
 import { Base64 } from 'js-base64'
 // import log from 'electron-log'
 // By default, it writes logs to the following locations:
 // on Linux: ~/.config/{app name}/logs/{process type}.log
 // on macOS: ~/Library/Logs/{app name}/{process type}.log
 // on Windows: %USERPROFILE%\AppData\Roaming\{app name}\logs\{process type}.log
-
-ipcMain.on('minimize', () => {
-  const win = BrowserWindow.getFocusedWindow()
-  win && win.minimize()
-})
-ipcMain.on('maximize', () => {
-  const win = BrowserWindow.getFocusedWindow()
-  win && (win.isMaximized() ? win.unmaximize() : win.maximize())
-})
-ipcMain.on('close', () => {
-  const win = BrowserWindow.getFocusedWindow()
-  win && win.close()
-})
 
 ipcMain.handle('getSiteList', async (event, query) => {
   // log.info('loadSite', `${process.cwd()}/static/rules`)
