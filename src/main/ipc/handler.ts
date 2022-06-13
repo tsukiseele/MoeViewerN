@@ -32,7 +32,7 @@ ipcMain.handle('getSiteList', async (event, query) => {
 ipcMain.handle('request', async (event, params) => {
   const cacheData = cache.get(params.url)
   if (cacheData) {
-    return {data: Base64.fromUint8Array(cacheData), type: 'image/png'}
+      return { data: Base64.fromUint8Array(cacheData), type: 'image/png' }
   }
   const response = await fetch(params.url, { method: 'GET', ...params.options })
   const blob = await response.blob()

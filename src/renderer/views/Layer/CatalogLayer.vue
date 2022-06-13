@@ -95,7 +95,7 @@ export default defineComponent({
               Promise.all(
                 this.resultSet.map(async (item) => {
                   const once = item
-                  const { data, type } = await invoke('request', { url: once.originUrl || once.largerUrl || once.sampleUrl || once.coverUrl })
+                  const { data, type } = await invoke('request', { url: once.coverUrl || once.sampleUrl || once.largerUrl || once.originUrl })
                   const src = URL.createObjectURL(this.base64ToBlob(data, type))
                   once._src = src
                   console.log('_src, ', src)

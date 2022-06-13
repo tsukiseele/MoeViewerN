@@ -9,14 +9,21 @@ const options = {
   // for use with tracking overall storage size
   maxSize: 1024 * 1024 * 64,
   sizeCalculation: (value: string, key: string) => {
-    var stats = fs.statSync(value)
-    return stats.size
+    try {
+      if (fs.existsSync(value)) {
+        const stat = fs.statSync(value)
+        if (stat.isFile()) return stat.size
+      }
+    } catch (error) {}
+    return 1
   },
 
   // for use when you need to clean up something when objects
   // are evicted from the cache
   dispose: (value: string, key: string) => {
-    fs.rmSync(value)
+    try {
+      fs.existsSync(value) && fs.rmSync(value)
+    } catch (error) {}
   },
 
   // how long to live in ms
@@ -65,19 +72,24 @@ const set = (key: string, data: string | Uint8Array, options?: LRU.SetOptions<st
 // Get cache byte data
 const get = (key: string, options?: LRU.GetOptions | undefined): Uint8Array | null => {
   const path = cache.get<string>(key, options)
-  if (path && fs.statSync(path).isFile()) {
-    return fs.readFileSync(path)
-  } else {
+  try {
+    if (path && fs.statSync(path).isFile()) {
+      return fs.readFileSync(path)
+    } else {
+      cache.delete(key)
+    }
+  } catch (error) {
     cache.delete(key)
-    return null
   }
+  return null
 }
 // Test cache exists
 const has = cache.has
+const remove = cache.delete
 
 // save cache status
 const saveCacheStatus = () => {
   fs.writeFileSync(cacheMapPath, JSON.stringify(cache.dump()))
 }
 
-export { set, get, has, saveCacheStatus }
+export { set, get, has, remove, saveCacheStatus }

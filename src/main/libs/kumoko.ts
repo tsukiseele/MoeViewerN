@@ -90,7 +90,7 @@ export default class Kumoko {
             break
           } else {
             // 判断并继承父节点字段
-            extend && children.forEach((child, index) => (children[index] = Object.assign({}, item, child)))
+            // extend && children.forEach((child, index) => (children[index] = Object.assign({}, item, child)))
             item.children ? item.children.push(...children) : (item.children = children)
             break
           }
