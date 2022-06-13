@@ -3,6 +3,8 @@ import SiteLoader from '../libs/site-loader'
 import Kumoko from '../libs/kumoko'
 import fetch from '../libs/proxy-fetch'
 import _ from 'lodash'
+import * as cache from './disk-lru'
+import { Base64 } from 'js-base64'
 // import log from 'electron-log'
 // By default, it writes logs to the following locations:
 // on Linux: ~/.config/{app name}/logs/{process type}.log
@@ -28,10 +30,15 @@ ipcMain.handle('getSiteList', async (event, query) => {
 })
 
 ipcMain.handle('request', async (event, params) => {
+  const cacheData = cache.get(params.url)
+  if (cacheData) {
+    return {data: Base64.fromUint8Array(cacheData), type: 'image/png'}
+  }
   const response = await fetch(params.url, { method: 'GET', ...params.options })
   const blob = await response.blob()
   const buffer = await blob.arrayBuffer()
   const base64 = Buffer.from(buffer).toString('base64')
+  cache.set(params.url, Buffer.from(buffer))
   return { data: base64, type: blob.type }
 })
 

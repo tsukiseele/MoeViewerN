@@ -30,7 +30,7 @@ contextBridge.exposeInMainWorld('electron', {
   requestAsync: async (params: any, callback: Function) => {
     if (callback) {
       seed += Date.now()
-      params.uuid = Date.now() + '-' + seed
+      params.uuid = /*Date.now() + '-' + */seed
       callbacks.set(params.uuid, callback)
     }
   console.log('SEND', params);

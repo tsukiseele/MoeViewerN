@@ -1,8 +1,8 @@
 import { app, BrowserWindow, ipcMain, shell } from 'electron'
 import { join } from 'path'
+import * as cache from './ipc/disk-lru'
 import './ipc/handler'
 import './ipc/io'
-
 async function createWindow() {
   // see https://www.npmjs.com/package/electron-acrylic-window
   let AcrylicBrowserWindow
@@ -52,6 +52,7 @@ app.whenReady().then(() => {
 })
 
 app.on('window-all-closed', function () {
+  cache.saveCacheStatus()
   if (process.platform !== 'darwin') app.quit()
 })
 // Listen for web contents being created
