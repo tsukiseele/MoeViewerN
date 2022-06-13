@@ -8,8 +8,8 @@ SLayer(:show="show" title="Gallery" @update:show="(show: boolean) => $emit('upda
             NImage(:src="resultSet[0]._src" object-fit="contain")
         section.multiple(v-else-if="resultSet && resultSet.length")
           NImageGroup(:theme-overrides="imageGroupThemeOverrides" show-toolbar-tooltip)
-            NImage(v-for="item in resultSet"  :src="item._src" object-fit="cover")
-        NProgress(v-if="resultSet && resultSet.length == 1" type="line" :percentage="percentage" processing :indicator-placement="'inside'" :border-radius="4" :class="{done: percentage === 100}")
+            NImage(v-for="item in resultSet"  :src="  item.coverUrl || item.sampleUrl || item.largerUrl || item.originUrl" object-fit="cover")
+        NProgress(type="line" :percentage="percentage" processing :indicator-placement="'inside'" :border-radius="4" :class="{done: percentage === 100}")
     
     SLoading(:show="!isLoaded")
     
@@ -18,7 +18,7 @@ SLayer(:show="show" title="Gallery" @update:show="(show: boolean) => $emit('upda
         NButton(@click="onSearch") Reload
     aside.aside
       .gallery-cover
-        NImage(:src="item._src" object-fit="cover")
+        NImage(:src="item.coverUrl || item.sampleUrl || item.largerUrl || item.originUrl" object-fit="cover")
       .gallery-title {{resultSet && resultSet.length && resultSet[0].title && resultSet[0].tags}}
       .gallery-options
         NButton(color="#007f7f" @click="onDownloadGallery") Download
@@ -36,6 +36,7 @@ import type { PropType } from 'vue'
 import { NSpace, NButton, NResult, NImage, NImageGroup, NTag, NProgress, useThemeVars } from 'naive-ui'
 import SLayer from '@/components/SLayer/index.vue'
 import SLoading from '@/components/SLoading/index.vue'
+// import native from '@/composables/native.js'
 import { invoke, invokeAsObject, requestAsync, io } from '@/electron'
 import { useDownloadStore } from '@/stores/counter'
 
@@ -81,13 +82,16 @@ export default defineComponent({
               const tree = await invokeAsObject('loadChildren', { item: this.item })
               if (tree && tree.children && tree.children.length) {
                 this.resultSet = tree.children
+                console.log('children: ', tree.children)
               } else {
                 this.resultSet = [this.item]
+                console.log('ITEM: ', this.item)
               }
             } else {
               this.resultSet = [this.item]
             }
             this.tags = this.tags || (this.resultSet && this.resultSet.length && this.resultSet[0].tags && this.resultSet[0].tags.split(' '))
+            console.log('this.tags', this.tags)
             if (this.resultSet.length === 1) {
               const once = this.resultSet[0]
               this.download(once)
@@ -95,7 +99,7 @@ export default defineComponent({
               Promise.all(
                 this.resultSet.map(async (item) => {
                   const once = item
-                  const { data, type } = await invoke('request', { url: once.originUrl || once.largerUrl || once.sampleUrl || once.coverUrl })
+                  const { data, type } = await invoke('request', { url: once.coverUrl || once.sampleUrl || once.largerUrl || once.originUrl })
                   const src = URL.createObjectURL(this.base64ToBlob(data, type))
                   once._src = src
                   console.log('_src, ', src)
@@ -106,6 +110,7 @@ export default defineComponent({
         } catch (error) {
           console.log(error)
         } finally {
+          console.log('resultSet', this.resultSet)
           this.$forceUpdate()
           this.isLoaded = true
         }

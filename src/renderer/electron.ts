@@ -8,14 +8,14 @@ const ipcRenderer = window.electron.ipcRenderer // as IpcRenderer
 const send = (channel: string, params?: any) => window.electron.send(channel, params ? JSON.parse(JSON.stringify(params)) : undefined)
 const invoke = async (channel: string, params?: any) => await window.electron.invoke(channel, params ? JSON.parse(JSON.stringify(params)) : undefined)
 const invokeAsObject = async (channel: string, params?: any) => JSON.parse(await invoke(channel, params))
-const requestAsync = (params: any, callback: Function) => window.electron.requestAsync(JSON.parse(JSON.stringify(params)), callback)
+const requestAsync = (params: any, callback: (p: Progress) => void) => window.electron.requestAsync(JSON.parse(JSON.stringify(params)), callback)
 
 const minimize = window.$win.minimize
 const maximize = window.$win.maximize
 const close = window.$win.close
 const io = {
-  writeFile: (path: string, blob: { type: string; data: string }) => {
-    return window.electron.io.writeFile(path, blob)
+  writeFile: (path: string, base64: string ) => {
+    return window.electron.io.writeFile(path, base64)
   },
 }
 interface Native extends ElectronApi {

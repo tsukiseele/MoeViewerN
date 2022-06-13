@@ -1,7 +1,7 @@
 interface Site {
   name: string,
-  id: Number,
-  version: Number,
+  id: number,
+  version: number,
   author: string,
   rating: string,
   details: string,
@@ -12,7 +12,7 @@ interface Site {
 }
 
 interface Headers {
-  [key: string]: String
+  [key: string]: string
 }
 
 interface Sections {
@@ -23,8 +23,14 @@ interface Sections {
 
 interface Section {
   index: string
-  rules: Rules
   reuse: string
+  rules: Rules
 }
 
 interface Rules {}
+
+interface Meta {
+  $children?: Meta[],
+  $site?: Site
+  $section?: Section
+}

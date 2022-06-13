@@ -40,6 +40,7 @@
             },
             "$children": {
               "selector": "$(.gdtl > a).attr(href)",
+              "flat": true,
               "rules": {
                 "originUrl": {
                   "selector": "$(#img).attr(src)"

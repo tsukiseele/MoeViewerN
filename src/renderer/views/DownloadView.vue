@@ -2,15 +2,10 @@
 #download
   ul.download-list
     li.download-item(v-for="item in downloadStore.list")
-      img.item-cover(:src="item?.coverUrl" alt="")
+      img.item-cover(:src="item?.coverUrl || item?.sampleUrl || item?.largerUrl || item?.originUrl" alt="")
       .item-info
         .item-name {{ item?.title }}
         NProgress.item-progress(type="line" :percentage="item?.progress?.progress * 100" processing :indicator-placement="'inside'" :border-radius="4" :class="{done: item?.progress?.progress  === 100}")
-    //- li.download-list--item(v-for="item in downloadStore.list")
-    //-   img.site-icon(:src="item?.title" alt="")
-    //-   .site-info
-    //-     .site-name {{ item?.progress?.progress }}
-    //-     NProgress(type="line" :percentage="percentage" processing :indicator-placement="'inside'" :border-radius="4" :class="{done: percentage === 100}")
 </template>
 
 <script>

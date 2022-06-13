@@ -15,5 +15,5 @@
       "@/*": ["./*"]
     },
   },
-  "include": ["./**/*.ts", "./**/*.d.ts", "./**/*.tsx", "./**/*.vue", "../main/libs/site.d.ts"]
+  "include": ["./**/*.ts", "./**/*.d.ts", "./**/*.tsx", "./**/*.vue", "../main/typings/*.d.ts"]
 }

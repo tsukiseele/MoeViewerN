@@ -15,7 +15,7 @@ const showCatalog = ref(false)
 const childItem = ref(null)
 const router = useRouter()
 const results = ref<any[]>([])
-const query = ref({ page: 1, keywords: '', siteId: 923 })
+const query = ref({ page: 1, keywords: 'namori', siteId: 923 })
 const sites = ref<Site[]>([])
 const currentSite = ref<Site>()
 const isLoaded = ref(false)
@@ -55,19 +55,18 @@ async function loadNext(params: any) {
 const base64ToBlob = (base64: string, type: string) => {
   return new Blob([Base64.toUint8Array(base64)], { type: type })
 }
-async function getImageSize(src: string) {
-  const img = new Image()
-  img.src = src
-  return await new Promise((resolve, reject) => {
-    try {
-      img.onload = img.onerror = e => resolve({ width: img.width, height: img.height })
-    } catch (error) {
-      reject(error)
-    }
-  })
-}
+// async function getImageSize(src: string) {
+//   const img = new Image()
+//   img.src = src
+//   return await new Promise((resolve, reject) => {
+//     try {
+//       img.onload = img.onerror = e => resolve({ width: img.width, height: img.height })
+//     } catch (error) {
+//       reject(error)
+//     }
+//   })
+// }
 function onImgLoaded(e: Event, item: any) {
-  console.log(e);
   //@ts-ignore
   const el = e.path[0]
   !el.loaded && loadImage(el, item)
@@ -80,7 +79,7 @@ async function loadImage(el: HTMLImageElement, item: any) {
     el.loaded = true
     item._src = URL.createObjectURL(base64ToBlob(data, type))
     loadedCount.value = loadedCount.value ? loadedCount.value + 1 : 1
-    console.log('queue.size', queue.size)
+    // console.log('queue.size', queue.size)
   })
 }
 async function onScrollBottom() {

@@ -22,7 +22,7 @@ const getDOMException = errorMessage => globalThis.DOMException === undefined ?
 	new AbortError(errorMessage) :
 	new DOMException(errorMessage);
 
-export default function pTimeout(promise, milliseconds, fallback, options) {
+export default function pTimeout(promise: Promise<any>, milliseconds: number, fallback: Function | Error, options: any) {
 	let timer;
 
 	const cancelablePromise = new Promise((resolve, reject) => {
@@ -64,10 +64,11 @@ export default function pTimeout(promise, milliseconds, fallback, options) {
 			}
 
 			const message = typeof fallback === 'string' ? fallback : `Promise timed out after ${milliseconds} milliseconds`;
-			const timeoutError = fallback instanceof Error ? fallback : new TimeoutError(message);
-
+      const timeoutError = fallback instanceof Error ? fallback : new TimeoutError(message);
+      //@ts-ignore
 			if (typeof promise.cancel === 'function') {
-				promise.cancel();
+				//@ts-ignore
+        promise.cancel();
 			}
 
 			reject(timeoutError);

@@ -1,6 +1,5 @@
 // @ts-nocheck
 import * as cheerio from 'cheerio'
-import fetch from 'node-fetch'
 
 const REG_PAGE_TEMPLATE = /\{page\s*?:\s*?(-?\d*)[,\s]*?(-?\d*?)\}/i
 const REG_PAGE_MATCH = /\{page\s*?:.*?\}/i

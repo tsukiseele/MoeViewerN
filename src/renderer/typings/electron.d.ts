@@ -6,7 +6,7 @@ export default interface ElectronApi {
   ipcRenderer: any //Electron.IpcRenderer,
   invoke(channel: string, params: any): Promise<any>
   send(channel: string, params: any): void
-  requestAsync(params: any, callback: Function): void
+  requestAsync(params: any, callback: (p: Progress) => void): void
   // Window Options
   maximize(): void
   minimize(): void 
@@ -14,7 +14,7 @@ export default interface ElectronApi {
 }
 
 interface IO {
-  writeFile(path: string, blob: { type: string, data: string }): Promise<Boolean>
+  writeFile(path: string, base64: string ): Promise<Boolean>
 }
 
 declare global {
