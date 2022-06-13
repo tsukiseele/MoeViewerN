@@ -5,7 +5,7 @@
       img.item-cover(:src="item?.coverUrl || item?.sampleUrl || item?.largerUrl || item?.originUrl" alt="")
       .item-info
         .item-name {{ item?.title }}
-        NProgress.item-progress(type="line" :percentage="item?.progress?.progress * 100" processing :indicator-placement="'inside'" :border-radius="4" :class="{done: item?.progress?.progress  === 100}")
+        NProgress.item-progress(type="line" :percentage="(item?.progress?.progress * 100).toFixed(2)" processing :indicator-placement="'inside'" :border-radius="4" :class="{done: item?.progress?.progress  === 100}")
 </template>
 
 <script>
