@@ -1,14 +1,14 @@
 <template lang="pug">
 #download
   ul.download-list
-    li.download-item(v-for="item in downloadStore.list")
+    li.download-item(v-for="item in (downloadStore.list as ImageDownloadMeta[])")
       img.item-cover(:src="item?.coverUrl || item?.sampleUrl || item?.largerUrl || item?.originUrl" alt="")
       .item-info
         .item-name {{ item?.title }}
-        NProgress.item-progress(type="line" :percentage="(item?.progress?.progress * 100).toFixed(2)" processing :indicator-placement="'inside'" :border-radius="4" :class="{done: item?.progress?.progress  === 100}")
+        NProgress.item-progress(type="line" :percentage="formatProgress(item)" processing :indicator-placement="'inside'" :border-radius="4" :class="{done: item?.progress?.progress  === 100}")
 </template>
 
-<script>
+<script lang="ts">
 import { defineComponent } from 'vue'
 import { invoke, invokeAsObject } from '@/electron'
 import { useDownloadStore } from '@/stores/counter'
@@ -29,9 +29,12 @@ export default defineComponent({
       }
     }
   }),
-  methods: {},
+  methods: {
+    formatProgress(item: ImageDownloadMeta): number | undefined {
+      return item && item.progress &&  item.progress.progress ? Number((item?.progress?.progress * 100).toFixed(2)) : undefined
+    }
+  },
   async mounted() {
-    console.log(this.downloadStore.list);
   },
   setup() {
     
