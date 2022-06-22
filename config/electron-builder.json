@@ -1,5 +1,6 @@
 {
   "appId": "com.tsukiseele.moeviewern",
+  "productName": "MoeViewerN",
   "directories": {
     "buildResources": "public",
     "output": "dist"

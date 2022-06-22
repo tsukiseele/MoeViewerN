@@ -44,9 +44,9 @@ const options = {
 // LRU cache
 const cache = new LRU<string, string>(options)
 // Cache directory
-const cacheDir = `${app.getAppPath()}/cache`
+const cacheDir = `${process.cwd()}/.cache`
 // Cache map path
-const cacheMapPath = `${app.getAppPath()}/cache.json`
+const cacheMapPath = `${cacheDir}/cache.json`
 // Create cache directory
 fs.mkdirSync(cacheDir, { recursive: true })
 // Resume cache status

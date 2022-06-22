@@ -6,6 +6,7 @@ download
 .vscode
 .idea
 .history
+.cache
 
 package-lock.json
 yarn.lock
