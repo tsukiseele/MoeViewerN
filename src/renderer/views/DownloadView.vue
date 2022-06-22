@@ -16,7 +16,7 @@ import { NProgress } from 'naive-ui'
 
 export default defineComponent({
   components: {
-    NProgress
+    NProgress,
   },
   name: 'download',
   data: () => ({
@@ -25,24 +25,22 @@ export default defineComponent({
       coverUrl: 'https://assets.yande.re/data/preview/b3/f7/b3f71038c8a12de81cdc78a101b2bd98.jpg',
       title: '碧蓝档案-ひな',
       progress: {
-        progress: 50
-      }
-    }
+        progress: 50,
+      },
+    },
   }),
   methods: {
     formatProgress(item: ImageDownloadMeta): number | undefined {
-      return item && item.progress &&  item.progress.progress ? Number((item?.progress?.progress * 100).toFixed(2)) : undefined
-    }
+      return item && item.progress && item.progress.progress ? Number((item.progress.progress * 100).toFixed(2)) : undefined
+    },
   },
-  async mounted() {
-  },
+  async mounted() {},
   setup() {
-    
     const downloadStore = useDownloadStore()
     return {
-      downloadStore
+      downloadStore,
     }
-  }
+  },
 })
 </script>
 
