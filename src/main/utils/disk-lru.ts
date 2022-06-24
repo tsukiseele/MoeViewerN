@@ -7,9 +7,9 @@ import { cyrb53 } from './hashcode'
 import CryptoJS from 'crypto-js'
 
 const options = {
-  max: 500,
+  max: Number.MAX_SAFE_INTEGER,
   // for use with tracking overall storage size
-  maxSize: 1024 * 1024 * 128,
+  maxSize: 1024 * 1024 * 512,
   sizeCalculation: (value: string, key: string) => {
     try {
       if (fs.existsSync(value)) {
