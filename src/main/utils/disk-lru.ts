@@ -3,7 +3,6 @@ import fs from 'fs'
 import { writeFile } from 'fs/promises'
 import LRU from 'lru-cache'
 import Base64 from 'js-base64'
-import { cyrb53 } from './hashcode'
 import CryptoJS from 'crypto-js'
 
 const options = {

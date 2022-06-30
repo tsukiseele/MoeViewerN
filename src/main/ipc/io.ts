@@ -9,11 +9,7 @@ const getWindowsFileName = (text: string) => {
 }
 
 ipcMain.handle('writeFile', async (event, filename, base64): Promise<boolean> => {
-  // const dir = `${process.cwd()}/download`
   const dir = `${process.cwd()}/download`
-  console.log('DIRRRRRRRRRRRRRRRRR', dir);
-  console.log('PPPPPDIRRRRRRRRRRRRRRRRR', `${process.cwd()}/download`);
-  
   await fs.mkdir(dir, { recursive: true })
   return Boolean(await fs.writeFile(`${dir}/${getWindowsFileName(filename)}`, Base64.toUint8Array(base64)))
 })
