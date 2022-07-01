@@ -1,4 +1,11 @@
-// @ts-nocheck
+// @TS-IGNORE
+/**
+ * 站点内容解析器，通过加载JSON配置抓取网页内容，并封装成数据集
+ * 
+ * @author tsukiseele
+ * @date 2022.6.20
+ * @license MIT
+ */
 import * as cheerio from 'cheerio'
 
 const REG_PAGE_TEMPLATE = /\{page\s*?:\s*?(-?\d*)[,\s]*?(-?\d*?)\}/i
@@ -6,11 +13,7 @@ const REG_PAGE_MATCH = /\{page\s*?:.*?\}/i
 const REG_KEYWORD_TEMPLATE = /\{keywords\s*?:\s*?(.*?)\}/i
 const REG_KEYWORD_MATCH = /\{keywords\s*?:.*?\}/i
 const REG_SELECTOR_TEMPLATE = /\$\((.*?)\)\.(\w+?)\((.*?)\)/
-/**
- * @author tsukiseele
- * @date 2021.11.25
- *
- */
+
 export default class Kumoko {
   // 当前站点抓取规则
   site = null
@@ -26,7 +29,7 @@ export default class Kumoko {
    * @param {Number} page 当前页
    * @param {String} keywords 关键字
    */
-  constructor(site, page = 0, keywords = null, request) {
+  constructor(site: Site, page = 0, keywords = null, request) {
     this.site = site
     this.page = page
     this.keywords = keywords

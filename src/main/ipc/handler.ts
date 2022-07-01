@@ -11,6 +11,9 @@ import { Base64 } from 'js-base64'
 // on macOS: ~/Library/Logs/{app name}/{process type}.log
 // on Windows: %USERPROFILE%\AppData\Roaming\{app name}\logs\{process type}.log
 
+/**
+ * 该文件封装了内容抓取，解析，封装操作的本地逻辑
+ */
 ipcMain.handle('getSiteList', async (event, query) => {
   // log.info('loadSite', `${process.cwd()}/static/rules`)
   return await SiteLoader.loadSites(`${process.cwd()}/static/rules`)
@@ -28,6 +31,9 @@ ipcMain.handle('request', async (event, params) => {
   return { data: base64, type: blob.type }
 })
 
+/**
+ * 请求数据，并发送IPC消息回调下载进度
+ */
 ipcMain.on('requestAsync', async (event, params) => {
   const response = await fetch(params.url, { method: 'GET', ...params.options })
   const total = Number(response.headers.get('content-length'))
@@ -37,7 +43,8 @@ ipcMain.on('requestAsync', async (event, params) => {
 
   let current = 0
   const throttled = _.throttle(() => event.reply('progress', { progress, uuid: params.uuid }), 200)
-  response.body.on('data', (chunk) => {
+  
+  response.body.on('data', (chunk: Uint8Array) => {
     current += chunk.length
     chunks.push(chunk)
     progress.progress = current / total

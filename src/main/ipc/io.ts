@@ -1,7 +1,9 @@
 import { app, ipcMain } from 'electron'
 import fs from 'fs/promises'
 import Base64 from 'js-base64'
-
+/**
+ * 该文件封装了文件IO的本地逻辑
+ */
 const REG_FILENAME = /[\\/:*?"<>|]/g
 
 const getWindowsFileName = (text: string) => {

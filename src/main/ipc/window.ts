@@ -1,5 +1,8 @@
 import { ipcMain, BrowserWindow } from 'electron'
 
+/**
+ * 该文件封装了窗口操作IO的本地逻辑
+ */
 ipcMain.on('minimize', () => {
   const win = BrowserWindow.getFocusedWindow()
   win && win.minimize()
