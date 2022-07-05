@@ -1,11 +1,11 @@
 <template lang="pug">
 #download
   ul.download-list
-    li.download-item(v-for="item in downloadStore.list ")
+    li.download-item(v-for="item in (downloadStore.list as ImageDownloadMeta[])")
       img.item-cover(:src="item?.coverUrl || item?.sampleUrl || item?.largerUrl || item?.originUrl" alt="")
       .item-info
         .item-name {{ item?.title }}
-        NProgress.item-progress(type="line" :percentage="formatProgress(item)" :processing="item.progress.progress !== 1" :indicator-placement="'inside'" :border-radius="4" :class="{done: item?.progress?.progress  === 100}")
+        NProgress.item-progress(type="line" :percentage="formatProgress(item)" :processing="item.progress?.progress !== 1" :indicator-placement="'inside'" :border-radius="4" :class="{done: item?.progress?.progress  === 100}")
 </template>
 
 <script lang="ts">

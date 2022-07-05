@@ -4,19 +4,31 @@ import { writeFile } from 'fs/promises'
 import LRU from 'lru-cache'
 import Base64 from 'js-base64'
 import CryptoJS from 'crypto-js'
+import FSize from 'filesize'
+const fileBytes = require('file-bytes');
+
+// const fSize = FSize.partial()
 
 const options = {
-  max: Number.MAX_SAFE_INTEGER,
+  // max: Number.MAX_SAFE_INTEGER,
   // for use with tracking overall storage size
-  maxSize: 1024 * 1024 * 512,
+  maxSize: 256 * 1024 * 1024, // 256MB
   sizeCalculation: (value: string, key: string) => {
     try {
       if (fs.existsSync(value)) {
         const stat = fs.statSync(value)
-        if (stat.isFile()) return stat.size
+        if (stat.isFile()) {
+          console.log(value);
+          
+          // console.log('XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX');
+          // console.log(stat);
+          console.log('SIZE: ', stat.size, fileBytes.sync(value));
+          return fileBytes.sync(value)
+          // return stat.size > 0 ? stat.size : 1024
+        }
       }
     } catch (error) {}
-    return 1
+    return 1024
   },
 
   // for use when you need to clean up something when objects
@@ -65,7 +77,7 @@ const set = (key: string, data: string | Uint8Array, options?: LRU.SetOptions<st
   // const value = `${cacheDir}/${cyrb53(key)}.png`
   const value = `${cacheDir}/${CryptoJS.SHA256(key)}.png`
   
-  // console.log('set cache:', value, ', cache size', cache.calculatedSize)
+  console.log('set cache:', value, ', cache size', cache.calculatedSize)
   if (typeof data == 'string') {
     writeFile(value, Base64.toUint8Array(data))
   } else if (data instanceof Uint8Array) {

@@ -1,7 +1,7 @@
 // @TS-IGNORE
 /**
  * 站点内容解析器，通过加载JSON配置抓取网页内容，并封装成数据集
- * 
+ *
  * @author tsukiseele
  * @date 2022.6.20
  * @license MIT
@@ -16,20 +16,20 @@ const REG_SELECTOR_TEMPLATE = /\$\((.*?)\)\.(\w+?)\((.*?)\)/
 
 export default class Kumoko {
   // 当前站点抓取规则
-  site = null
+  site: Site | undefined
   // 当前分页值
-  page = 0
+  page: number = 1
   // 搜索关键字
-  keywords = null
+  keywords: string | undefined = undefined
   //
-  request = null
+  request: Function | undefined
   /**
    * 通过配置构造一个爬虫对象
    * @param {Site} site 规则
    * @param {Number} page 当前页
    * @param {String} keywords 关键字
    */
-  constructor(site: Site, page = 0, keywords = null, request) {
+  constructor(site: Site, page = 1, keywords: string | undefined, request: any) {
     this.site = site
     this.page = page
     this.keywords = keywords
@@ -49,7 +49,8 @@ export default class Kumoko {
    * @param {Number} deep 解析深度
    * @return {Promise<Array<Object>>}
    */
-  async parseSection(section, isParseChildren = false) {
+  async parseSection(section: Section, isParseChildren = false) {
+    if (!this.site) throw new Error('site cannot be empty!')
     // 复用规则
     if (section.reuse) {
       section.rules = this.site.sections[section.reuse].rules
@@ -66,7 +67,7 @@ export default class Kumoko {
     }
     return result
   }
-  async parseChildrenOfList(list, rules) {
+  async parseChildrenOfList(list: Meta[], rules: Rules) {
     await Promise.allSettled(list.map((item) => this.parseChildrenConcurrency(item, rules)))
   }
   /**
@@ -74,12 +75,12 @@ export default class Kumoko {
    * @param {*} item
    * @param {*} rules
    */
-  async parseChildrenConcurrency(item, rules, extend = true) {
+  async parseChildrenConcurrency(item: Meta, rules: Rules, extend = true): Promise<Meta> {
     if (item.$children && rules.$children) {
-      let histroy = null
+      let histroy: any[] = []
       let page = 0
       do {
-        const children = await this.parseRules(item.$children, rules.$children.rules, page++, null)
+        const children = await this.parseRules(item.$children, rules.$children.rules, page++)
         if (children && histroy && children.length && histroy.length && children.length === histroy.length && this.objectEquals(children[0], histroy[0])) break
         histroy = JSON.parse(JSON.stringify(children))
         if (children && children.length) {
@@ -109,17 +110,17 @@ export default class Kumoko {
    * @param {Number} keywords 关键字
    * @returns {Promise<Array<Object>>}
    */
-  async parseRules(_url, rule, page = this.page, keywords = this.keywords) {
+  async parseRules(_url: string, rule: Rules, page = this.page, keywords = this.keywords): Promise<Meta[]> {
     if (!rule) return []
     // 生成URL
     const url = this.replaceUrlTemplate(_url, page, keywords)
     // 发送请求
-    const html = await this.requestText(url, this.site.headers)
+    const html = await this.requestText(url, this.site?.headers)
     // 检查无效响应
     if (!html) return []
     // 加载文档
     const $ = cheerio.load(html)
-    const resultSet = []
+    const resultSet: any[] = []
     // 遍历选择器集
     for (const k of Object.keys(rule)) {
       const exp = rule[k]
@@ -130,7 +131,7 @@ export default class Kumoko {
           // 此处的选择器只应选择一个元素，否则result会被刷新为最后一个
           this.selectEach($, exp.selector, (result) => (context = result))
         } else {
-          context = $('html')
+          context = $('html').toString()
         }
         // 匹配正则内容
         const regexp = new RegExp(exp.regex, 'g')
@@ -155,23 +156,13 @@ export default class Kumoko {
   }
 
   /**
-   * 解析下一层级
-   * @param {Object} res 该层级对象
-   * @returns {Promise<Array<Object>>}
-   */
-  async parseNext(res) {
-    const section = this.getCurrentSection()
-    return await this.parseRules(section.index, section.rules[1], res.$children)
-  }
-
-  /**
    * 请求文档内容，默认使用fetch发送请求，自动注入请求头
    * @param {String} url 链接
    * @param {Object} options 操作
    * @param {Number} timeout 最大超时
    * @returns {Promise<String>} 响应文本
    */
-  async requestText(url, options) {
+  async requestText(url: string, options: any) {
     // 如果已有传入请求，则使用传入的
     if (this.request) {
       return await this.request(url, options || {})
@@ -188,6 +179,7 @@ export default class Kumoko {
    * @returns {Section}
    */
   getCurrentSection() {
+    if (!this.site) throw Error('site cannot be empty!')
     const section = this.keywords ? this.site.sections.search : this.site.sections.home
     // 复用规则
     if (section.reuse) {
@@ -233,15 +225,15 @@ export default class Kumoko {
    * @param {String} replacement 替换式
    * @returns {String} 结果
    */
-  replaceRegex(text, capture, replacement) {
-    if (!text) return replacement
+  replaceRegex(text: string, capture?: string, replacement?: string): string {
+    if (!text) return replacement || ''
     if (!capture) return text
     if (!replacement) {
       const m = new RegExp(capture).exec(text)
       return m && m[0] ? m[0] : text
     }
     const result = new RegExp(capture).exec(text)
-    result && result.forEach((item, index) => (replacement = replacement.replace(new RegExp('\\$' + index, 'g'), item)))
+    result && result.forEach((item, index) => (replacement = replacement?.replace(new RegExp('\\$' + index, 'g'), item)))
     return replacement
   }
 
@@ -252,7 +244,7 @@ export default class Kumoko {
    * @param {String} keywords 关键字
    * @returns {String} 真实URL
    */
-  replaceUrlTemplate(template, page, keywords) {
+  replaceUrlTemplate(template: string, page: number = 1, keywords?: string): string {
     const pageMatch = REG_PAGE_TEMPLATE.exec(template)
     const keywordMatch = REG_KEYWORD_TEMPLATE.exec(template)
     // 获取默认keywords
@@ -272,7 +264,7 @@ export default class Kumoko {
    * @param {*} deep deep equals
    * @returns
    */
-  objectEquals(x, y, deep = false) {
+  objectEquals(x: any, y: any, deep = false): boolean {
     if (x === y) return true
     // if both x and y are null or undefined and exactly the same
     if (!(x instanceof Object) || !(y instanceof Object)) return false
@@ -289,7 +281,7 @@ export default class Kumoko {
       // if they have the same strict value or identity then they are equal
       if (typeof x[p] !== 'object') return false
       // Numbers, Strings, Functions, Booleans must be strictly equal
-      if (deep && !objectEquals(x[p], y[p], deep)) return false
+      if (deep && !this.objectEquals(x[p], y[p], deep)) return false
       // Objects and Arrays must be tested recursively
     }
     for (p in y) if (y.hasOwnProperty(p) && !x.hasOwnProperty(p)) return false

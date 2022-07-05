@@ -74,7 +74,7 @@ ipcMain.handle('loadChildren', async (event, params) => {
       options.timeout = 5000
       return await (await fetch(url, options)).text()
     }
-    return JSON.stringify(await new Kumoko(params.item, 0, null, requestAsText).parseChildrenConcurrency(params.item, params.item.$section.rules))
+    return JSON.stringify(await new Kumoko(params.item, 0, undefined, requestAsText).parseChildrenConcurrency(params.item, params.item.$section.rules))
   }
 })
 ipcMain.handle('load', async (event, query) => {

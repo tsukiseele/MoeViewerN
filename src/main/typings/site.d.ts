@@ -1,12 +1,12 @@
 interface Site {
-  name: string,
-  id: number,
-  version: number,
-  author: string,
-  rating: string,
-  details: string,
-  type: string,
-  icon: string,
+  name: string
+  id: number
+  version: number
+  author: string
+  rating: string
+  details: string
+  type: string
+  icon: string
   headers: Headers
   sections: Sections
 }
@@ -16,8 +16,8 @@ interface Headers {
 }
 
 interface Sections {
-  [key: string]: Section,
-  home: Section,
+  [key: string]: Section
+  home: Section
   search: Section
 }
 
@@ -27,10 +27,24 @@ interface Section {
   rules: Rules
 }
 
-interface Rules {}
+interface Rules {
+  [key: string]: Selector
+  $children: ChildrenNode
+}
+interface ChildrenNode extends Selector {
+  flat?: boolean,
+  rules: Rules
+}
+interface Selector {
+  selector: string
+  regex: string,
+  capture?: string
+  replacement?: string
+}
 
 interface Meta {
-  $children?: Meta[],
+  children?: Meta[]
+  $children?: string
   $site?: Site
   $section?: Section
 }

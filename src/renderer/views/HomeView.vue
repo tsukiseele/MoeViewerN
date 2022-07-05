@@ -12,7 +12,7 @@ import placeholder from '@/assets/images/placeholder.webp'
 import pQueue from 'p-queue'
 
 const showCatalog = ref(false)
-const childItem = ref(null)
+const childItem = ref<ImageMeta>()
 const router = useRouter()
 const results = ref<any[]>([])
 const query = ref({ page: 1, keywords: 'namori', siteId: 923 })
@@ -68,6 +68,7 @@ const base64ToBlob = (base64: string, type: string) => {
 // }
 function onImgLoaded(e: Event, item: any) {
   //@ts-ignore
+  console.log(e);
   const el = e.path[0]
   !el.loaded && loadImage(el, item)
 }
