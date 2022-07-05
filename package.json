@@ -38,8 +38,6 @@
     "electron-acrylic-window": "~0.5.11",
     "electron-log": "~4.4.6",
     "esm": "~3.2.25",
-    "file-bytes": "~2.0.3",
-    "filesize": "~9.0.11",
     "get-proxy-settings": "~0.1.13",
     "https-proxy-agent": "~5.0.0",
     "js-base64": "~3.7.2",

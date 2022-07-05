@@ -1,13 +1,7 @@
-import { app } from 'electron'
 import fs from 'fs'
-import { writeFile } from 'fs/promises'
 import LRU from 'lru-cache'
 import Base64 from 'js-base64'
 import CryptoJS from 'crypto-js'
-import FSize from 'filesize'
-const fileBytes = require('file-bytes');
-
-// const fSize = FSize.partial()
 
 const options = {
   // max: Number.MAX_SAFE_INTEGER,
@@ -17,15 +11,7 @@ const options = {
     try {
       if (fs.existsSync(value)) {
         const stat = fs.statSync(value)
-        if (stat.isFile()) {
-          console.log(value);
-          
-          // console.log('XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX');
-          // console.log(stat);
-          console.log('SIZE: ', stat.size, fileBytes.sync(value));
-          return fileBytes.sync(value)
-          // return stat.size > 0 ? stat.size : 1024
-        }
+        return stat.isFile() && stat.size > 0 ? stat.size : 1024
       }
     } catch (error) {}
     return 1024
@@ -76,12 +62,12 @@ const saveCacheStatus = () => {
 const set = (key: string, data: string | Uint8Array, options?: LRU.SetOptions<string, string> | undefined): LRU<string, string> => {
   // const value = `${cacheDir}/${cyrb53(key)}.png`
   const value = `${cacheDir}/${CryptoJS.SHA256(key)}.png`
-  
+
   console.log('set cache:', value, ', cache size', cache.calculatedSize)
   if (typeof data == 'string') {
-    writeFile(value, Base64.toUint8Array(data))
+    fs.writeFileSync(value, Base64.toUint8Array(data))
   } else if (data instanceof Uint8Array) {
-    writeFile(value, data)
+    fs.writeFileSync(value, data)
   } else {
     throw Error('缓存错误：无法识别的数据类型')
   }
@@ -101,7 +87,7 @@ const get = (key: string, options?: LRU.GetOptions | undefined): Uint8Array | nu
   }
   return null
 }
-// Test cache exists
+// Check cache exists
 const has = cache.has
 const remove = cache.delete
 
