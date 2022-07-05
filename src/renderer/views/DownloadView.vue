@@ -13,6 +13,7 @@ import { defineComponent } from 'vue'
 import { invoke, invokeAsObject } from '@/electron'
 import { useDownloadStore } from '@/stores/counter'
 import { NProgress } from 'naive-ui'
+import filesize from 'filesize'
 
 export default defineComponent({
   components: {
