@@ -1,7 +1,7 @@
 <template lang="pug">
 #download
   ul.download-list
-    li.download-item(v-for="item in (downloadStore.list as ImageDownloadMeta[])")
+    li.download-item(v-for="[_, item] in downloadStore.statusMap")
       img.item-cover(:src="item?.coverUrl || item?.sampleUrl || item?.largerUrl || item?.originUrl" alt="")
       .item-info
         .item-name {{ item?.title }}
@@ -22,13 +22,6 @@ export default defineComponent({
   name: 'download',
   data: () => ({
     sites: [],
-    item: {
-      coverUrl: 'https://assets.yande.re/data/preview/b3/f7/b3f71038c8a12de81cdc78a101b2bd98.jpg',
-      title: '碧蓝档案-ひな',
-      progress: {
-        progress: 50,
-      },
-    },
   }),
   methods: {
     formatProgress(item: ImageDownloadMeta): number | undefined {
@@ -74,6 +67,7 @@ export default defineComponent({
       justify-content: space-evenly;
       margin: 0 1rem;
       .item-progress {
+
       }
     }
   }

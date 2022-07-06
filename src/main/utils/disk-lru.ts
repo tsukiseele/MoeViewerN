@@ -4,39 +4,29 @@ import Base64 from 'js-base64'
 import CryptoJS from 'crypto-js'
 
 const options = {
-  // max: Number.MAX_SAFE_INTEGER,
   // for use with tracking overall storage size
   maxSize: 256 * 1024 * 1024, // 256MB
+  // calculate file size
   sizeCalculation: (value: string, key: string) => {
     try {
       if (fs.existsSync(value)) {
         const stat = fs.statSync(value)
         return stat.isFile() && stat.size > 0 ? stat.size : 1024
       }
-    } catch (error) {}
+    } catch (error) {
+      console.error(error);
+    }
     return 1024
   },
-
   // for use when you need to clean up something when objects
   // are evicted from the cache
   dispose: (value: string, key: string) => {
     try {
       fs.existsSync(value) && fs.rmSync(value)
-    } catch (error) {}
+    } catch (error) {
+      console.error(error);
+    }
   },
-
-  // how long to live in ms
-  // ttl: 1000 * 60 * 5,
-
-  // return stale items before removing from cache?
-  // allowStale: false,
-
-  // updateAgeOnGet: false,
-  // updateAgeOnHas: false,
-
-  // async method to use for cache.fetch(), for
-  // stale-while-revalidate type of behavior
-  // fetch: async (key, staleValue, { options, signal }) => {}
 }
 // LRU cache
 const cache = new LRU<string, string>(options)
@@ -63,7 +53,7 @@ const set = (key: string, data: string | Uint8Array, options?: LRU.SetOptions<st
   // const value = `${cacheDir}/${cyrb53(key)}.png`
   const value = `${cacheDir}/${CryptoJS.SHA256(key)}.png`
 
-  console.log('set cache:', value, ', cache size', cache.calculatedSize)
+  console.log('set cache:', value, ', cache size:', cache.calculatedSize)
   if (typeof data == 'string') {
     fs.writeFileSync(value, Base64.toUint8Array(data))
   } else if (data instanceof Uint8Array) {

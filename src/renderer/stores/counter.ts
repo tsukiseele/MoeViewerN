@@ -1,8 +1,9 @@
 import { defineStore } from 'pinia'
+
 export const useDownloadStore = defineStore({
   id: 'download',
   state: () => ({
-    list: {}
+    statusMap: new Map<string, ImageDownloadMeta>
   }),
   // getters: {
   //   doubleCount: (state) => state.counter * 2
@@ -10,8 +11,8 @@ export const useDownloadStore = defineStore({
   actions: {
     update(key: string, value: any) {
       // console.log('KEY', key, 'VALUE', value);
-      this.list[key] = value       
-      console.log('UPDATE', this.list);
+      this.statusMap.set(key, value)
+      console.log('UPDATE', this.statusMap);
     }
   }
 })

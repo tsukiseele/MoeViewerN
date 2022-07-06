@@ -23,7 +23,7 @@ const isListLoading = ref(false)
 const keywordsOptions = ref([])
 const loadedCount = ref(0)
 const queue = new pQueue({ concurrency: 16 })
-const siteOptions = computed(() => sites.value && sites.value.length && sites.value.map(site => ({ label: site.name, value: site.id })))
+const siteOptions = computed(() => sites.value && sites.value.length && sites.value.map(site => ({ label: site.name, value: site.id })) || undefined)
 
 onMounted(async () => {
   sites.value = await invoke('getSiteList')
@@ -67,8 +67,7 @@ const base64ToBlob = (base64: string, type: string) => {
 //   })
 // }
 function onImgLoaded(e: Event, item: any) {
-  //@ts-ignore
-  console.log(e);
+  // @ts-ignore
   const el = e.path[0]
   !el.loaded && loadImage(el, item)
 }
