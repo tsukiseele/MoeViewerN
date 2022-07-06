@@ -1,0 +1,66 @@
+<template lang="pug">
+#sites
+  ul.site-list
+    li.site-list-item(v-for="site in sites" @click="$router.push('/subscribes/edit')")
+      img.site-icon(:src="site.icon" alt="")
+      .site-info
+        .site-name {{ site.name }}
+        .site-details {{ site.details }}
+        .site__btn-edit
+  
+</template>
+
+<script lang="ts">
+import { defineComponent } from 'vue'
+import { invoke, invokeAsObject } from '@/electron'
+
+export default defineComponent({
+  name: 'subscribes',
+  data: () => ({
+    sites: [] as Site[],
+  }),
+  methods: {},
+  async mounted() {
+    this.sites = await invoke('getSiteList')
+    console.log(this.sites)
+    // console.log(this.sites);
+    this.sites.forEach((site) => console.log(site))
+    this.$forceUpdate()
+  },
+})
+</script>
+
+<style lang="scss" scoped>
+.site-list {
+  width: 100%;
+  .site-list-item {
+    display: flex;
+    // justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 48px;
+    padding: 0.5rem;
+    background-color: rgba(255, 255, 255, 0.5);
+    transition: 0.25s ease-out;
+    cursor: pointer;
+    &:hover {
+      background-color: white;
+    }
+    .site-icon {
+      width: 36px;
+      height: 36px;
+      object-fit: cover;
+    }
+    .site-info {
+      margin-left: 1rem;
+    }
+  }
+}
+@media (min-width: 1024px) {
+  #sites {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+  }
+}
+</style>

@@ -21,7 +21,14 @@ const router = createRouter({
     {
       path: '/subscribes',
       name: 'subscribes',
-      component: () => import('@/views/SiteView.vue'),
+      component: () => import('@/views/site/SiteView.vue'),
+      children: [
+        {
+          path: 'edit',
+          name: 'subscribes-edit',
+          component: () => import('@/views/site/SiteEditView.vue'),
+        }
+      ]
     },
     {
       path: '/download',
