@@ -1,25 +1,39 @@
 <template lang="pug">
 #sites
   ul.site-list
-    li.site-list-item(v-for="site in sites" @click="$router.push('/subscribes/edit')")
+    li.site-list-item(v-for="site in sites" @click="onItemClick(site)")
       img.site-icon(:src="site.icon" alt="")
       .site-info
         .site-name {{ site.name }}
         .site-details {{ site.details }}
         .site__btn-edit
-  
+  NModal(v-model:show="showModal")
+    SSiteEditor(v-if="editItem" :data="editItem")
 </template>
 
 <script lang="ts">
 import { defineComponent } from 'vue'
 import { invoke, invokeAsObject } from '@/electron'
+import { NModal } from 'naive-ui'
+import SSiteEditor from '@/components/SSiteEditor/index.vue' 
 
 export default defineComponent({
   name: 'subscribes',
+  components: {
+    NModal,
+    SSiteEditor
+  },
   data: () => ({
     sites: [] as Site[],
+    showModal: false,
+    editItem: null as Site | null
   }),
-  methods: {},
+  methods: {
+    onItemClick(site: Site) {
+      this.editItem = site
+      this.showModal = true
+    }
+  },
   async mounted() {
     this.sites = await invoke('getSiteList')
     console.log(this.sites)

@@ -24,6 +24,8 @@ interface Sections {
 interface Section {
   index: string
   reuse: string
+  name?: string
+  detail?: string
   rules: Rules
 }
 

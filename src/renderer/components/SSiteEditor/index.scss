@@ -1,0 +1,22 @@
+.s-site-editor {
+  width: 90vw;
+  height: 90vh;
+  overflow: scroll;
+  padding: 2rem;
+  background-color: white;
+
+  .section-name {
+    flex: 0 0 100px;
+    align-self: flex-start;
+  }
+  .sections {
+    flex: 1;
+    margin-left: 2rem;
+    // .n-input {
+    //   width: 100%;
+    // }
+  }
+  pre {
+    font-family: 'Consolas';
+  }
+}
