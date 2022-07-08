@@ -19,6 +19,9 @@ contextBridge.exposeInMainWorld('electron', {
     writeFile: async (path: string, blob: any) => {
       ipcRenderer.invoke('writeFile', path, blob)
     },
+    writeClipboardText: async (text: string) => {
+      ipcRenderer.invoke('writeClipboardText', text)
+    }
   },
   ipcRenderer: ipcRenderer,
   invoke: ipcRenderer.invoke,

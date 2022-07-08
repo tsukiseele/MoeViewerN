@@ -15,12 +15,10 @@
       NInput(v-model:value='formValue.details', placeholder='规则详情')
     NFormItem(label='类型 - type', path='type')
       NSelect(v-model:value="formValue.type" :options="Object.entries(options.type).map(([value, label]) => ({label, value}))" @keydown.enter.prevent='')
-    
-      //- NInput(v-model:value='formValue.type', placeholder='规则类型')
     NFormItem(label='图标 - icon', path='icon')
       NInput(v-model:value='formValue.icon', placeholder='规则图标')
     NFormItem(label='请求头 - headers', path='headers')
-      NDynamicInput(v-model:value='formValue.headers', #='{ index, value }' :on-create="onCreate" show-sort-button)
+      NDynamicInput(v-model:value='formValue.headers', #='{ index, value }' :on-create="onCreate" show-sort-button, style="margin-top: .5rem;")
         div(style='display: flex')
           NFormItem(ignore-path-change, :show-label='false', :path='`formValue.headers[${index}].key`', :rule='dynamicInputRule')
             NInput(v-model:value='formValue.headers[index].key', placeholder='Name', @keydown.enter.prevent='')
@@ -28,40 +26,38 @@
           NFormItem(ignore-path-change, :show-label='false', :path='`formValue.headers[${index}].value`', :rule='dynamicInputRule')
             NInput(v-model:value='formValue.headers[index].value', placeholder='Value', @keydown.enter.prevent='')
     NFormItem(label='板块列表 - sections', path='sections')
-      NDynamicInput(v-model:value='formValue.sections', #='{ index, value }' :on-create="onCreateSection")
-        NFormItem.section-name(ignore-path-change, label='', :path='`formValue.sections[${index}].key`',)
+      NDynamicInput(v-model:value='formValue.sections', #='{ index, value }', :on-create="onCreateSection" , style="margin-top: .5rem;")
+        NFormItem.section-name(ignore-path-change, :show-label='false', :path='`formValue.sections[${index}].key`')
           NSelect(v-model:value="formValue.sections[index].key" :options="Object.entries(options.section).map(([value, label]) => ({label, value}))" @keydown.enter.prevent='')
         div.sections
-          NFormItem(label='索引', path='details')
-            NInput(v-model:value='formValue.sections[index].value.index', placeholder='规则详情')
-          NFormItem(v-if="formValue.sections[index].value.name" label='名称', path='type')
-            NInput(v-model:value='formValue.sections[index].value.name', placeholder='规则类型')
-          NFormItem(v-if="formValue.sections[index].value.detail" label='描述', path='icon')
-            NInput(v-model:value='formValue.sections[index].value.detail', placeholder='规则图标')
-          NDynamicInput(v-model:value='formValue.sections[index].value.rules', #='{ i, _ }' :on-create="onCreateSection")
-            NFormItem.section-name(ignore-path-change, label='', :path='`formValue.sections[${index}].key`',)
-              NSelect(v-model:value="formValue.sections[index].key" :options="Object.entries(options.section).map(([value, label]) => ({label, value}))" @keydown.enter.prevent='')
-          //- NFormItem(label='规则', path='icon')
-            NFormItem(label='', path='details' v-for="(v, k) in formValue.sections[index].value.rules")
-              span {{formValue.sections[index].value.rules[k]}}
-              //- NInput(v-model:value='formValue.sections[index].value.rules[v]', placeholder='规则详情')
+          NFormItem(:show-label='false', :path='`formValue.sections[${index}].value.index`')
+            NInput(v-model:value='formValue.sections[index].value.index', placeholder='板块索引')
+          NFormItem(v-if="formValue.sections[index].value.name" label='名称', :path='`formValue.sections[${index}].value.name`')
+            NInput(v-model:value='formValue.sections[index].value.name', placeholder='板块名称')
+          NFormItem(v-if="formValue.sections[index].value.detail" label='描述', :path='`formValue.sections[${index}].value.detail`')
+            NInput(v-model:value='formValue.sections[index].value.detail', placeholder='板块描述')
+          DynamicRulesEditor(v-model:data="formValue.sections[index].value.rules")
     NFormItem
       NButton(attr-type='button', @click='handleValidateClick') 验证
+      NButton(attr-type='button', @click='onGenerate') 生成
   pre {{ JSON.stringify(formValue, null, 2) }}
 </template>
 
 <script lang="ts">
 import { defineComponent, ref, defineProps, PropType } from 'vue'
 import { FormInst, NRadioGroup, NRadioButton, NForm, NFormItem, NInputGroup, NInputGroupLabel, NInput, NInputNumber, NSelect, NButton, NDynamicInput, useMessage } from 'naive-ui'
-
+import DynamicRulesEditor from './rules.vue'
 export default defineComponent({
   props: {
     data: {
-      // 提供相对 `Object` 更确定的类型
       type: Object as PropType<Site>,
       required: true,
     },
   },
+  emits: ['generate'],
+  // emits: {
+  //   generate: Function as (text: string) => void
+  // },
   components: {
     NRadioGroup,
     NRadioButton,
@@ -74,45 +70,60 @@ export default defineComponent({
     NSelect,
     NButton,
     NDynamicInput,
+    DynamicRulesEditor,
+  },
+  methods: {
+    onGenerate() {
+      console.log(this.convertForm2Site(this.formValue));
+      
+      this.$emit('generate',JSON.stringify(this.convertForm2Site(this.formValue)))
+    },
   },
   setup(props) {
-    console.log(props.data)
-    console.log(props.data)
-
-    const site = JSON.parse(JSON.stringify(props.data))
-
-    if (site.headers) site.headers = Object.entries(site.headers).map(([key, value]) => ({ key, value }))
-    if (site.sections) {
-      site.sections = Object.entries(site.sections).map(([key, value]) => ({ key, value }))
-
-      const expand = (rules: any) => {
-        rules = Object.entries(rules).map(([key, value]) => {
-          // if (key == 'rules') {
-          //   // console.log('rv', rules[key], 'k', key, 'v', value);
-          //   rules[key] = expand(value)
-          // }
-          return { key, value }
-        })
-        rules.forEach((rule: any) => {
-          rule.value = Object.entries(rule.value).map(([key, value]) => {
-            // console.log('rv', rule.value, 'k', key, 'v', value);
-            if (key == 'rules') {
-              rule.value[key] = expand(value)
-              console.log('rv', rule.value, 'k', key, 'v', value)
-            }
-            return { key, value }
-          })
-        })
-        return rules
-      }
-
-      site.sections.forEach((section: any) => {
-        section.value.rules = expand(section.value.rules)
-      })
-    }
     const formRef = ref<FormInst | null>(null)
     const message = useMessage()
-
+    // 将普通对象转换为表单键值对对象
+    const convertSite2Form = (_site: any): any => {
+      const site = JSON.parse(JSON.stringify(_site))
+      if (site.headers) site.headers = Object.entries(site.headers).map(([key, value]) => ({ key, value }))
+      if (site.sections) {
+        site.sections = Object.entries(site.sections).map(([key, value]) => ({ key, value }))
+        const expand = (rules: any) => {
+          rules = Object.entries(rules).map(([key, value]) => ({ key, value }))
+          rules.forEach((rule: any) => (rule.value = Object.entries(rule.value).map(([key, value]) => (key == 'rules' ? { key, value: expand(value) } : { key, value }))))
+          return rules
+        }
+        site.sections.forEach((section: any) => (section.value.rules = expand(section.value.rules)))
+      }
+      return site
+    }
+    // 将表单键值对对象规则还原为普通对象
+    const convertForm2Site = (_form: any): any => {
+      const form = JSON.parse(JSON.stringify(_form))
+      const site: any = {...form}
+      site.headers = {}
+      site.sections = {}
+      form.headers.forEach((item: any) => (site.headers[item.key] = item.value))
+      const tran = (rules: any) => {
+        const orules: any = {}
+        rules.forEach((rule: any) => {
+          const oselector: any = {}
+          rule.value.forEach((selector: any) => (selector.key == 'rules' ? (oselector[selector.key] = tran(selector.value)) : (oselector[selector.key] = selector.value)))
+          orules[rule.key] = oselector
+        })
+        return orules
+      }
+      form.sections.forEach((item: any) => {
+        site.sections[item.key] = item.value
+        if (item.value.rules) {
+          site.sections[item.key].rules = tran(item.value.rules)
+        }
+      })
+      return site
+    }
+    const siteForm = convertSite2Form(props.data)
+    console.log(props.data);
+    
     return {
       formRef,
       size: ref<'small' | 'medium' | 'large'>('medium'),
@@ -126,8 +137,8 @@ export default defineComponent({
         type: string
         icon: string
         headers: { key: string; value: string }[]
-        sections: { key: string; value: Section }[]
-      }>(site),
+        sections: { key: string; value: any }[]
+      }>(siteForm),
       options: {
         section: {
           home: '主页',
@@ -157,6 +168,8 @@ export default defineComponent({
           trigger: ['input'],
         },
       },
+      convertSite2Form,
+      convertForm2Site,
       handleValidateClick(e: MouseEvent) {
         e.preventDefault()
         formRef.value?.validate((errors) => {
@@ -183,19 +196,25 @@ export default defineComponent({
       },
       onCreateSection() {
         return {
-          key: '',
-          index: 'https://exhentai.org/?page={page:-1}',
-          name: '主页',
-          details: '主页详情',
-          rules: {
-            title: {
-              selector: '$(.gl4t.glname).text()',
-            },
-            coverUrl: {
-              selector: '$(.gl3t a img).attr(src)',
-            },
-            $children: {},
+          key: 'home',
+          value: {
+            index: 'https://exhentai.org/?page={page:-1}',
+            name: '',
+            details: '',
+            rules: [],
           },
+        }
+      },
+      onCreateRule() {
+        return {
+          key: 'title',
+          value: [],
+        }
+      },
+      onCreateSelector() {
+        return {
+          key: 'selector',
+          value: '',
         }
       },
     }

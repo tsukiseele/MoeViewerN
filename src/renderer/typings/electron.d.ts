@@ -15,6 +15,7 @@ export default interface ElectronApi {
 
 interface IO {
   writeFile(path: string, base64: string ): Promise<Boolean>
+  writeClipboardText(text: string): Boolean
 }
 
 declare global {

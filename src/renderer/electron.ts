@@ -17,10 +17,14 @@ const io = {
   writeFile: (path: string, base64: string ) => {
     return window.electron.io.writeFile(path, base64)
   },
+  
+  writeClipboardText: (text: string) => {
+    return window.electron.io.writeClipboardText(text)
+  }
 }
-interface Native extends ElectronApi {
-  invokeAsObject(channel: string, params?: any): Promise<any>
-}
+// interface Native extends ElectronApi {
+//   invokeAsObject(channel: string, params?: any): Promise<any>
+// }
 export {
   io,
   ipcRenderer,

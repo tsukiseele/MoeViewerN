@@ -8,12 +8,12 @@
         .site-details {{ site.details }}
         .site__btn-edit
   NModal(v-model:show="showModal")
-    SSiteEditor(v-if="editItem" :data="editItem")
+    SSiteEditor(v-if="editItem" :data="editItem" @generate="onGenerate")
 </template>
 
 <script lang="ts">
 import { defineComponent } from 'vue'
-import { invoke, invokeAsObject } from '@/electron'
+import { invoke, invokeAsObject, io } from '@/electron'
 import { NModal } from 'naive-ui'
 import SSiteEditor from '@/components/SSiteEditor/index.vue' 
 
@@ -32,6 +32,9 @@ export default defineComponent({
     onItemClick(site: Site) {
       this.editItem = site
       this.showModal = true
+    },
+    onGenerate(text: string) {
+      io.writeClipboardText(text)
     }
   },
   async mounted() {
