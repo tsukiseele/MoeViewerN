@@ -1,15 +1,16 @@
 <script setup lang="ts">
-import { Base64 } from 'js-base64'
-import { onMounted, ref, watch, computed, h } from 'vue'
+import { onMounted, ref, watch, computed, h, inject } from 'vue'
 import { useRouter } from 'vue-router'
-import { NButton, NSelect, NInputNumber, NAutoComplete, NResult, NTag, useMessage } from 'naive-ui'
-import SSimpleWaterfall from '../components/SSimpleWaterfall/index.vue'
-import SLoading from '../components/SLoading/index.vue'
-import CatalogLayer from '@/views/Layer/CatalogLayer.vue'
 import _ from 'lodash'
-import { invoke, invokeAsObject } from '../electron'
-import placeholder from '@/assets/images/placeholder.webp'
 import pQueue from 'p-queue'
+import { Base64 } from 'js-base64'
+import { invoke, invokeAsObject } from '@/electron'
+import { NButton, NSelect, NInputNumber, NAutoComplete, NResult, NTag, useMessage } from 'naive-ui'
+import SSimpleWaterfall from '@/components/SSimpleWaterfall/index.vue'
+import SLoading from '@/components/SLoading/index.vue'
+import CatalogLayer from '@/views/Layer/CatalogLayer.vue'
+import placeholder from '@/assets/images/placeholder.webp'
+import ElectronApi from '@/typings/electron'
 
 const showCatalog = ref(false)
 const childItem = ref<ImageMeta>()
@@ -24,9 +25,12 @@ const keywordsOptions = ref([])
 const loadedCount = ref(0)
 const queue = new pQueue({ concurrency: 16 })
 const siteOptions = computed(() => sites.value && sites.value.length && sites.value.map(site => ({ label: site.name, value: site.id })) || undefined)
+const $eapi = inject<ElectronApi>('$eapi')
 
 onMounted(async () => {
-  sites.value = await invoke('getSiteList')
+  if (!$eapi) throw new Error('Not found electron interface')
+
+  sites.value = await $eapi.invoke('getSiteList')
   console.log(sites.value)
   if (sites.value && sites.value.length) {
     onSearch()
@@ -55,17 +59,6 @@ async function loadNext(params: any) {
 const base64ToBlob = (base64: string, type: string) => {
   return new Blob([Base64.toUint8Array(base64)], { type: type })
 }
-// async function getImageSize(src: string) {
-//   const img = new Image()
-//   img.src = src
-//   return await new Promise((resolve, reject) => {
-//     try {
-//       img.onload = img.onerror = e => resolve({ width: img.width, height: img.height })
-//     } catch (error) {
-//       reject(error)
-//     }
-//   })
-// }
 function onImgLoaded(e: Event, item: any) {
   // @ts-ignore
   const el = e.path[0]
@@ -79,7 +72,6 @@ async function loadImage(el: HTMLImageElement, item: any) {
     el.loaded = true
     item._src = URL.createObjectURL(base64ToBlob(data, type))
     loadedCount.value = loadedCount.value ? loadedCount.value + 1 : 1
-    // console.log('queue.size', queue.size)
   })
 }
 async function onScrollBottom() {
@@ -154,76 +146,5 @@ watch(() => query.value.keywords, getKeywordsOptions)
 </template>
 
 <style lang="scss" scoped>
-#home {
-  // background-color: aliceblue;
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  header {
-    display: flex;
-    justify-content: flex-end;
-    align-items: center;
-    height: 3rem;
-    > * {
-      margin-right: 0.5rem;
-      &:first-of-type {
-        margin-left: 0.5rem;
-      }
-    }
-    .n-select {
-      width: 16rem;
-    }
-    .n-input-number {
-      width: 10rem;
-    }
-    .n-auto-complete {
-      i {
-        // transition: 0.25s ease-out;
-        cursor: pointer;
-        user-select: none;
-        border-radius: 50%;
-        width: 2rem;
-        height: 2rem;
-        text-align: center;
-        transition: 0.25s ease-out;
-        &:hover {
-          color: teal;
-        }
-        &:focus,
-        &:active {
-          background-color: #eee;
-        }
-      }
-    }
-  }
-  // padding: 1rem;
-  main {
-    position: relative;
-    flex: 1;
-    height: 0;
-    // overflow: auto;
-    padding: 1rem 0;
-  }
-  .list-loading {
-    position: absolute;
-    left: 0;
-    bottom: 0;
-    right: 0;
-    height: 8px;
-  }
-  .n-result {
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-  }
-  .list-item {
-    box-shadow: 0 0 5px rgba(0, 0, 0, 0.12);
-    background-color: whitesmoke;
-    cursor: pointer;
-    .item-title {
-      padding: 0.5rem;
-    }
-  }
-}
+@import './index.scss'
 </style>

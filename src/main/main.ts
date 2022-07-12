@@ -1,9 +1,7 @@
 import { app, BrowserWindow, ipcMain, shell } from 'electron'
 import { join } from 'path'
 import * as cache from './utils/disk-lru'
-import './ipc/window'
-import './ipc/handler'
-import './ipc/io'
+import './ipc/main'
 
 async function createWindow() {
   // see https://www.npmjs.com/package/electron-acrylic-window

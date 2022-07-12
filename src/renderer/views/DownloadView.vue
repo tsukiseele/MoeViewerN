@@ -25,6 +25,7 @@ export default defineComponent({
   }),
   methods: {
     formatProgress(item: ImageDownloadMeta): number | undefined {
+    
       return item && item.progress && item.progress.progress ? Number((item.progress.progress * 100).toFixed(2)) : undefined
     },
   },

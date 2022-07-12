@@ -3,9 +3,11 @@
  */
 export default interface ElectronApi {
   io: IO
+  db: DB
+  win: Win
   ipcRenderer: any //Electron.IpcRenderer,
-  invoke(channel: string, params: any): Promise<any>
-  send(channel: string, params: any): void
+  invoke(channel: string, params?: any): Promise<any>
+  send(channel: string, params?: any): void
   requestAsync(params: any, callback: (p: Progress) => void): void
   // Window Options
   maximize(): void
@@ -13,14 +15,15 @@ export default interface ElectronApi {
   close(): void
 }
 
-interface IO {
+export interface IO {
   writeFile(path: string, base64: string ): Promise<Boolean>
   writeClipboardText(text: string): Boolean
 }
 
-declare global {
-  interface Window {
-    electron: ElectronApi,
-    $win: ElectronApi
-  }
+export interface DB {
+  initSQLite(): Promise<Boolean>
+}
+
+export interface Win {
+  initSQLite(): Promise<Boolean>
 }

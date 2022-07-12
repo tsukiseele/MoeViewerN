@@ -54,10 +54,9 @@ export default defineComponent({
       required: true,
     },
   },
-  emits: ['generate'],
-  // emits: {
-  //   generate: Function as (text: string) => void
-  // },
+  emits: {
+    generate: Function as (text: string) => void
+  },
   components: {
     NRadioGroup,
     NRadioButton,
@@ -74,9 +73,9 @@ export default defineComponent({
   },
   methods: {
     onGenerate() {
-      console.log(this.convertForm2Site(this.formValue));
-      
-      this.$emit('generate',JSON.stringify(this.convertForm2Site(this.formValue)))
+      console.log(this.convertForm2Site(this.formValue))
+
+      this.$emit('generate', JSON.stringify(this.convertForm2Site(this.formValue)))
     },
   },
   setup(props) {
@@ -100,7 +99,7 @@ export default defineComponent({
     // 将表单键值对对象规则还原为普通对象
     const convertForm2Site = (_form: any): any => {
       const form = JSON.parse(JSON.stringify(_form))
-      const site: any = {...form}
+      const site: any = { ...form }
       site.headers = {}
       site.sections = {}
       form.headers.forEach((item: any) => (site.headers[item.key] = item.value))
@@ -122,8 +121,8 @@ export default defineComponent({
       return site
     }
     const siteForm = convertSite2Form(props.data)
-    console.log(props.data);
-    
+    console.log(props.data)
+
     return {
       formRef,
       size: ref<'small' | 'medium' | 'large'>('medium'),

@@ -1,5 +1,5 @@
 <template lang="pug">
-NDynamicInput(v-model:value='rules', #='{ index: ruleIndex, _ }' :on-create="onCreateRule")
+NDynamicInput.field-input(v-model:value='rules', #='{ index: ruleIndex, _ }' :on-create="onCreateRule")
   NFormItem.section-name(ignore-path-change, label='字段', :path='`rules[${ruleIndex}].key`',)
     NInput(v-model:value='rules[ruleIndex].key', placeholder='规则详情')
   div(style='margin: 32px 8px 0 8px') : 
@@ -7,10 +7,10 @@ NDynamicInput(v-model:value='rules', #='{ index: ruleIndex, _ }' :on-create="onC
   NFormItem
     NDynamicInput(v-model:value='rules[ruleIndex].value', #='{index: fieldIndex, _ }' :on-create="onCreateSelector")
       //- NInputGroup
-      NInput(v-model:value='rules[ruleIndex].value[fieldIndex].key', placeholder='属性名' style="max-width: 160px; align-self: flex-start;")
+      NInput.prop-name(v-model:value='rules[ruleIndex].value[fieldIndex].key', placeholder='属性名' style="max-width: 160px; align-self: flex-start;")
       div(style='margin: 8px 8px 0 8px') = 
 
-      NInput(v-if="rules[ruleIndex].value[fieldIndex].key != 'rules'" v-model:value='rules[ruleIndex].value[fieldIndex].value', placeholder='属性值')
+      NInput.prop-value(v-if="rules[ruleIndex].value[fieldIndex].key != 'rules'" v-model:value='rules[ruleIndex].value[fieldIndex].value', placeholder='属性值')
       dynamic-rules-editor(v-else v-model:data="rules[ruleIndex].value[fieldIndex].value")    
         
 </template>
@@ -54,7 +54,7 @@ export default defineComponent({
   setup(props) {
     const formRef = ref<FormInst | null>(null)
     const message = useMessage()
-    
+
     return {
       formRef,
       options: {
@@ -94,13 +94,13 @@ export default defineComponent({
       onCreateRule() {
         return {
           key: 'title',
-          value: []
+          value: [],
         }
       },
       onCreateSelector() {
         return {
           key: 'selector',
-          value: ''
+          value: '',
         }
       },
     }
@@ -109,5 +109,21 @@ export default defineComponent({
 </script>
 
 <style lang="scss" scoped>
-@import './index.scss';
+.section-name {
+  flex: 0 0 100px;
+  align-self: flex-start;
+}
+.prop-name {
+  flex: 0 0 100px;
+  // align-self: flex-start;
+}
+::v-deep {
+  .field-input .n-dynamic-input-item .n-form-item:first-of-type {
+    display: flex;
+    flex-direction: column;
+  }
+}
+:deep(.prop-value) {
+  flex: 1;
+}
 </style>

@@ -14,14 +14,30 @@ ipcRenderer.on('progress', (event, data) => {
 /**
  * 上下文桥，隔离Main和Renderer，暴露声明API
  */
-contextBridge.exposeInMainWorld('electron', {
+const electronIpc = {
   io: {
-    writeFile: async (path: string, blob: any) => {
-      ipcRenderer.invoke('writeFile', path, blob)
+    writeFile(path: string, blob: any): Promise<boolean> {
+      return ipcRenderer.invoke('writeFile', path, blob)
     },
-    writeClipboardText: async (text: string) => {
-      ipcRenderer.invoke('writeClipboardText', text)
-    }
+    writeClipboardText(text: string): Promise<boolean> {
+      return ipcRenderer.invoke('writeClipboardText', text)
+    },
+  },
+  db: {
+    initSQLite(): Promise<boolean> {
+      return ipcRenderer.invoke('initSQLite')
+    },
+  },
+  win: {
+    minimize() {
+      ipcRenderer.send('minimize')
+    },
+    maximize() {
+      ipcRenderer.send('maximize')
+    },
+    close() {
+      ipcRenderer.send('close')
+    },
   },
   ipcRenderer: ipcRenderer,
   invoke: ipcRenderer.invoke,
@@ -38,16 +54,5 @@ contextBridge.exposeInMainWorld('electron', {
     }
     ipcRenderer.send('requestAsync', params)
   },
-})
-
-contextBridge.exposeInMainWorld('$win', {
-  minimize() {
-    ipcRenderer.send('minimize')
-  },
-  maximize() {
-    ipcRenderer.send('maximize')
-  },
-  close() {
-    ipcRenderer.send('close')
-  },
-})
+}
+contextBridge.exposeInMainWorld('electron', electronIpc)

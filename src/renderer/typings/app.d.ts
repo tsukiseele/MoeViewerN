@@ -1,8 +1,3 @@
-declare module global {
-  interface Window {
-    $message: any
-  }
-}
 
 interface ImageMeta extends Meta {
   title?: string
