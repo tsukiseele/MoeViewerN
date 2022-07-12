@@ -3,15 +3,15 @@
     <section class="about-item">
       <h2 class="about-title">Developer</h2>
       <img class="about-avatar" src="../assets/images/github-avatar.webp" alt="" />
-      <div class="about-content"><a href="https://github.com/tsukiseele/MoeViewerN" target="_blank">TsukiSeele</a></div>
+      <div class="about-content"><a href="https://github.com/tsukiseele" target="_blank">TsukiSeele</a></div>
     </section>
     <section class="about-item">
       <h2 class="about-title">License</h2>
-      <div class="about-content"> <a href="https://github.com/tsukiseele/MoeViewerN" target="_blank">GPL-v3.0</a></div>
+      <div class="about-content"><a href="https://github.com/tsukiseele/MoeViewerN/blob/alpha/LICENSE" target="_blank">GPL-v3.0</a></div>
     </section>
     <section class="about-item">
       <h2 class="about-title">Support</h2>
-      <div class="about-content">NO QRCode</div>
+      <div class="about-content"><a href="https://github.com/tsukiseele/MoeViewerN" target="_blank">MoeViewerN</a></div>
     </section>
     <section class="about-item">
       <h2 class="about-title">Thanks</h2>
@@ -116,7 +116,7 @@ export default defineComponent({
         font-weight: bold;
         text-transform: uppercase;
         padding: 0.5rem;
-        font-size: 1.75rem;
+        font-size: 1.8rem;
         color: #cd5da0;
       }
       .about-content {

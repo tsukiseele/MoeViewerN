@@ -2,6 +2,7 @@ import fs from 'fs'
 import LRU from 'lru-cache'
 import Base64 from 'js-base64'
 import CryptoJS from 'crypto-js'
+import { resolve } from 'path'
 
 const options = {
   // for use with tracking overall storage size
@@ -14,7 +15,7 @@ const options = {
         return stat.isFile() && stat.size > 0 ? stat.size : 1024
       }
     } catch (error) {
-      console.error(error);
+      console.error(error)
     }
     return 1024
   },
@@ -24,16 +25,16 @@ const options = {
     try {
       fs.existsSync(value) && fs.rmSync(value)
     } catch (error) {
-      console.error(error);
+      console.error(error)
     }
   },
 }
 // LRU cache
 const cache = new LRU<string, string>(options)
 // Cache directory
-const cacheDir = `${process.cwd()}/.cache`
+const cacheDir = resolve(process.cwd(), '.cache')
 // Cache map path
-const cacheMapPath = `${cacheDir}/cache.json`
+const cacheMapPath = resolve(cacheDir, 'cache.json')
 // Create cache directory
 fs.mkdirSync(cacheDir, { recursive: true })
 // Resume cache status
@@ -51,7 +52,7 @@ const saveCacheStatus = () => {
 // Add cache and write file
 const set = (key: string, data: string | Uint8Array, options?: LRU.SetOptions<string, string> | undefined): LRU<string, string> => {
   // const value = `${cacheDir}/${cyrb53(key)}.png`
-  const value = `${cacheDir}/${CryptoJS.SHA256(key)}.png`
+  const value = resolve(cacheDir, `${CryptoJS.SHA256(key)}.png`)
 
   console.log('set cache:', value, ', cache size:', cache.calculatedSize)
   if (typeof data == 'string') {
