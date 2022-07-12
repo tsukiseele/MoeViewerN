@@ -51,10 +51,8 @@ const saveCacheStatus = () => {
 }
 // Add cache and write file
 const set = (key: string, data: string | Uint8Array, options?: LRU.SetOptions<string, string> | undefined): LRU<string, string> => {
-  // const value = `${cacheDir}/${cyrb53(key)}.png`
   const value = resolve(cacheDir, `${CryptoJS.SHA256(key)}.png`)
-
-  console.log('set cache:', value, ', cache size:', cache.calculatedSize)
+  console.log('set cache:', value, ', total cache size:', cache.calculatedSize)
   if (typeof data == 'string') {
     fs.writeFileSync(value, Base64.toUint8Array(data))
   } else if (data instanceof Uint8Array) {

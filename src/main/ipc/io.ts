@@ -1,6 +1,7 @@
 import { app, clipboard, ipcMain } from 'electron'
 import fs from 'fs/promises'
 import Base64 from 'js-base64'
+import { resolve } from 'path'
 /**
  * 该文件封装了文件IO的本地逻辑
  */
@@ -10,10 +11,12 @@ const getWindowsFileName = (text: string) => {
   return text.replace(REG_FILENAME, '_')
 }
 
-ipcMain.handle('writeFile', async (event, filename, base64): Promise<boolean> => {
-  const dir = `${process.cwd()}/download`
+ipcMain.handle('writeFile', async (event, filename: string, base64: string, dirname?: string): Promise<boolean> => {
+  const dir = resolve(process.cwd(), 'download')
   await fs.mkdir(dir, { recursive: true })
-  return Boolean(await fs.writeFile(`${dir}/${getWindowsFileName(filename)}`, Base64.toUint8Array(base64)))
+  console.log('patyhy', resolve(dir, dirname || '', getWindowsFileName(filename)));
+  
+  return Boolean(await fs.writeFile(resolve(dir, dirname || '', getWindowsFileName(filename)), Base64.toUint8Array(base64)))
 })
 
 ipcMain.handle('writeClipboardText', async (event, text): Promise<boolean> => {
