@@ -7,10 +7,13 @@ interface Progress {
   response?: { data: string; type: string }
 }
 declare namespace ElectronIPC {
-  interface Win {
+  type EIPC = typeof import('../preload').electronIpc
+
+  interface App {
     minimize(): void
     maximize(): void
     close(): void
+    openExternal(url: string): void
   }
   interface IO {
     writeFile(path: string, blob: any): Promise<boolean>
@@ -20,7 +23,8 @@ declare namespace ElectronIPC {
     initSQLite(): Promise<boolean>
   }
   interface Http {
-    requestAsync(params: any, callback: Function): Promise<void>
+    download(params: any, callback: (progress: Progress) => void): void
+    // requestAsync(params: any, callback: Function): Promise<void>
   }
   interface IPC {
     ipcRenderer: IpcRenderer
@@ -28,7 +32,7 @@ declare namespace ElectronIPC {
     send(channel: string, ...args: any[]): void
     requestAsync(params: any, callback: Function): Promise<void>
     http: Http
-    win: Win
+    app: App
     io: IO
     db: DB
   }

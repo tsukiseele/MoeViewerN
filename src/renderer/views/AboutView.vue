@@ -1,30 +1,32 @@
 <template>
   <div class="about">
     <section class="about-item">
-      <h3 class="about-title">Developer</h3>
-      <img class="about-avatar" src="../assets/images/github-avatar.webp" alt="">
+      <h2 class="about-title">Developer</h2>
+      <img class="about-avatar" src="../assets/images/github-avatar.webp" alt="" />
       <div class="about-content"><a href="https://github.com/tsukiseele/MoeViewerN" target="_blank">TsukiSeele</a></div>
     </section>
     <section class="about-item">
-      <h3 class="about-title">License</h3>
-      <div class="about-content">GPL-v3.0</div>
+      <h2 class="about-title">License</h2>
+      <div class="about-content"> <a href="https://github.com/tsukiseele/MoeViewerN" target="_blank">GPL-v3.0</a></div>
     </section>
     <section class="about-item">
-      <h3 class="about-title">Support</h3>
+      <h2 class="about-title">Support</h2>
       <div class="about-content">NO QRCode</div>
     </section>
     <section class="about-item">
-      <h3 class="about-title">Thanks</h3>
+      <h2 class="about-title">Thanks</h2>
       <div class="about-content code">
         <ul>
-          <li v-for="item in thanks" :key="item.name">{{ item.name }}</li>
+          <li v-for="item in thanks" :key="item.name">
+            <a :href="item.link" target="_blank">{{ item.name }}</a>
+          </li>
         </ul>
       </div>
     </section>
   </div>
 </template>
 
-<script>
+<script lang="ts">
 import { defineComponent } from 'vue'
 
 export default defineComponent({
@@ -38,9 +40,65 @@ export default defineComponent({
         name: 'Electron',
         link: 'https://github.com/electron/electron',
       },
+      {
+        name: 'cheerio',
+        link: 'https://github.com/cheeriojs/cheerio',
+      },
+      {
+        name: 'lru-cache',
+        link: 'https://github.com/isaacs/node-lru-cache',
+      },
+      {
+        name: 'naive-ui',
+        link: 'https://github.com/TuSimple/naive-ui',
+      },
+      {
+        name: 'node-fetch',
+        link: 'https://github.com/node-fetch/node-fetch',
+      },
+      {
+        name: 'promise-fun',
+        link: 'https://github.com/sindresorhus/promise-fun',
+      },
+      {
+        name: 'sqlite3',
+        link: 'https://github.com/TryGhost/node-sqlite3',
+      },
+      {
+        name: 'crypto-js',
+        link: 'https://github.com/brix/crypto-js',
+      },
+      {
+        name: 'electron-acrylic-window',
+        link: 'https://github.com/Seo-Rii/electron-acrylic-window',
+      },
+      {
+        name: 'get-proxy-settings',
+        link: 'https://github.com/Azure/get-proxy-settings',
+      },
+      {
+        name: 'https-proxy-agent',
+        link: 'https://github.com/TooTallNate/node-https-proxy-agent',
+      },
+      {
+        name: 'js-base64',
+        link: 'https://github.com/dankogai/js-base64',
+      },
+      {
+        name: 'lodash',
+        link: 'https://github.com/lodash/lodash',
+      },
+      {
+        name: 'material-design-icons',
+        link: 'https://github.com/google/material-design-icons',
+      },
     ],
   }),
-  methods: {},
+  methods: {
+    onOpenExternalLink(link: string) {
+      window.eapi.app.openExternal(link)
+    },
+  },
 })
 </script>
 <style lang="scss" scoped>
@@ -49,14 +107,21 @@ export default defineComponent({
     min-height: 100vh;
     display: flex;
     flex-direction: column;
+    text-align: center;
     // padding: .5rem;
     .about-item {
       padding: 0.5rem;
       .about-title {
-        padding: .5rem;
+        font-family: serif;
+        font-weight: bold;
+        text-transform: uppercase;
+        padding: 0.5rem;
+        font-size: 1.75rem;
+        color: #cd5da0;
       }
       .about-content {
         padding: 0.5rem;
+        font-size: 1.25rem;
       }
       .about-avatar {
         width: 6rem;
@@ -71,5 +136,7 @@ export default defineComponent({
 }
 .code {
   font-family: 'JetBrain Mono', 'Consolas', 'Courier New', Courier, monospace;
+  font-size: 1.25rem;
+  line-height: 2rem;
 }
 </style>

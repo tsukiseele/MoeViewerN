@@ -38,10 +38,10 @@ async function requestAsync(params: any, callback: (p: Progress) => void) {
   window.electron.requestAsync(JSON.parse(JSON.stringify(params)), callback)
 }
 const ipc = { invoke, invokeAsObject, send }
-const http = { requestAsync }
+const http = window.electron.http
 const io = window.electron.io
 const db = window.electron.db
-const win = window.electron.win
+const app = window.electron.app
 // const io = {
 //   writeFile(path: string, base64: string) {
 //     return window.electron.io.writeFile(path, base64)
@@ -61,4 +61,4 @@ const win = window.electron.win
 //   close: window.electron.win.close,
 // }
 
-export { ipc, win, http, io, db, ipcRenderer, send, invoke, invokeAsObject, requestAsync }
+export { ipc, app, http, io, db, ipcRenderer, send, invoke, invokeAsObject, requestAsync }

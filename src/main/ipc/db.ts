@@ -1,11 +1,12 @@
 import { app, ipcMain } from 'electron'
+import { resolve } from 'path';
 
 const sqlite3 = require('sqlite3').verbose();
-const db = new sqlite3.Database(':memory:');
+const db = new sqlite3.Database(resolve(process.cwd(), 'download.db')); //:memory:
 
 ipcMain.handle('initSQLite', async (event, text): Promise<boolean> => {
   db.serialize(() => {
-      db.run("CREATE TABLE lorem (info TEXT)");
+      // db.run("CREATE TABLE lorem (info TEXT)");
   
       const stmt = db.prepare("INSERT INTO lorem VALUES (?)");
       for (let i = 0; i < 10; i++) {
@@ -18,6 +19,6 @@ ipcMain.handle('initSQLite', async (event, text): Promise<boolean> => {
       });
   });
   
-  db.close();
+  // db.close();
   return true
 })

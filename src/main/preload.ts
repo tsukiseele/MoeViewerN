@@ -1,4 +1,4 @@
-import { contextBridge, ipcRenderer } from 'electron'
+import { contextBridge, ipcRenderer, shell } from 'electron'
 import { random } from 'lodash'
 import { cyrb53 } from './utils/hashcode'
 
@@ -28,7 +28,10 @@ const electronIpc = {
       return ipcRenderer.invoke('initSQLite')
     },
   },
-  win: {
+  http: {
+    download(params: any, callback: (progress: Progress) => void) {},
+  },
+  app: {
     minimize() {
       ipcRenderer.send('minimize')
     },
@@ -37,6 +40,9 @@ const electronIpc = {
     },
     close() {
       ipcRenderer.send('close')
+    },
+    openExternal(url: string) {
+      shell.openExternal(url)
     },
   },
   ipcRenderer: ipcRenderer,
@@ -57,4 +63,5 @@ const electronIpc = {
 }
 contextBridge.exposeInMainWorld('electron', electronIpc)
 
-export declare type EIPC = typeof electronIpc
+export { electronIpc }
+// export declare type EIPC = typeof electronIpc
