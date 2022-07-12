@@ -37,7 +37,7 @@ import { NSpace, NButton, NResult, NImage, NImageGroup, NTag, NProgress, useThem
 import SLayer from '@/components/SLayer/index.vue'
 import SLoading from '@/components/SLoading/index.vue'
 import { invoke, invokeAsObject, requestAsync, io } from '@/electron'
-import { useDownloadStore } from '@/stores/counter'
+import { useDownloadStore } from '@/stores/download'
 
 export default defineComponent({
   components: {

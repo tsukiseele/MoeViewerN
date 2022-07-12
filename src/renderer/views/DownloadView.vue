@@ -11,7 +11,7 @@
 <script lang="ts">
 import { defineComponent } from 'vue'
 import { invoke, invokeAsObject } from '@/electron'
-import { useDownloadStore } from '@/stores/counter'
+import { useDownloadStore } from '@/stores/download'
 import { NProgress } from 'naive-ui'
 import filesize from 'filesize'
 
@@ -25,7 +25,6 @@ export default defineComponent({
   }),
   methods: {
     formatProgress(item: ImageDownloadMeta): number | undefined {
-    
       return item && item.progress && item.progress.progress ? Number((item.progress.progress * 100).toFixed(2)) : undefined
     },
   },

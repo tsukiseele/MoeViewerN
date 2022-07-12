@@ -56,3 +56,5 @@ const electronIpc = {
   },
 }
 contextBridge.exposeInMainWorld('electron', electronIpc)
+
+export declare type EIPC = typeof electronIpc

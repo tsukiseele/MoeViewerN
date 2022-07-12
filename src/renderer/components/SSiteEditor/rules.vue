@@ -6,10 +6,8 @@ NDynamicInput.field-input(v-model:value='rules', #='{ index: ruleIndex, _ }' :on
   
   NFormItem
     NDynamicInput(v-model:value='rules[ruleIndex].value', #='{index: fieldIndex, _ }' :on-create="onCreateSelector")
-      //- NInputGroup
       NInput.prop-name(v-model:value='rules[ruleIndex].value[fieldIndex].key', placeholder='属性名' style="max-width: 160px; align-self: flex-start;")
       div(style='margin: 8px 8px 0 8px') = 
-
       NInput.prop-value(v-if="rules[ruleIndex].value[fieldIndex].key != 'rules'" v-model:value='rules[ruleIndex].value[fieldIndex].value', placeholder='属性值')
       dynamic-rules-editor(v-else v-model:data="rules[ruleIndex].value[fieldIndex].value")    
         

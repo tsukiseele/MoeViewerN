@@ -1,16 +1,14 @@
 <script setup lang="ts">
-import { onMounted, ref, watch, computed, h, inject } from 'vue'
+import { onMounted, ref, watch, computed, h } from 'vue'
 import { useRouter } from 'vue-router'
 import _ from 'lodash'
 import pQueue from 'p-queue'
 import { Base64 } from 'js-base64'
-import { invoke, invokeAsObject } from '@/electron'
-import { NButton, NSelect, NInputNumber, NAutoComplete, NResult, NTag, useMessage } from 'naive-ui'
+import { NButton, NSelect, NInputNumber, NAutoComplete, NResult, NTag } from 'naive-ui'
 import SSimpleWaterfall from '@/components/SSimpleWaterfall/index.vue'
 import SLoading from '@/components/SLoading/index.vue'
 import CatalogLayer from '@/views/Layer/CatalogLayer.vue'
 import placeholder from '@/assets/images/placeholder.webp'
-import ElectronApi from '@/typings/electron'
 
 const showCatalog = ref(false)
 const childItem = ref<ImageMeta>()
@@ -25,12 +23,9 @@ const keywordsOptions = ref([])
 const loadedCount = ref(0)
 const queue = new pQueue({ concurrency: 16 })
 const siteOptions = computed(() => sites.value && sites.value.length && sites.value.map(site => ({ label: site.name, value: site.id })) || undefined)
-const $eapi = inject<ElectronApi>('$eapi')
 
 onMounted(async () => {
-  if (!$eapi) throw new Error('Not found electron interface')
-
-  sites.value = await $eapi.invoke('getSiteList')
+  sites.value = await window.eapi.invoke('getSiteList')
   console.log(sites.value)
   if (sites.value && sites.value.length) {
     onSearch()
@@ -48,12 +43,12 @@ async function onSearch() {
 }
 async function loadList(params: any) {
   isLoaded.value = false
-  results.value = await invokeAsObject('load', params)
+  results.value = await window.eapi.invokeAsObject('load', params)
   // if (!results.value || !results.value.length) $message.error(`资源未找到！`)
   isLoaded.value = true
 }
 async function loadNext(params: any) {
-  const next = await invokeAsObject('load', params)
+  const next = await window.eapi.invokeAsObject('load', params)
   results.value.push(...next)
 }
 const base64ToBlob = (base64: string, type: string) => {
@@ -67,7 +62,7 @@ function onImgLoaded(e: Event, item: any) {
 async function loadImage(el: HTMLImageElement, item: any) {
   if (item._src) return
   queue.add(async () => {
-    const { data, type } = await invoke('request', { url: item.coverUrl, options: { headers: currentSite.value?.headers, timeout: 5000, retries: 5 } })
+    const { data, type } = await window.eapi.invoke('request', { url: item.coverUrl, options: { headers: currentSite.value?.headers, timeout: 5000, retries: 5 } })
     //@ts-ignore
     el.loaded = true
     item._src = URL.createObjectURL(base64ToBlob(data, type))
