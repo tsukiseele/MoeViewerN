@@ -16,7 +16,7 @@ declare namespace ElectronIPC {
     openExternal(url: string): void
   }
   interface IO {
-    writeFile(path: string, blob: any): Promise<boolean>
+    writeFile(base64: string, filename: string, dirname?: string): Promise<boolean>
     writeClipboardText(text: string): Promise<boolean>
   }
   interface DB {

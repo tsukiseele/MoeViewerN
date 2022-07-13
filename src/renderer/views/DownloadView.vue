@@ -2,10 +2,16 @@
 #download
   ul.download-list
     li.download-item(v-for="[_, item] in downloadStore.statusMap")
-      img.item-cover(:src="item?.coverUrl || item?.sampleUrl || item?.largerUrl || item?.originUrl" alt="")
-      .item-info
-        .item-name {{ item?.title }}
-        NProgress.item-progress(type="line" :percentage="formatProgress(item)" :processing="item.progress?.progress !== 1" :indicator-placement="'inside'" :border-radius="4" :class="{done: item?.progress?.progress  === 100}")
+      template(v-if="item.childTask")
+        img.item-cover(:src="item?.coverUrl || item?.sampleUrl || item?.largerUrl || item?.originUrl" alt="")
+        .item-info
+          .item-name 任务组
+          NProgress.item-progress(type="line" :percentage="getGroupProgress(item.childTask)" :processing="getGroupProgress(item.childTask) < 100" :indicator-placement="'inside'" :border-radius="4" :class="{done: item?.progress?.progress  === 100}")
+      template(v-else)
+        img.item-cover(:src="item?.coverUrl || item?.sampleUrl || item?.largerUrl || item?.originUrl" alt="")
+        .item-info
+          .item-name {{ item?.title }}
+          NProgress.item-progress(type="line" :percentage="formatProgress(item)" :processing="item.progress?.progress !== 1" :indicator-placement="'inside'" :border-radius="4" :class="{done: item?.progress?.progress  === 100}")
 </template>
 
 <script lang="ts">
@@ -23,7 +29,18 @@ export default defineComponent({
   data: () => ({
     sites: [],
   }),
+  
   methods: {
+    getGroupStatus(items: Map<string, ImageDownloadMeta>) {
+      let count = 0
+      items.forEach((item, k) => {
+        item.progress?.done && count++
+      });
+      return count
+    },
+    getGroupProgress(items: Map<string, ImageDownloadMeta>) {
+      return Number((this.getGroupStatus(items) / items.size * 100 ).toFixed(2))
+    },
     formatProgress(item: ImageDownloadMeta): number | undefined {
       return item && item.progress && item.progress.progress ? Number((item.progress.progress * 100).toFixed(2)) : undefined
     },

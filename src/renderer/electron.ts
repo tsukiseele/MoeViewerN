@@ -42,23 +42,5 @@ const http = window.electron.http
 const io = window.electron.io
 const db = window.electron.db
 const app = window.electron.app
-// const io = {
-//   writeFile(path: string, base64: string) {
-//     return window.electron.io.writeFile(path, base64)
-//   },
-//   writeClipboardText(text: string) {
-//     return window.electron.io.writeClipboardText(text)
-//   },
-// }
-// const db = {
-//   initSQLite(path: string, base64: string) {
-//     return window.electron.io.writeFile(path, base64)
-//   },
-// }
-// const win = {
-//   minimize: window.electron.win.minimize,
-//   maximize: window.electron.win.maximize,
-//   close: window.electron.win.close,
-// }
 
 export { ipc, app, http, io, db, ipcRenderer, send, invoke, invokeAsObject, requestAsync }

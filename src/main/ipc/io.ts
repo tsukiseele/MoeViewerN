@@ -7,16 +7,19 @@ import { resolve } from 'path'
  */
 const REG_FILENAME = /[\\/:*?"<>|]/g
 
+const DIR_DOWNLOAD = resolve(process.cwd(), 'download')
+
+
 const getWindowsFileName = (text: string) => {
   return text.replace(REG_FILENAME, '_')
 }
 
-ipcMain.handle('writeFile', async (event, filename: string, base64: string, dirname?: string): Promise<boolean> => {
-  const dir = resolve(process.cwd(), 'download')
+ipcMain.handle('writeFile', async (event, base64: string, filename: string, dirname?: string): Promise<boolean> => {
+  console.log('patyhy', resolve(DIR_DOWNLOAD, dirname || '', getWindowsFileName(filename)));
+  const dir = resolve(DIR_DOWNLOAD, dirname || '')
+  const path = resolve(dir, getWindowsFileName(filename))
   await fs.mkdir(dir, { recursive: true })
-  console.log('patyhy', resolve(dir, dirname || '', getWindowsFileName(filename)));
-  
-  return Boolean(await fs.writeFile(resolve(dir, dirname || '', getWindowsFileName(filename)), Base64.toUint8Array(base64)))
+  return Boolean(await fs.writeFile(path, Base64.toUint8Array(base64)))
 })
 
 ipcMain.handle('writeClipboardText', async (event, text): Promise<boolean> => {

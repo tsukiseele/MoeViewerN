@@ -9,12 +9,13 @@ interface ImageMeta extends Meta {
   _src?: string
 }
 interface ImageDownloadMeta extends ImageMeta {
-  title?: string
-  coverUrl?: string,
-  sampleUrl?: string,
-  largerUrl?: string,
-  originUrl?: string,
+  // title?: string
+  // coverUrl?: string,
+  // sampleUrl?: string,
+  // largerUrl?: string,
+  // originUrl?: string,
   progress?: Progress,
-  tags?: string,
-  _src?: string
+  // tags?: string,
+  // _src?: string
+  childTask?: Map<string, ImageDownloadMeta>
 }

@@ -1,6 +1,7 @@
 import { contextBridge, ipcRenderer, shell } from 'electron'
 import { random } from 'lodash'
 import { cyrb53 } from './utils/hashcode'
+// import { cyrb53 } from './utils/hashcode'
 
 const callbacks = new Map<number, any>()
 
@@ -16,8 +17,8 @@ ipcRenderer.on('progress', (event, data) => {
  */
 const electronIpc = {
   io: {
-    writeFile(path: string, blob: any): Promise<boolean> {
-      return ipcRenderer.invoke('writeFile', path, blob)
+    writeFile(base64: string, filename: string, dirname?: string): Promise<boolean> {
+      return ipcRenderer.invoke('writeFile', base64, filename, dirname)
     },
     writeClipboardText(text: string): Promise<boolean> {
       return ipcRenderer.invoke('writeClipboardText', text)
@@ -29,7 +30,22 @@ const electronIpc = {
     },
   },
   http: {
-    download(params: any, callback: (progress: Progress) => void) {},
+    /**
+     * 下载二进制数据，回调下载进度
+     * @param {*} params
+     * @param {*} callback
+     */
+    download(params: any, callback: (progress: Progress) => void): void {
+      if (!params.url) throw new Error('url cannot be empty!')
+      if (callback) {
+        // params.uuid = cyrb53(params.url, 255)
+        params.uuid = cyrb53(random(0, Number.MAX_SAFE_INTEGER).toString(), Date.now() % 256)
+        callbacks.set(params.uuid, callback)
+      }
+      console.log('XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXVVVVVVVVVVV');
+      
+      ipcRenderer.send('download', params)
+    },
   },
   app: {
     minimize() {

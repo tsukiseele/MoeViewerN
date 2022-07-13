@@ -134,17 +134,11 @@ export default defineComponent({
       if (this.isLoaded) {
         if (this.resultSet && this.resultSet.length) {
           console.log('this.resultSet', this.resultSet)
-          this.resultSet.forEach(async (item) => {
-            const response = requestAsync({ url: item.originUrl || item.largerUrl || item.sampleUrl || item.coverUrl }, (p) => {
-              if (!p.uuid) throw Error('无效的唯一标识符')
-              this.downloadStore.update(p.uuid || '', JSON.parse(JSON.stringify({ ...item, progress: p })))
-              if (p.done) {
-                if (!p.response) throw Error('空响应')
-
-                io.writeFile(`${item.title}-${Date.now()}.${p.response.type.split('/')[1]}`, p.response.data)
-              }
-            })
-          })
+          this.downloadStore.downloadGroup(this.item, this.resultSet)
+          // this.resultSet.forEach(async (image) => {
+          //   const filename = `${image.title || ''} ${image.tags || ''} ${Date.now()}`.trim().substring(0, 64)
+          //   this.downloadStore.download(image, filename, this.resultSet.length > 1 ? this.item?.title?.substring(0, 16) : undefined)
+          // })
         }
       } else {
         alert('请等待列表加载完成！')
