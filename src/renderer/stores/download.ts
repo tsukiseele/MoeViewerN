@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
-import CryptoJS from 'crypto-js'
-import { cyrb53 } from '@/../main/utils/hashcode';
+// import CryptoJS from 'crypto-js'
+// import { cyrb53 } from '@/../main/utils/hashcode';
 
 export const useDownloadStore = defineStore({
   id: 'download',
@@ -9,8 +9,6 @@ export const useDownloadStore = defineStore({
   }),
   actions: {
     update(uuid: string, value: any, gid?: string) {
-      console.log('UUUUUUUUUUUUU');
-      
       if (gid) {
         const group = this.statusMap.get(gid)
         if (group) {
@@ -42,14 +40,15 @@ export const useDownloadStore = defineStore({
     },
     /**
       * 
-      * @param item ImageMeta 图片数据
-      * @param filename 文件名，不包含后缀
-      * @param dirname 目录名，可选
+      * @param parent 父级数据项
+      * @param images 下载任务数据集
       */
     downloadGroup(parent: ImageMeta, images: ImageMeta[]) {
+      // 任务组目录名，最长16字符
       const dirname = parent.title?.substring(0, 16) || Date.now().toString()
       const gid = CryptoJS.MD5(dirname).toString()
       images.forEach(image => {
+        // 组内文件名，最长64字符
         const filename = `${image.title || ''} ${image.tags || ''} ${Date.now()}`.trim().substring(0, 64)
         window.eapi.http.download({ url: image.originUrl || image.largerUrl || image.sampleUrl || image.coverUrl }, (p: Progress) => {
           if (!p.uuid) throw new Error('下载失败：无效的唯一标识符')

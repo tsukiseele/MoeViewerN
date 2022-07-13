@@ -1,60 +1,58 @@
 # MoeViewerN
 <img src="./public/icon.ico" alt="MoeViewerN" width="128px" />
 
-一个可爱的二次元网络画廊浏览器，目前处在开发阶段。
+一个可爱的二次元网络画廊浏览器，目前处在dev阶段。
 
 ## 预览
 ![](./sample/preview_2.webp)
 
-## 以下是开发指南
+## 主要功能
+1. 图库，漫画的预览与阅读
+2. 图库，漫画的批量下载
+3. Booru的搜索关键字补全
+4. 可扩展的自定义抓取配置
+5. 相对友好的抓取规则编辑器
+6. 更多的功能等待开发
 
+## 协议
+[GPLv3.0 LICENSE](./LICENSE)
+
+## 开发指南
+### 准备工作
+- 安装VisualStudio Code插件：
 [VSCode](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=johnsoncodehk.volar) (和禁用) + [TypeScript Vue Plugin (Volar)](https://marketplace.visualstudio.com/items?itemName=johnsoncodehk.vscode-typescript-vue-plugin).
 
-## 类型支持 TS 中的 .vue 导入 
+### 使用 Microsoft 的 windows-build-tools 安装所有必需的工具和配置（仅限 windows）
+- ```sh
+  yarn global add windows-build-tools
+  ```
 
-默认情况下，TypeScript 无法处理 `.vue` 导入的类型信息，因此我们将 `tsc` CLI 替换为 `vue-tsc` 以进行类型检查。在编辑器中，我们需要 [TypeScript Vue Plugin (Volar)](https://marketplace.visualstudio.com/items?itemName=johnsoncodehk.vscode-typescript-vue-plugin) 让 TypeScript 语言服务知道 `.vue` 类型。
+### 运行与构建
+- 初始化
+  ```sh
+  yarn
+  ```
 
-如果您觉得独立的 TypeScript 插件不够快，Volar 还实现了性能更高的 [接管模式](https://github.com/johnsoncodehk/volar/discussions/471#discussioncomment-1361669)。 您可以通过以下步骤启用它：
+- 运行`yarn dev`以开发模式在浏览器中打开Vite。
+  ```sh
+  yarn dev
+  ```
+- 运行`yarn build`来构建文件。
+  ```sh
+  yarn build
+  ```
 
-1.禁用内置的TypeScript Extension
-  1) 从 VSCode 的命令面板运行 `Extensions: Show Built-in Extensions`
-  2) 找到`TypeScript and JavaScript Language Features`，右键选择`Disable (Workspace)`
-2. 通过从命令面板运行`Developer: Reload Window` 重新加载 VSCode 窗口。
+- 运行`yarn build:win`来构建文件（仅Window）。
+  ```sh
+  yarn build:win
+  ```
 
-## 自定义配置
+- 运行`yarn build:mac`来构建文件（仅MAC）。
+  ```sh
+  yarn build:mac
+  ```
 
-参见 [Vite配置参考](https://vitejs.dev/config/).
-
-## 使用 Microsoft 的 windows-build-tools 安装所有必需的工具和配置（仅限 windows）
-```sh
-npm install -g windows-build-tools
-```
-
-## 项目初始化
-```sh
-yarn
-```
-
-### 运行`yarn dev`以开发模式在浏览器中打开Vite。
-```sh
-yarn dev
-```
-### 运行`yarn build`来构建文件并且可以提供服务。
-```sh
-yarn build
-```
-
-### 运行`yarn build`来构建文件并且可以提供服务。
-```sh
-yarn preview
-```
-
-### 运行`yarn electron:dev`以在开发模式下使用电子。
-```sh
-yarn electron:dev
-```
-
-### 运行`yarn electron:build`来构建你的电子应用。
-```sh 
-yarn electron:build
-```
+- 运行`yarn build:linux`来构建文件（仅LINUX）。
+  ```sh 
+  yarn build:linux
+  ```

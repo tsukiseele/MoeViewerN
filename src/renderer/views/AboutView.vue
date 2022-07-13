@@ -33,12 +33,12 @@ export default defineComponent({
   data: () => ({
     thanks: [
       {
-        name: 'Vue',
-        link: 'https://github.com/vuejs/',
-      },
-      {
         name: 'Electron',
         link: 'https://github.com/electron/electron',
+      },
+      {
+        name: 'Vue',
+        link: 'https://github.com/vuejs/',
       },
       {
         name: 'cheerio',
