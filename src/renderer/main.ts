@@ -11,7 +11,6 @@ import * as EAPI from './electron'
 import App from './App.vue'
 import router from './router'
 import { Base64 } from 'js-base64'
-import { useMessage } from 'naive-ui'
 // 
 import '@mdi/font/css/materialdesignicons.min.css'
 import '@/assets/styles/main.scss'
@@ -27,7 +26,6 @@ app.provide('utils', {
     return new Blob([Base64.toUint8Array(base64)], { type: type })
   },
 })
-window.$message = useMessage()
 app.use(createPinia())
 app.use(router)
  

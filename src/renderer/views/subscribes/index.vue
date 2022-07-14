@@ -8,7 +8,7 @@
         .site-details {{ site.details }}
         .site__btn-edit
   NModal(v-model:show="showModal")
-    SSiteEditor(v-if="editItem" :data="editItem" @generate="onGenerate")
+    SSiteEditor(v-if="editItem" :data="editItem" @generated="onGenerated")
 </template>
 
 <script lang="ts">
@@ -33,8 +33,10 @@ export default defineComponent({
       this.editItem = site
       this.showModal = true
     },
-    onGenerate(text: string) {
+    onGenerated(text: string) {
       window.eapi.app.writeClipboardText(text)
+      console.log('?????????????');
+      
       window.$message.success('已导出到剪贴板')
     }
   },

@@ -14,6 +14,9 @@ const links = [
   { to: '/download', icon: 'download' },
   { to: '/about', icon: 'info' },
 ]
+
+
+// window.$message = useMessage()
 console.log(window.eapi.ipcRenderer);
 // console.log(window.eapi.on);
 console.log(ipcRenderer);

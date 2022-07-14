@@ -55,7 +55,7 @@ export default defineComponent({
     },
   },
   emits: {
-    generate: Function as (text: string) => void
+    generated: Function as (text: string) => void
   },
   components: {
     NRadioGroup,
@@ -75,7 +75,7 @@ export default defineComponent({
     onGenerate() {
       console.log(this.convertForm2Site(this.formValue))
 
-      this.$emit('generate', JSON.stringify(this.convertForm2Site(this.formValue)))
+      this.$emit('generated', JSON.stringify(this.convertForm2Site(this.formValue)))
     },
   },
   setup(props) {
