@@ -120,7 +120,7 @@ export default defineComponent({
   },
   methods: {
     async download(once: ImageMeta) {
-      const response = requestAsync({ url: once.originUrl || once.largerUrl || once.sampleUrl }, (p) => {
+      requestAsync({ url: once.originUrl || once.largerUrl || once.sampleUrl }, (p) => {
         console.log(p)
         this.percentage = Number((p.progress * 100).toFixed(2))
         if (p.done && p.response) {
@@ -133,8 +133,12 @@ export default defineComponent({
     onDownloadGallery() {
       if (this.isLoaded) {
         if (this.resultSet && this.resultSet.length) {
+          if (this.resultSet.length === 1) {
+            this.downloadStore.download(this.resultSet[0])
+          } else {
+            this.downloadStore.downloadGroup(this.item, this.resultSet)
+          }
           console.log('this.resultSet', this.resultSet)
-          this.downloadStore.downloadGroup(this.item, this.resultSet)
           // this.resultSet.forEach(async (image) => {
           //   const filename = `${image.title || ''} ${image.tags || ''} ${Date.now()}`.trim().substring(0, 64)
           //   this.downloadStore.download(image, filename, this.resultSet.length > 1 ? this.item?.title?.substring(0, 16) : undefined)

@@ -1,10 +1,14 @@
-import { contextBridge, ipcRenderer, shell } from 'electron'
+import { BrowserWindow, contextBridge, ipcRenderer, shell } from 'electron'
 import { random } from 'lodash'
 import { cyrb53 } from './utils/hashcode'
 // import { cyrb53 } from './utils/hashcode'
 
 const callbacks = new Map<number, any>()
 
+ipcRenderer.on('appExit', (event, data) => {
+
+  BrowserWindow.getFocusedWindow()?.webContents.send('appEdit')
+})
 ipcRenderer.on('progress', (event, data) => {
   const callback = callbacks.get(data.uuid)
   if (!callback) return
@@ -15,13 +19,35 @@ ipcRenderer.on('progress', (event, data) => {
 /**
  * 上下文桥，隔离Main和Renderer，暴露声明API
  */
+console.log(ipcRenderer);
+
 const electronIpc = {
-  io: {
-    writeFile(base64: string, filename: string, dirname?: string): Promise<boolean> {
-      return ipcRenderer.invoke('writeFile', base64, filename, dirname)
+  app: {
+    minimize() {
+      ipcRenderer.send('minimize')
+    },
+    maximize() {
+      ipcRenderer.send('maximize')
+    },
+    close() {
+      ipcRenderer.send('close')
+    },
+    openExternal(url: string) {
+      shell.openExternal(url)
     },
     writeClipboardText(text: string): Promise<boolean> {
       return ipcRenderer.invoke('writeClipboardText', text)
+    },
+  },
+  io: {
+    writeText(text: string, filename: string, dirname?: string): Promise<boolean> {
+      return ipcRenderer.invoke('writeText', text, filename, dirname)
+    },
+    writeFile(base64: string, filename: string, dirname?: string): Promise<boolean> {
+      return ipcRenderer.invoke('writeFile', base64, filename, dirname)
+    },
+    writeDownload(base64: string, filename: string, dirname?: string): Promise<boolean> {
+      return ipcRenderer.invoke('writeDownload', base64, filename, dirname)
     },
   },
   db: {
@@ -42,23 +68,7 @@ const electronIpc = {
         params.uuid = cyrb53(random(0, Number.MAX_SAFE_INTEGER).toString(), Date.now() % 256)
         callbacks.set(params.uuid, callback)
       }
-      console.log('XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXVVVVVVVVVVV');
-      
       ipcRenderer.send('download', params)
-    },
-  },
-  app: {
-    minimize() {
-      ipcRenderer.send('minimize')
-    },
-    maximize() {
-      ipcRenderer.send('maximize')
-    },
-    close() {
-      ipcRenderer.send('close')
-    },
-    openExternal(url: string) {
-      shell.openExternal(url)
     },
   },
   ipcRenderer: ipcRenderer,

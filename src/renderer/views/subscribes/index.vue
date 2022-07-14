@@ -34,14 +34,13 @@ export default defineComponent({
       this.showModal = true
     },
     onGenerate(text: string) {
-      io.writeClipboardText(text)
+      window.eapi.app.writeClipboardText(text)
+      window.$message.success('已导出到剪贴板')
     }
   },
   async mounted() {
     this.sites = await invoke('getSiteList')
     console.log(this.sites)
-    // console.log(this.sites);
-    this.sites.forEach((site) => console.log(site))
     this.$forceUpdate()
   },
 })

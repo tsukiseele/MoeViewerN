@@ -7,7 +7,7 @@ import { Base64 } from 'js-base64'
 import { NButton, NSelect, NInputNumber, NAutoComplete, NResult, NTag } from 'naive-ui'
 import SSimpleWaterfall from '@/components/SSimpleWaterfall/index.vue'
 import SLoading from '@/components/SLoading/index.vue'
-import CatalogLayer from '@/views/Layer/CatalogLayer.vue'
+import CatalogLayer from '@/views/layer/CatalogLayer.vue'
 import placeholder from '@/assets/images/placeholder.webp'
 
 const showCatalog = ref(false)
@@ -27,7 +27,7 @@ const siteOptions = computed(() => (sites.value && sites.value.length && sites.v
 onMounted(async () => {
   // window.eapi.db.initSQLite()
   sites.value = await window.eapi.invoke('getSiteList')
-  console.log(sites.value)
+  console.log('Sites: ', sites.value)
   if (sites.value && sites.value.length) {
     onSearch()
   }
@@ -47,6 +47,8 @@ async function loadList(params: any) {
   results.value = await window.eapi.invokeAsObject('load', params)
   // if (!results.value || !results.value.length) $message.error(`资源未找到！`)
   isLoaded.value = true
+  console.log('Images: ', results.value);
+  
 }
 async function loadNext(params: any) {
   const next = await window.eapi.invokeAsObject('load', params)

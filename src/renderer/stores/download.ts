@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-// import CryptoJS from 'crypto-js'
+import CryptoJS from 'crypto-js'
 // import { cyrb53 } from '@/../main/utils/hashcode';
 
 export const useDownloadStore = defineStore({
@@ -26,15 +26,15 @@ export const useDownloadStore = defineStore({
      * @param filename 文件名，不包含后缀
      * @param dirname 目录名，可选
      */
-    download(item: ImageMeta, filename: string, dirname?: string) {
-      console.log('Download: ', item, filename, dirname);
-      
+    download(item: ImageMeta) {
+      const filename = `${item.title || ''} ${item.tags || ''} ${Date.now()}`.trim().substring(0, 64)
+      console.log('Download: ', item, filename);
       window.eapi.http.download({ url: item.originUrl || item.largerUrl || item.sampleUrl || item.coverUrl }, (p: Progress) => {
         if (!p.uuid) throw new Error('下载失败：无效的唯一标识符')
         this.update(p.uuid, JSON.parse(JSON.stringify({ ...item, progress: p })))
         if (p.done) {
           if (!p.response) throw new Error('下载失败：空响应')
-          window.eapi.io.writeFile(p.response.data, `${filename}.${p.response.type.split('/')[1]}`, dirname)
+          window.eapi.io.writeDownload(p.response.data, `${filename}.${p.response.type.split('/')[1]}`)
         }
       })
     },
@@ -56,10 +56,11 @@ export const useDownloadStore = defineStore({
           this.update(p.uuid, JSON.parse(JSON.stringify({ ...image, progress: p })), gid)
           if (p.done) {
             if (!p.response) throw new Error('下载失败：空响应')
-            window.eapi.io.writeFile(p.response.data, `${filename}.${p.response.type.split('/')[1]}`, dirname)
+            window.eapi.io.writeDownload(p.response.data, `${filename}.${p.response.type.split('/')[1]}`, dirname)
           }
         })
       })
+      window.eapi.io.writeText(JSON.stringify(Object.fromEntries(this.statusMap)), 'download.json')
     }
   }
 }) 

@@ -11,20 +11,20 @@
     slot
 </template>
 
-<script>
+<script lang="ts">
 import { defineComponent } from 'vue'
 export default defineComponent({
   mounted() {
   },
   methods: {
     onMinimize() {
-      $win.minimize()
+      window.eapi.app.minimize()
     },
     onMaximize() {
-      $win.maximize()
+      window.eapi.app.maximize()
     },
     onClose() {
-      $win.close()
+      window.eapi.app.close()
     },
   },
 })

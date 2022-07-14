@@ -1,4 +1,4 @@
-import { app, BrowserWindow, ipcMain, shell } from 'electron'
+import { app, BrowserWindow, ipcMain, ipcRenderer, shell } from 'electron'
 import { join } from 'path'
 import * as cache from './utils/disk-lru'
 import './ipc/main'
@@ -53,6 +53,7 @@ app.whenReady().then(() => {
 
 app.on('window-all-closed', function () {
   cache.saveCacheStatus()
+  ipcRenderer.send('appExit')
   if (process.platform !== 'darwin') app.quit()
 })
 // Listen for web contents being created

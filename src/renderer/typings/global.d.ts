@@ -7,4 +7,8 @@ interface Window {
    * Electron 序列化封装后的ipc接口
    */
   eapi: typeof import('../electron')
+  /**
+   * 
+   */
+  $message: any
 }

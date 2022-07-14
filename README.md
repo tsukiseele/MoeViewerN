@@ -5,6 +5,7 @@
 
 ## 预览
 ![](./sample/preview_2.webp)
+![](./sample/preview_3.png)
 
 ## 主要功能
 1. 图库，漫画的预览与阅读

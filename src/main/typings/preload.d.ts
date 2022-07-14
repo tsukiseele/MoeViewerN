@@ -14,10 +14,12 @@ declare namespace ElectronIPC {
     maximize(): void
     close(): void
     openExternal(url: string): void
+    writeClipboardText(text: string): Promise<boolean>
   }
   interface IO {
+    writeText(text: string, filename: string, dirname?: string): Promise<boolean>
     writeFile(base64: string, filename: string, dirname?: string): Promise<boolean>
-    writeClipboardText(text: string): Promise<boolean>
+    writeDownload(base64: string, filename: string, dirname?: string): Promise<boolean>
   }
   interface DB {
     initSQLite(): Promise<boolean>

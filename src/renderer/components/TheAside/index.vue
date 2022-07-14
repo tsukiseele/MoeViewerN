@@ -5,7 +5,7 @@ aside.aside
 </template>
 
 <script lang="ts" >
-import { defineComponent } from 'vue'
+import { defineComponent, PropType } from 'vue'
 
 // interface Link {
 //   to: string,
@@ -14,7 +14,7 @@ import { defineComponent } from 'vue'
 
 export default defineComponent({
   props: {
-    links: []
+    links: [] as PropType<{icon: string, to:string}[]>
     // links: {
     //   type: Link[],
     //   default: ''
