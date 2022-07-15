@@ -35,8 +35,6 @@ export default defineComponent({
     },
     onGenerated(text: string) {
       window.eapi.app.writeClipboardText(text)
-      console.log('?????????????');
-      
       window.$message.success('已导出到剪贴板')
     }
   },

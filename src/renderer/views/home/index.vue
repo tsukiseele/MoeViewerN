@@ -4,7 +4,7 @@ import { useRouter } from 'vue-router'
 import _ from 'lodash'
 import pQueue from 'p-queue'
 import { Base64 } from 'js-base64'
-import { NButton, NSelect, NInputNumber, NAutoComplete, NResult, NTag } from 'naive-ui'
+import { useMessage, NButton, NSelect, NInputNumber, NAutoComplete, NResult, NTag } from 'naive-ui'
 import SSimpleWaterfall from '@/components/SSimpleWaterfall/index.vue'
 import SLoading from '@/components/SLoading/index.vue'
 import CatalogLayer from '@/views/layer/CatalogLayer.vue'
@@ -24,6 +24,7 @@ const loadedCount = ref(0)
 const queue = new pQueue({ concurrency: 16 })
 const siteOptions = computed(() => (sites.value && sites.value.length && sites.value.map((site) => ({ label: site.name, value: site.id }))) || undefined)
 
+// window.$message = useMessage()
 onMounted(async () => {
   // window.eapi.db.initSQLite()
   sites.value = await window.eapi.invoke('getSiteList')

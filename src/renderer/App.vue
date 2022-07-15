@@ -1,11 +1,10 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue'
-import { useDownloadStore } from './stores/download'
 import { RouterView } from 'vue-router'
-import { NMessageProvider } from 'naive-ui'
+import { NMessageProvider } from 'naive-ui';
 import TheFrame from '@/components/TheFrame/index.vue'
 import TheAside from '@/components/TheAside/index.vue'
-import { ipcRenderer } from './electron'
+
 const links = [
   { to: '/', icon: 'dashboard' },
   { to: '/favorites', icon: 'loyalty' },
@@ -15,16 +14,6 @@ const links = [
   { to: '/about', icon: 'info' },
 ]
 
-
-// window.$message = useMessage()
-console.log(window.eapi.ipcRenderer);
-// console.log(window.eapi.on);
-console.log(ipcRenderer);
-
-// window.eapi.ipcRenderer.on('appExit', () => {
-//   const store = useDownloadStore()
-//   window.eapi.io.writeText(JSON.stringify(store.statusMap), 'download.json')
-// })
 
 </script>
 
