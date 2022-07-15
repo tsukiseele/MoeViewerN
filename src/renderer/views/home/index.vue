@@ -148,8 +148,13 @@ watch(() => query.value.keywords, getKeywordsOptions)
     SSimpleWaterfall(v-if="isLoaded && results && results.length" :items="results" :loadedCount="loadedCount" image-key="coverUrl" :item-width="200" @loaded="onLoaded" @loading="isLoaded = false" @scroll-bottom="onScrollBottom")
       template(v-slot="{item, index}")
         .list-item(v-if="item" @click="openChild(item)")
-          img.item-image(:src="item._src || placeholder" @load="(e) => onImgLoaded(e, item)")
-          .item-title {{ item.title }}
+          img.item-cover(:src="item._src || placeholder" @load="(e) => onImgLoaded(e, item)")
+          .item-info 
+            .item-title {{ item.title }}
+            .item-tags {{ item.tags }}
+            .item-options
+              i.mdi.mdi-download
+          .item-mask 
     NResult(v-else-if="isLoaded && results.length === 0" status="info" title="提示" description="已经到底了")
     NResult(v-else-if="isLoaded" status="404" title="资源未找到" description="可能因素：网络不可用，防火墙拦截（尤其是在中国大陆）")
       template(#footer)
