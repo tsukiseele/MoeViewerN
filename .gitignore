@@ -1,7 +1,7 @@
 node_modules
-dist
-build
-download
+/dist
+/build
+/download
 
 .vscode
 .idea

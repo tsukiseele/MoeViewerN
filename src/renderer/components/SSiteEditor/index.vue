@@ -1,51 +1,52 @@
 <template lang="pug">
 .s-site-editor
-  NForm(ref='formRef', :model='formValue', :rules='rules', :size='size')
-    NFormItem(label='名称 - name', path='name')
-      NInput(v-model:value='formValue.name', placeholder='规则名称')
-    NFormItem(label='UUID - id', path='id')
-      NInputNumber(v-model:value='formValue.id', placeholder='规则UUID' :show-button="false")
-    NFormItem(label='版本 - version', path='version')
-      NInputNumber(v-model:value='formValue.version', placeholder='规则版本')
-    NFormItem(label='作者 - author', path='author')
-      NInput(v-model:value='formValue.author', placeholder='规则作者')
-    NFormItem(label='评级 - rating', path='rating')
-      NInput(v-model:value='formValue.rating', placeholder='规则评级')
-    NFormItem(label='详情 - detail', path='details')
-      NInput(v-model:value='formValue.details', placeholder='规则详情')
-    NFormItem(label='类型 - type', path='type')
-      NSelect(v-model:value="formValue.type" :options="Object.entries(options.type).map(([value, label]) => ({label, value}))" @keydown.enter.prevent='')
-    NFormItem(label='图标 - icon', path='icon')
-      NInput(v-model:value='formValue.icon', placeholder='规则图标')
-    NFormItem(label='请求头 - headers', path='headers')
-      NDynamicInput(v-model:value='formValue.headers', #='{ index, value }' :on-create="onCreate" show-sort-button, style="margin-top: .5rem;")
-        div(style='display: flex')
-          NFormItem(ignore-path-change, :show-label='false', :path='`formValue.headers[${index}].key`', :rule='dynamicInputRule')
-            NInput(v-model:value='formValue.headers[index].key', placeholder='Name', @keydown.enter.prevent='')
-          div(style='height: 34px; line-height: 34px; margin: 0 8px') =
-          NFormItem(ignore-path-change, :show-label='false', :path='`formValue.headers[${index}].value`', :rule='dynamicInputRule')
-            NInput(v-model:value='formValue.headers[index].value', placeholder='Value', @keydown.enter.prevent='')
-    NFormItem(label='板块列表 - sections', path='sections')
-      NDynamicInput(v-model:value='formValue.sections', #='{ index, value }', :on-create="onCreateSection" , style="margin-top: .5rem;")
-        NFormItem.section-name(ignore-path-change, :show-label='false', :path='`formValue.sections[${index}].key`')
-          NSelect(v-model:value="formValue.sections[index].key" :options="Object.entries(options.section).map(([value, label]) => ({label, value}))" @keydown.enter.prevent='')
-        div.sections
-          NFormItem(:show-label='false', :path='`formValue.sections[${index}].value.index`')
-            NInput(v-model:value='formValue.sections[index].value.index', placeholder='板块索引')
-          NFormItem(v-if="formValue.sections[index].value.name" label='名称', :path='`formValue.sections[${index}].value.name`')
-            NInput(v-model:value='formValue.sections[index].value.name', placeholder='板块名称')
-          NFormItem(v-if="formValue.sections[index].value.detail" label='描述', :path='`formValue.sections[${index}].value.detail`')
-            NInput(v-model:value='formValue.sections[index].value.detail', placeholder='板块描述')
-          DynamicRulesEditor(v-model:data="formValue.sections[index].value.rules")
-    NFormItem
-      NButton(attr-type='button', @click='handleValidateClick') 验证
-      NButton(attr-type='button', @click='onGenerate') 生成
-  pre {{ JSON.stringify(formValue, null, 2) }}
+  NScrollbar(x-scrollable)
+    NForm(ref='formRef', :model='formValue', :rules='rules', :size='size')
+      NFormItem(label='名称 - name', path='name')
+        NInput(v-model:value='formValue.name', placeholder='规则名称')
+      NFormItem(label='UUID - id', path='id')
+        NInputNumber(v-model:value='formValue.id', placeholder='规则UUID' :show-button="false")
+      NFormItem(label='版本 - version', path='version')
+        NInputNumber(v-model:value='formValue.version', placeholder='规则版本')
+      NFormItem(label='作者 - author', path='author')
+        NInput(v-model:value='formValue.author', placeholder='规则作者')
+      NFormItem(label='评级 - rating', path='rating')
+        NInput(v-model:value='formValue.rating', placeholder='规则评级')
+      NFormItem(label='详情 - detail', path='details')
+        NInput(v-model:value='formValue.details', placeholder='规则详情')
+      NFormItem(label='类型 - type', path='type')
+        NSelect(v-model:value="formValue.type" :options="Object.entries(options.type).map(([value, label]) => ({label, value}))" @keydown.enter.prevent='')
+      NFormItem(label='图标 - icon', path='icon')
+        NInput(v-model:value='formValue.icon', placeholder='规则图标')
+      NFormItem(label='请求头 - headers', path='headers')
+        NDynamicInput(v-model:value='formValue.headers', #='{ index, value }' :on-create="onCreate" show-sort-button, style="margin-top: .5rem;")
+          div(style='display: flex')
+            NFormItem(ignore-path-change, :show-label='false', :path='`formValue.headers[${index}].key`', :rule='dynamicInputRule')
+              NInput(v-model:value='formValue.headers[index].key', placeholder='Name', @keydown.enter.prevent='')
+            div(style='height: 34px; line-height: 34px; margin: 0 8px') =
+            NFormItem(ignore-path-change, :show-label='false', :path='`formValue.headers[${index}].value`', :rule='dynamicInputRule')
+              NInput(v-model:value='formValue.headers[index].value', placeholder='Value', @keydown.enter.prevent='')
+      NFormItem(label='板块列表 - sections', path='sections')
+        NDynamicInput(v-model:value='formValue.sections', #='{ index, value }', :on-create="onCreateSection" , style="margin-top: .5rem;")
+          NFormItem.section-name(ignore-path-change, :show-label='false', :path='`formValue.sections[${index}].key`')
+            NSelect(v-model:value="formValue.sections[index].key" :options="Object.entries(options.section).map(([value, label]) => ({label, value}))" @keydown.enter.prevent='')
+          div.sections
+            NFormItem(:show-label='false', :path='`formValue.sections[${index}].value.index`')
+              NInput(v-model:value='formValue.sections[index].value.index', placeholder='板块索引')
+            NFormItem(v-if="formValue.sections[index].value.name" label='名称', :path='`formValue.sections[${index}].value.name`')
+              NInput(v-model:value='formValue.sections[index].value.name', placeholder='板块名称')
+            NFormItem(v-if="formValue.sections[index].value.detail" label='描述', :path='`formValue.sections[${index}].value.detail`')
+              NInput(v-model:value='formValue.sections[index].value.detail', placeholder='板块描述')
+            DynamicRulesEditor(v-model:data="formValue.sections[index].value.rules")
+      NFormItem
+        NButton(attr-type='button', @click='handleValidateClick') 验证
+        NButton(attr-type='button', @click='onGenerate') 生成
+    pre {{ JSON.stringify(formValue, null, 2) }}
 </template>
 
 <script lang="ts">
 import { defineComponent, ref, defineProps, PropType } from 'vue'
-import { FormInst, NRadioGroup, NRadioButton, NForm, NFormItem, NInputGroup, NInputGroupLabel, NInput, NInputNumber, NSelect, NButton, NDynamicInput, useMessage } from 'naive-ui'
+import { FormInst, NScrollbar, NRadioGroup, NRadioButton, NForm, NFormItem, NInputGroup, NInputGroupLabel, NInput, NInputNumber, NSelect, NButton, NDynamicInput, useMessage } from 'naive-ui'
 import DynamicRulesEditor from './rules.vue'
 export default defineComponent({
   props: {
@@ -54,10 +55,9 @@ export default defineComponent({
       required: true,
     },
   },
-  emits: {
-    generated: Function as (text: string) => void
-  },
+  emits: ['generated'],
   components: {
+    NScrollbar,
     NRadioGroup,
     NRadioButton,
     NForm,
@@ -73,8 +73,6 @@ export default defineComponent({
   },
   methods: {
     onGenerate() {
-      console.log(this.convertForm2Site(this.formValue))
-
       this.$emit('generated', JSON.stringify(this.convertForm2Site(this.formValue)))
     },
   },
