@@ -152,7 +152,7 @@ watch(() => query.value.keywords, getKeywordsOptions)
           .item-info 
             .item-title {{ item.title }}
             .item-tags {{ item.tags }}
-            //- .item-options
+            .item-options
               i.mdi.mdi-download
           .item-mask 
     NResult(v-else-if="isLoaded && results.length === 0" status="info" title="提示" description="已经到底了")

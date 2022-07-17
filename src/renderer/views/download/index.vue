@@ -20,6 +20,7 @@
                 :class="{done: item?.progress?.progress  === 100}")
               .item-progress--info {{ `${ getGroupStatus(item.childTask) } / ${ item.childTask.size }` }} pics
             .item-finish(v-else) {{ `下载完成 - ${ item.childTask.size }个条目` }}
+            
         .download-children(:class="{expand: item.isExpand}")
           .download-item(v-for="[_, child] in item.childTask" @click.stop="onChildItemClick(child)")
             img.item-cover(:src="child?._src" alt="")
@@ -34,6 +35,7 @@
                   :class="{done: child?.progress?.progress  === 100}")
                 .item-progress--info {{ `${filesize(child.progress?.current || 0)} / ${filesize(child.progress?.total || 0)}` }}
               .item-finish(v-else) {{ `下载完成 - ${filesize(child.progress?.current || 0)}` }}
+              i.item-reload.mdi.mdi-refresh(@click="onReload(item, child)")
       .download-item(v-else)
         img.item-cover(:src="item?._src" alt="")
         .item-info
@@ -77,6 +79,10 @@ export default defineComponent({
     },
   },
   methods: {
+    onReload(item: ImageDownloadMeta, child: ImageDownloadMeta) {
+      this.downloadStore.downloadGroup(item, [child])
+      // window.$message(`下载开始: ${child.title}`)
+    },
     onItemClick(item: ImageDownloadMeta) {
       if (item.childTask) {
         item.isExpand = !item.isExpand

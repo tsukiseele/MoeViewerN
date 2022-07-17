@@ -1,6 +1,6 @@
 <template lang="pug">
-  .app-image-preview
-    img(:src='src' @click="onClick")
+.app-image-preview
+  img(:src='src' @click="onClick")
 </template>
 
 <script>

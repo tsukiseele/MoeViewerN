@@ -2,7 +2,7 @@
   <div class="about">
     <section class="about-item">
       <h2 class="about-title">Developer</h2>
-      <img class="about-avatar" src="../assets/images/github-avatar.webp" alt="" />
+      <img class="about-avatar" src="../../assets/images/github-avatar.webp" alt="" />
       <div class="about-content"><a href="https://github.com/tsukiseele" target="_blank">TsukiSeele</a></div>
     </section>
     <section class="about-item">
