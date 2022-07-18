@@ -43,7 +43,7 @@ ipcMain.on('requestAsync', async (event, params) => {
 
   let current = 0
   const throttled = _.throttle(() => event.reply('progress', { progress, uuid: params.uuid }), 200)
-  
+
   response.body.on('data', (chunk: Uint8Array) => {
     current += chunk.length
     chunks.push(chunk)

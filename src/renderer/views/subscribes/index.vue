@@ -13,7 +13,6 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue'
-import { invoke, invokeAsObject, io } from '@/electron'
 import { NModal } from 'naive-ui'
 import SSiteEditor from '@/components/SSiteEditor/index.vue' 
 
@@ -39,7 +38,7 @@ export default defineComponent({
     }
   },
   async mounted() {
-    this.sites = await invoke('getSiteList')
+    this.sites = await window.eapi.invoke('getSiteList')
     console.log(this.sites)
     this.$forceUpdate()
   },

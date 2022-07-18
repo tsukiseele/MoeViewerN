@@ -33,10 +33,12 @@ interface Rules {
   [key: string]: Selector
   $children: ChildrenNode
 }
+
 interface ChildrenNode extends Selector {
   flat?: boolean,
   rules: Rules
 }
+
 interface Selector {
   selector: string
   regex: string,

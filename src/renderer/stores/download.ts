@@ -60,7 +60,7 @@ export const useDownloadStore = defineStore({
           }
         })
       })
-      window.eapi.io.writeText(JSON.stringify(Object.fromEntries(this.statusMap)), 'download.json')
+      // window.eapi.io.writeText(JSON.stringify(Object.fromEntries(this.statusMap)), 'download.json')
     }
   }
 }) 

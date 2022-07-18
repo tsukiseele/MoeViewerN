@@ -2,7 +2,7 @@
 .frame
   .frame-bar
     .frame-icon.mdi.mdi-alpha-m-box
-    .frame-title MoeViewerN
+    .frame-title MoeViewer for Desktop
     .frame-spacer
     .frame-btn.mdi.mdi-window-minimize(@click="onMinimize")
     .frame-btn.mdi.mdi-window-restore(@click="onMaximize")

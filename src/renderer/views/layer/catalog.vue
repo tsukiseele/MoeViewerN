@@ -11,11 +11,10 @@ SLayer(:show="show" title="Gallery" @update:show="(show: boolean) => $emit('upda
             NImage(v-for="item in resultSet"  :src="item._src" object-fit="cover")
         NProgress(v-if="resultSet && resultSet.length == 1" type="line" :percentage="percentage" processing :indicator-placement="'inside'" :border-radius="4" :class="{done: percentage === 100}")
     
-    SLoading(:show="!isLoaded")
-    
-    NResult(v-if="isLoaded && !(resultSet && resultSet.length)" status="404" title="Resource Not Found" description="可能因素：目标未命中，网络不可用，防火墙拦截（尤其是在中国大陆）")
-      template(#footer)
-        NButton(@click="onSearch") Reload
+      SLoading(:show="!isLoaded")
+      NResult(v-if="isLoaded && !(resultSet && resultSet.length)" status="404" title="Resource Not Found" description="可能因素：目标未命中，网络不可用，防火墙拦截（尤其是在中国大陆）")
+        template(#footer)
+          NButton(@click="onSearch") Reload
     aside.aside
       .gallery-cover
         NImage(:src="item._src" object-fit="cover")

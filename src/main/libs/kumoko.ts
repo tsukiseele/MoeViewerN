@@ -109,7 +109,7 @@ export default class Kumoko {
    * @param {Number} keywords 关键字
    * @returns {Promise<Array<Object>>}
    */
-  async parseRules(_url: string, rule: Rules, page = this.page, keywords = this.keywords): Promise<Meta[]> {
+  async parseRules(_url: string, rule: Rules, page: number = this.page, keywords: string | undefined = this.keywords): Promise<Meta[]> {
     if (!rule) return []
     // 生成URL
     const url = this.replaceUrlTemplate(_url, page, keywords)
@@ -134,7 +134,7 @@ export default class Kumoko {
         }
         // 匹配正则内容
         const regexp = new RegExp(exp.regex, 'g')
-        let res
+        let res: RegExpExecArray | null
         for (let i = 0; (res = regexp.exec(context)) != null; i++) {
           // 以第一个组为匹配值
           if (res[1]) {
@@ -161,7 +161,7 @@ export default class Kumoko {
    * @param {Number} timeout 最大超时
    * @returns {Promise<String>} 响应文本
    */
-  async requestText(url: string, options: any) {
+  async requestText(url: string, options: any): Promise<string> {
     // 如果已有传入请求，则使用传入的
     if (this.request) {
       return await this.request(url, options || {})
@@ -177,7 +177,7 @@ export default class Kumoko {
    * 获取当前板块
    * @returns {Section}
    */
-  getCurrentSection() {
+  getCurrentSection(): Section {
     if (!this.site) throw Error('site cannot be empty!')
     const section = this.keywords ? this.site.sections.search : this.site.sections.home
     // 复用规则
@@ -189,30 +189,33 @@ export default class Kumoko {
 
   /**
    * 遍历选择器
-   * @param {Document} $ 文档上下文
-   * @param {String} selector 选择器
-   * @param {Function} each
+   * @param {cheerio.CheerioAPI} $ 文档上下文
+   * @param {string} selector 选择器
+   * @param {function} each 
    */
-  selectEach($, selector, each) {
-    const match = REG_SELECTOR_TEMPLATE.exec(selector) ///\$\((.*?)\)\.(\w+?)\((.*?)\)/.exec(selector)
+  selectEach($: cheerio.CheerioAPI, selector: string, each: (content: string, index: number) => void) {
+    const match = REG_SELECTOR_TEMPLATE.exec(selector)
     if (!match) return
     const s = {
       select: match[1],
-      fun: match[2],
+      func: match[2],
       attr: match[3],
     }
     // 遍历元素集
-    $(s.select).each((index, item) => {
+    $(s.select).each((index, el) => {
       let result = ''
-      switch (s.fun) {
+      switch (s.func) {
         case 'attr':
-          result = item.attribs[s.attr]
+          //@ts-ignore
+          result = el.attribs[s.attr]
+          // result = el.attr[s.attr]
           break
         case 'text':
-          result = $(item).text()
+          result = $(el).text()
           break
         case 'html':
-          result = $(item).html()
+          result = $(el).html() || ''
+          break
       }
       each(result, index)
     })
@@ -263,7 +266,7 @@ export default class Kumoko {
    * @param {*} deep deep equals
    * @returns
    */
-  objectEquals(x: any, y: any, deep = false): boolean {
+  objectEquals(x: any, y: any, deep: boolean = false): boolean {
     if (x === y) return true
     // if both x and y are null or undefined and exactly the same
     if (!(x instanceof Object) || !(y instanceof Object)) return false

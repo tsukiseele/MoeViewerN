@@ -1,15 +1,23 @@
 <template lang="pug">
-.container
-  div(style="font-size: 1rem; padding: 1rem;") 收藏夹
-
+#favorites
+  div(style="font-size: 1rem; height: 2rem; line-height: 2rem;") 收藏夹
+  ul.favorite-list
+    li.favorite-list-item(v-for="item in favorites")
+      img.item-cover(:src="item._src" width="200px")
+      //- img.item-cover(:src="item._src" width="200px")
+      span.item-title {{ item.title }}
 </template>
 
-<script lang="ts">
-import { defineComponent } from 'vue'
+<script lang="ts" setup>
+import { useFavorites } from '../../stores/favorites'
+import { NImage } from 'naive-ui';
 
-export default defineComponent({
+const favorites = useFavorites().favorites
 
-})
+console.log(favorites);
+
 </script>
 
-<style lang="less" scoped></style>
+<style lang="scss" scoped>
+@import './index.scss';
+</style>

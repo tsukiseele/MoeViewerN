@@ -1,19 +1,30 @@
-import { app, BrowserWindow, ipcMain, ipcRenderer, shell } from 'electron'
+import { app, BrowserWindow, screen, ipcMain, ipcRenderer, shell } from 'electron'
 import { join } from 'path'
 import * as cache from './utils/disk-lru'
 import './ipc/main'
 
 async function createWindow() {
   // see https://www.npmjs.com/package/electron-acrylic-window
-  let AcrylicBrowserWindow
+  let AcrylicBrowserWindow: any
   try {
     const eaw = await import('electron-acrylic-window')
     if (eaw) AcrylicBrowserWindow = eaw.BrowserWindow
   } catch (error) {}
 
+  const workAreaSize = screen
+    .getAllDisplays()
+    .map((item) => item.workAreaSize)
+    .reduceRight((a, b) => ({ width: a.width + b.width, height: Math.max(a.height, b.height) }), { width: 0, height: 0 })
+  
+  const width = 1080
+  const height = 720
+  const x = workAreaSize.width - width / 2
+  const y = workAreaSize.height - height / 2
   const mainWindow = new (AcrylicBrowserWindow || BrowserWindow)({
-    width: 1080,
-    height: 720,
+    width: width,
+    height: height,
+    x: x,
+    y: y,
     frame: false,
     transparent: true,
     webPreferences: {
@@ -58,14 +69,13 @@ app.on('window-all-closed', function () {
 })
 // Listen for web contents being created
 app.on('web-contents-created', (e, contents) => {
-
   // Check for a webview
   if (['window', 'webview'].includes(contents.getType())) {
     // Listen for any new window events
     contents.setWindowOpenHandler((details) => {
       e.preventDefault()
       shell.openExternal(details.url)
-      return { action: "deny" }
+      return { action: 'deny' }
     })
   }
 })

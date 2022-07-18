@@ -4,11 +4,12 @@ import { useRouter } from 'vue-router'
 import _ from 'lodash'
 import pQueue from 'p-queue'
 import { Base64 } from 'js-base64'
-import { useMessage, NButton, NSelect, NInputNumber, NAutoComplete, NResult, NTag } from 'naive-ui'
+import { NImage, NTooltip, NButton, NSelect, NInputNumber, NAutoComplete, NResult, NTag } from 'naive-ui'
 import SSimpleWaterfall from '@/components/SSimpleWaterfall/index.vue'
 import SLoading from '@/components/SLoading/index.vue'
-import CatalogLayer from '@/views/layer/CatalogLayer.vue'
+import CatalogLayer from '@/views/layer/catalog.vue'
 import placeholder from '@/assets/images/placeholder.webp'
+import { useFavorites } from '@/stores/favorites'
 
 const showCatalog = ref(false)
 const childItem = ref<ImageMeta>()
@@ -134,6 +135,21 @@ const getKeywordsOptions = _.throttle(async (nv) => {
 }, 500)
 
 watch(() => query.value.keywords, getKeywordsOptions)
+
+//
+
+const favorites = useFavorites()
+const onItemStar = (item: any) => {
+  console.log(item);
+  favorites.add(item)
+  console.log(favorites);
+  
+  
+}
+function onItemDownload(item: ImageMeta) {
+  console.log(item);
+  
+}
 </script>
 
 <template lang="pug">
@@ -145,7 +161,7 @@ watch(() => query.value.keywords, getKeywordsOptions)
       template(#suffix)
         i.mdi.mdi-magnify(@click="onSearch" )
   main
-    SSimpleWaterfall(v-if="isLoaded && results && results.length" :items="results" :loadedCount="loadedCount" image-key="coverUrl" :item-width="200" @loaded="onLoaded" @loading="isLoaded = false" @scroll-bottom="onScrollBottom")
+    SSimpleWaterfall(v-if="isLoaded && results && results.length" :items="results" :loaded-count="loadedCount" image-key="coverUrl" :item-width="200" @loaded="onLoaded" @loading="isLoaded = false" @scroll-bottom="onScrollBottom")
       template(v-slot="{item, index}")
         .list-item(v-if="item" @click="openChild(item)")
           img.item-cover(:src="item._src || placeholder" @load="(e) => onImgLoaded(e, item)")
@@ -153,7 +169,11 @@ watch(() => query.value.keywords, getKeywordsOptions)
             .item-title {{ item.title }}
             .item-tags {{ item.tags }}
             .item-options
-              i.mdi.mdi-download
+              i.mdi.mdi-download(@click.stop="onItemDownload(item)")
+              NTooltip
+                template(#trigger)
+                  i.mdi.mdi-star(@click.stop="onItemStar(item)")
+                | 收藏
           .item-mask 
     NResult(v-else-if="isLoaded && results.length === 0" status="info" title="提示" description="已经到底了")
     NResult(v-else-if="isLoaded" status="404" title="资源未找到" description="可能因素：网络不可用，防火墙拦截（尤其是在中国大陆）")

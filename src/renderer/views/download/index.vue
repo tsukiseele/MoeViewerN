@@ -55,8 +55,9 @@
 import { defineComponent } from 'vue'
 import { useThemeVars, NProgress } from 'naive-ui'
 import { changeColor } from 'seemly'
-import FileSize from 'filesize'
 import { useDownloadStore } from '@/stores/download'
+import FileSize from 'filesize'
+
 
 export default defineComponent({
   components: {

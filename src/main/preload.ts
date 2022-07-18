@@ -64,8 +64,8 @@ const electronIpc = {
     download(params: any, callback: (progress: Progress) => void): void {
       if (!params.url) throw new Error('url cannot be empty!')
       if (callback) {
-        // params.uuid = cyrb53(params.url, 255)
-        params.uuid = cyrb53(random(0, Number.MAX_SAFE_INTEGER).toString(), Date.now() % 256)
+        params.uuid = cyrb53(params.url, 255)
+        // params.uuid = cyrb53(random(0, Number.MAX_SAFE_INTEGER).toString(), Date.now() % 256)
         callbacks.set(params.uuid, callback)
       }
       ipcRenderer.send('download', params)

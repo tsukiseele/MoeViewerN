@@ -14,7 +14,6 @@ const links = [
   { to: '/about', icon: 'info' },
 ]
 
-
 </script>
 
 <template lang="pug">
@@ -30,6 +29,28 @@ TheFrame
 </template>
 
 <style lang="scss" scoped>
+
+.v-enter-active {
+  transition: all 0.3s ease-out;
+}
+
+.v-leave-active {
+  transition: none;
+}
+
+.v-enter-from,
+.v-leave-to {
+  transform: translateX(-10vh);
+  opacity: 0;
+}
+// .v-enter-active,
+// .v-leave-active {
+//   transition: opacity 0.5s ease-out;
+// }
+// .v-enter-from,
+// .v-leave-to {
+//   opacity: 0;
+// }
 #container {
   display: flex;
   flex-direction: row;
@@ -37,6 +58,7 @@ TheFrame
   height: 100%;
   overflow: hidden;
   main#main {
+    position: relative;
     flex: 1;
     width: 0;
     overflow: auto;

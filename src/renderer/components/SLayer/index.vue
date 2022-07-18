@@ -1,6 +1,7 @@
 <template lang="pug">
-NModal(v-model:show="showModal" :mask-closable="false")
-  .layer()
+//- NModal()
+Transition(name='fade')
+  .layer(v-if="showModal")
     header
       .title {{ title }}
       i.close.mdi.mdi-window-close(@click="showModal = false" ) 
@@ -44,16 +45,28 @@ export default defineComponent({
 </script>
 
 <style lang="scss" scoped>
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.5s ease-out;
+}
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+}
 .layer {
+  position: absolute;
+  left: 0;
+  top: 0;
+  // margin-top: 2rem;
+  // margin-left: 3rem;
   display: flex;
   flex-direction: column;
 
   // margin-top: var(--frame-height);
   width: 100%;
-  height: 100vh;
+  height: 100%;
   // height: calc(100vh - var(--frame-height));
-  background-color: rgba($color: #ffffff, $alpha: 0.8);
-  backdrop-filter: blur(16px);
+  background-color: rgba($color: #ddd, $alpha: 1);
   overflow: hidden;
   header {
     display: flex;
