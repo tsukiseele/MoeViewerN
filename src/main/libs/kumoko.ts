@@ -13,9 +13,11 @@ const REG_KEYWORD_TEMPLATE = /\{keywords\s*?:\s*?(.*?)\}/i
 const REG_KEYWORD_MATCH = /\{keywords\s*?:.*?\}/i
 const REG_SELECTOR_TEMPLATE = /\$\((.*?)\)\.(\w+?)\((.*?)\)/
 
-interface RequestOptions {
+export declare interface RequestOptions {
   headers?: Headers
+  timeout?: number
 }
+
 export default class Kumoko<T extends Meta> {
   // 当前站点抓取规则
   site: Site | undefined
@@ -24,7 +26,7 @@ export default class Kumoko<T extends Meta> {
   // 搜索关键字
   keywords: string | undefined = undefined
   //
-  request: (url: string, options?: RequestOptions) => Promise<string | undefined> | undefined
+  request: (url: string, options: RequestOptions) => Promise<string | undefined> | undefined
 
   /**
    * 通过配置构造一个爬虫对象
@@ -32,7 +34,7 @@ export default class Kumoko<T extends Meta> {
    * @param {Number} page 当前页
    * @param {String} keywords 关键字
    */
-  constructor(site: Site, page: number = 1, keywords: string | undefined, request: (url: string, options?: RequestOptions) => Promise<string | undefined> | undefined) {
+  constructor(site: Site, page: number = 1, keywords: string | undefined, request: (url: string, options: RequestOptions) => Promise<string | undefined> | undefined) {
     this.site = site
     this.page = page
     this.keywords = keywords
@@ -166,9 +168,9 @@ export default class Kumoko<T extends Meta> {
   async requestText(url: string, options?: RequestOptions): Promise<string | undefined> {
     // 如果已有传入请求，则使用传入的
     if (this.request) {
-      return await this.request(url, options)
+      return await this.request(url, options || {})
     }
-    const resp = await fetch(url, options as any)
+    const resp = await fetch(url, options)
     if (resp.ok) {
       return await resp.text()
     }

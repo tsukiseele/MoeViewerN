@@ -1,6 +1,6 @@
 import { ipcMain, BrowserWindow } from 'electron'
 import SiteLoader from '../libs/site-loader'
-import Kumoko from '../libs/kumoko'
+import Kumoko, { RequestOptions } from '../libs/kumoko'
 import fetch from '../libs/proxy-fetch'
 import _ from 'lodash'
 import * as cache from '../utils/disk-lru'
@@ -69,12 +69,12 @@ ipcMain.on('requestAsync', async (event, params) => {
 
 ipcMain.handle('loadChildren', async (event, params) => {
   if (params.item && params.item.$children) {
-    const requestAsText = async (url: string, options: any) => {
-      options.headers = { ...params.item.$site.headers }
+    const requestAsText = async (url: string, options: RequestOptions) => {
+      // options.headers = { ...params.item.$site.headers }
       options.timeout = 5000
       return await (await fetch(url, options)).text()
     }
-    return JSON.stringify(await new Kumoko(params.item, 0, undefined, requestAsText).parseChildrenConcurrency(params.item, params.item.$section.rules))
+    return JSON.stringify(await new Kumoko(params.item, undefined, undefined, requestAsText).parseChildrenConcurrency(params.item, params.item.$section.rules))
   }
 })
 ipcMain.handle('load', async (event, query) => {
@@ -83,8 +83,8 @@ ipcMain.handle('load', async (event, query) => {
     const sites = await SiteLoader.loadSites(`${process.cwd()}/static/rules`)
     const site = sites.find((site) => site.id == query.siteId)
     if (!site) return []
-    const requestAsText = async (url: string, options: any) => {
-      options.headers = { ...site.headers }
+    const requestAsText = async (url: string, options: RequestOptions) => {
+      // options.headers = { ...site.headers }
       options.timeout = 5000
       return await (await fetch(url, options)).text()
     }
