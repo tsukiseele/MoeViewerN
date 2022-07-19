@@ -13,7 +13,10 @@ const REG_KEYWORD_TEMPLATE = /\{keywords\s*?:\s*?(.*?)\}/i
 const REG_KEYWORD_MATCH = /\{keywords\s*?:.*?\}/i
 const REG_SELECTOR_TEMPLATE = /\$\((.*?)\)\.(\w+?)\((.*?)\)/
 
-export default class Kumoko {
+interface RequestOptions {
+  headers?: Headers
+}
+export default class Kumoko<T extends Meta> {
   // 当前站点抓取规则
   site: Site | undefined
   // 当前分页值
@@ -21,14 +24,15 @@ export default class Kumoko {
   // 搜索关键字
   keywords: string | undefined = undefined
   //
-  request: Function | undefined
+  request: (url: string, options?: RequestOptions) => Promise<string | undefined> | undefined
+
   /**
    * 通过配置构造一个爬虫对象
    * @param {Site} site 规则
    * @param {Number} page 当前页
    * @param {String} keywords 关键字
    */
-  constructor(site: Site, page = 1, keywords: string | undefined, request: any) {
+  constructor(site: Site, page: number = 1, keywords: string | undefined, request: (url: string, options?: RequestOptions) => Promise<string | undefined> | undefined) {
     this.site = site
     this.page = page
     this.keywords = keywords
@@ -36,9 +40,9 @@ export default class Kumoko {
   }
   /**
    * 解析Site对象，返回结果集
-   * @returns {Promise<Array<Object>>}
+   * @returns {Promise<<T extends Meta>[]>}
    */
-  async parseSite(isParseChildren = false) {
+  async parseSite(isParseChildren = false): Promise<T[]> {
     return await this.parseSection(this.getCurrentSection(), isParseChildren)
   }
 
@@ -46,9 +50,9 @@ export default class Kumoko {
    * 解析Section对象，返回结果集
    * @param {Section} section 站点板块
    * @param {Number} deep 解析深度
-   * @return {Promise<Array<Object>>}
+   * @return {Promise<<T extends Meta>[]>}
    */
-  async parseSection(section: Section, isParseChildren = false) {
+  async parseSection(section: Section, isParseChildren = false): Promise<T[]> {
     if (!this.site) throw new Error('site cannot be empty!')
     // 复用规则
     if (section.reuse) {
@@ -59,24 +63,23 @@ export default class Kumoko {
       item.$section = section
       item.$site = this.site
     })
-    // console.log(this.site);
-    // console.log(result)
     if (isParseChildren && section.rules.$children) {
       await this.parseChildrenOfList(result, section.rules)
     }
     return result
   }
-  async parseChildrenOfList(list: Meta[], rules: Rules) {
+  async parseChildrenOfList(list: T[], rules: Rules): Promise<void> {
     await Promise.allSettled(list.map((item) => this.parseChildrenConcurrency(item, rules)))
   }
   /**
    * 解析Children，自动检测末尾，自动继承父级，自动拉平单项子级
    * @param {*} item
    * @param {*} rules
+   * @return {Promise<T extends Meta>}
    */
-  async parseChildrenConcurrency(item: Meta, rules: Rules, extend = true): Promise<Meta> {
+  async parseChildrenConcurrency(item: T, rules: Rules, extend = true): Promise<T> {
     if (item.$children && rules.$children) {
-      let histroy: any[] = []
+      let histroy: T[] = []
       let page = 0
       do {
         const children = await this.parseRules(item.$children, rules.$children.rules, page++)
@@ -107,19 +110,19 @@ export default class Kumoko {
    * 解析Rule对象，返回结果集
    * @param {Number} page 页码
    * @param {Number} keywords 关键字
-   * @returns {Promise<Array<Object>>}
+   * @returns {Promise<<T extends Meta>[]>}
    */
-  async parseRules(_url: string, rule: Rules, page: number = this.page, keywords: string | undefined = this.keywords): Promise<Meta[]> {
+  async parseRules(_url: string, rule: Rules, page: number = this.page, keywords: string | undefined = this.keywords): Promise<T[]> {
     if (!rule) return []
     // 生成URL
     const url = this.replaceUrlTemplate(_url, page, keywords)
     // 发送请求
-    const html = await this.requestText(url, this.site?.headers)
+    const html = await this.requestText(url, { headers: this.site?.headers })
     // 检查无效响应
     if (!html) return []
     // 加载文档
     const $ = cheerio.load(html)
-    const resultSet: any[] = []
+    const resultSet: T[] = []
     // 遍历选择器集
     for (const k of Object.keys(rule)) {
       const exp = rule[k]
@@ -139,14 +142,14 @@ export default class Kumoko {
           // 以第一个组为匹配值
           if (res[1]) {
             // 执行最终替换，并添加到结果集
-            resultSet[i] || resultSet.push({})
+            resultSet[i] || resultSet.push({} as T)
             resultSet[i][k] = this.replaceRegex(res[1], exp.capture, exp.replacement)
           }
         }
       } else if (exp.selector) {
         this.selectEach($, exp.selector, (result, index) => {
           // 执行最终替换，并添加到结果集
-          resultSet[index] || resultSet.push({})
+          resultSet[index] || resultSet.push({} as T)
           resultSet[index][k] = this.replaceRegex(result, exp.capture, exp.replacement)
         })
       }
@@ -158,15 +161,14 @@ export default class Kumoko {
    * 请求文档内容，默认使用fetch发送请求，自动注入请求头
    * @param {String} url 链接
    * @param {Object} options 操作
-   * @param {Number} timeout 最大超时
    * @returns {Promise<String>} 响应文本
    */
-  async requestText(url: string, options: any): Promise<string> {
+  async requestText(url: string, options?: RequestOptions): Promise<string | undefined> {
     // 如果已有传入请求，则使用传入的
     if (this.request) {
-      return await this.request(url, options || {})
+      return await this.request(url, options)
     }
-    const resp = await fetch(url, options)
+    const resp = await fetch(url, options as any)
     if (resp.ok) {
       return await resp.text()
     }
@@ -191,7 +193,7 @@ export default class Kumoko {
    * 遍历选择器
    * @param {cheerio.CheerioAPI} $ 文档上下文
    * @param {string} selector 选择器
-   * @param {function} each 
+   * @param {function} each
    */
   selectEach($: cheerio.CheerioAPI, selector: string, each: (content: string, index: number) => void) {
     const match = REG_SELECTOR_TEMPLATE.exec(selector)

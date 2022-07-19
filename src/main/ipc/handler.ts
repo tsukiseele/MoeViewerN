@@ -69,7 +69,7 @@ ipcMain.on('requestAsync', async (event, params) => {
 
 ipcMain.handle('loadChildren', async (event, params) => {
   if (params.item && params.item.$children) {
-    const requestAsText = async (url, options) => {
+    const requestAsText = async (url: string, options: any) => {
       options.headers = { ...params.item.$site.headers }
       options.timeout = 5000
       return await (await fetch(url, options)).text()
@@ -83,13 +83,12 @@ ipcMain.handle('load', async (event, query) => {
     const sites = await SiteLoader.loadSites(`${process.cwd()}/static/rules`)
     const site = sites.find((site) => site.id == query.siteId)
     if (!site) return []
-    const requestAsText = async (url, options) => {
+    const requestAsText = async (url: string, options: any) => {
       options.headers = { ...site.headers }
       options.timeout = 5000
       return await (await fetch(url, options)).text()
     }
-
-    const kumoko = new Kumoko(site, query.page || 1, query.keywords || '', requestAsText)
+    const kumoko = new Kumoko<Meta>(site, query.page || 1, query.keywords || '', requestAsText)
     const resultSet = await kumoko.parseSite()
     return JSON.stringify(resultSet)
   } catch (error) {

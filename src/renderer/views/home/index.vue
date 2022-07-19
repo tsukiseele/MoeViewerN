@@ -25,9 +25,7 @@ const loadedCount = ref(0)
 const queue = new pQueue({ concurrency: 16 })
 const siteOptions = computed(() => (sites.value && sites.value.length && sites.value.map((site) => ({ label: site.name, value: site.id }))) || undefined)
 
-// window.$message = useMessage()
 onMounted(async () => {
-  // window.eapi.db.initSQLite()
   sites.value = await window.eapi.invoke('getSiteList')
   console.log('Sites: ', sites.value)
   if (sites.value && sites.value.length) {
@@ -49,8 +47,6 @@ async function loadList(params: any) {
   results.value = await window.eapi.invokeAsObject('load', params)
   // if (!results.value || !results.value.length) $message.error(`资源未找到！`)
   isLoaded.value = true
-  console.log('Images: ', results.value);
-  
 }
 async function loadNext(params: any) {
   const next = await window.eapi.invokeAsObject('load', params)
@@ -59,16 +55,17 @@ async function loadNext(params: any) {
 const base64ToBlob = (base64: string, type: string) => {
   return new Blob([Base64.toUint8Array(base64)], { type: type })
 }
+interface PreloadImageElement extends HTMLImageElement {
+  loaded?: boolean
+}
 function onImgLoaded(e: Event, item: any) {
-  // @ts-ignore
-  const el = e.path[0]
+  const el = (e.composedPath && e.composedPath())[0] as PreloadImageElement
   !el.loaded && loadImage(el, item)
 }
-async function loadImage(el: HTMLImageElement, item: any) {
+async function loadImage(el: PreloadImageElement, item: any) {
   if (item._src) return
   queue.add(async () => {
     const { data, type } = await window.eapi.invoke('request', { url: item.coverUrl, options: { headers: currentSite.value?.headers, timeout: 5000, retries: 5 } })
-    //@ts-ignore
     el.loaded = true
     item._src = URL.createObjectURL(base64ToBlob(data, type))
     loadedCount.value = loadedCount.value ? loadedCount.value + 1 : 1
@@ -140,15 +137,12 @@ watch(() => query.value.keywords, getKeywordsOptions)
 
 const favorites = useFavorites()
 const onItemStar = (item: any) => {
-  console.log(item);
+  console.log(item)
   favorites.add(item)
-  console.log(favorites);
-  
-  
+  console.log(favorites)
 }
 function onItemDownload(item: ImageMeta) {
-  console.log(item);
-  
+  console.log(item)
 }
 </script>
 

@@ -1,4 +1,3 @@
-
 /**
  * 图片元数据
  */
@@ -9,7 +8,7 @@ interface ImageMeta extends Meta {
   largerUrl?: string,
   originUrl?: string,
   tags?: string,
-  _src?: string
+  _src?: string,
 }
 /**
  * 下载任务
