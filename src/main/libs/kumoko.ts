@@ -13,11 +13,19 @@ const REG_KEYWORD_TEMPLATE = /\{keywords\s*?:\s*?(.*?)\}/i
 const REG_KEYWORD_MATCH = /\{keywords\s*?:.*?\}/i
 const REG_SELECTOR_TEMPLATE = /\$\((.*?)\)\.(\w+?)\((.*?)\)/
 
+const config = {
+  request: async (url: string, options: RequestOptions) => { 
+    if (!fetch) throw new Error("fetch is not defined");
+    const resp = await fetch(url, options)
+    return resp.ok ? await resp.text() : ''
+  }
+}
+
+
 export declare interface RequestOptions {
   headers?: Headers
   timeout?: number
 }
-
 export default class Kumoko<T extends Meta> {
   // 当前站点抓取规则
   site: Site | undefined
@@ -26,7 +34,7 @@ export default class Kumoko<T extends Meta> {
   // 搜索关键字
   keywords: string | undefined = undefined
   //
-  request: (url: string, options: RequestOptions) => Promise<string | undefined> | undefined
+  request: ((url: string, options: RequestOptions) => Promise<string | undefined>) | undefined = undefined
 
   /**
    * 通过配置构造一个爬虫对象
@@ -34,11 +42,25 @@ export default class Kumoko<T extends Meta> {
    * @param {Number} page 当前页
    * @param {String} keywords 关键字
    */
-  constructor(site: Site, page: number = 1, keywords: string | undefined, request: (url: string, options: RequestOptions) => Promise<string | undefined> | undefined) {
+  constructor(site: Site) {
     this.site = site
+  }
+  setSite(site: Site): Kumoko<T> {
+    this.site = site
+    return this
+  }
+  setPage(page: number): Kumoko<T> {
     this.page = page
+    return this
+  }
+  setKeywords(keywords: string): Kumoko<T> {
     this.keywords = keywords
+    return this
+  }
+  setRequest(request: (url: string, options: RequestOptions) => Promise<string | undefined>): Kumoko<T> {
+    // this.request = request
     this.request = request
+    return this
   }
   /**
    * 解析Site对象，返回结果集
@@ -118,6 +140,8 @@ export default class Kumoko<T extends Meta> {
     if (!rule) return []
     // 生成URL
     const url = this.replaceUrlTemplate(_url, page, keywords)
+    console.log('UUU', url);
+    
     // 发送请求
     const html = await this.requestText(url, { headers: this.site?.headers })
     // 检查无效响应
@@ -165,16 +189,17 @@ export default class Kumoko<T extends Meta> {
    * @param {Object} options 操作
    * @returns {Promise<String>} 响应文本
    */
-  async requestText(url: string, options?: RequestOptions): Promise<string | undefined> {
+  async requestText(url: string, options: RequestOptions): Promise<string | undefined> {
     // 如果已有传入请求，则使用传入的
-    if (this.request) {
-      return await this.request(url, options || {})
-    }
-    const resp = await fetch(url, options)
-    if (resp.ok) {
-      return await resp.text()
-    }
-    return ''
+    // if (this.request) {
+    //   return await this.request(url, options || {})
+    // }
+    // const resp = await fetch(url, options)
+    // if (resp.ok) {
+    //   return await resp.text()
+    // }
+    // return ''
+    return this.request ? this.request(url, options) : config.request(url, options)
   }
 
   /**
@@ -250,7 +275,7 @@ export default class Kumoko<T extends Meta> {
    * @param {String} keywords 关键字
    * @returns {String} 真实URL
    */
-  replaceUrlTemplate(template: string, page: number = 1, keywords?: string): string {
+  replaceUrlTemplate(template: string, page: number, keywords?: string): string {
     const pageMatch = REG_PAGE_TEMPLATE.exec(template)
     const keywordMatch = REG_KEYWORD_TEMPLATE.exec(template)
     // 获取默认keywords
@@ -294,4 +319,9 @@ export default class Kumoko<T extends Meta> {
     // allows x[ p ] to be set to undefined
     return true
   }
+}
+
+export {
+  Kumoko,
+  config
 }

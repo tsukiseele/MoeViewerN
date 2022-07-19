@@ -1,6 +1,6 @@
 import { ipcMain, BrowserWindow } from 'electron'
 import SiteLoader from '../libs/site-loader'
-import Kumoko, { RequestOptions } from '../libs/kumoko'
+import Kumoko, { RequestOptions, config as KumokuConfig } from '../libs/kumoko'
 import fetch from '../libs/proxy-fetch'
 import _ from 'lodash'
 import * as cache from '../utils/disk-lru'
@@ -11,6 +11,10 @@ import { Base64 } from 'js-base64'
 // on macOS: ~/Library/Logs/{app name}/{process type}.log
 // on Windows: %USERPROFILE%\AppData\Roaming\{app name}\logs\{process type}.log
 
+KumokuConfig.request = async (url: string, options: RequestOptions) => {
+  options.timeout = 5000
+  return await (await fetch(url, options)).text()
+}
 /**
  * 该文件封装了内容抓取，解析，封装操作的本地逻辑
  */
@@ -69,12 +73,12 @@ ipcMain.on('requestAsync', async (event, params) => {
 
 ipcMain.handle('loadChildren', async (event, params) => {
   if (params.item && params.item.$children) {
-    const requestAsText = async (url: string, options: RequestOptions) => {
-      // options.headers = { ...params.item.$site.headers }
-      options.timeout = 5000
-      return await (await fetch(url, options)).text()
-    }
-    return JSON.stringify(await new Kumoko(params.item, undefined, undefined, requestAsText).parseChildrenConcurrency(params.item, params.item.$section.rules))
+    // const requestAsText = async (url: string, options: RequestOptions) => {
+    //   // options.headers = { ...params.item.$site.headers }
+    //   options.timeout = 5000
+    //   return await (await fetch(url, options)).text()
+    // }
+    return JSON.stringify(await new Kumoko(params.item).parseChildrenConcurrency(params.item, params.item.$section.rules))
   }
 })
 ipcMain.handle('load', async (event, query) => {
@@ -88,7 +92,7 @@ ipcMain.handle('load', async (event, query) => {
       options.timeout = 5000
       return await (await fetch(url, options)).text()
     }
-    const kumoko = new Kumoko<Meta>(site, query.page || 1, query.keywords || '', requestAsText)
+    const kumoko = new Kumoko<Meta>(site).setPage(query.page).setKeywords(query.keywords)
     const resultSet = await kumoko.parseSite()
     return JSON.stringify(resultSet)
   } catch (error) {

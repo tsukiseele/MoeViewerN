@@ -101,6 +101,8 @@ export default defineComponent({
                 })
               )
             }
+            console.log('RRR', this.resultSet);
+            
           }
         } catch (error) {
           console.log(error)
@@ -126,6 +128,7 @@ export default defineComponent({
           const { data, type } = p.response
           const src = URL.createObjectURL(this.base64ToBlob(data, type))
           once._src = src
+          
         }
       })
     },
