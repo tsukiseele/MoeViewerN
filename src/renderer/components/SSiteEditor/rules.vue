@@ -3,9 +3,9 @@ NDynamicInput.field-input(v-model:value='rules', #='{ index: ruleIndex, _ }' :on
   NFormItem.section-name(ignore-path-change, label='字段', :path='`rules[${ruleIndex}].key`',)
     NInput(v-model:value='rules[ruleIndex].key', placeholder='规则详情')
   div(style='margin: 32px 8px 0 8px') : 
-  
+
   NFormItem
-    NDynamicInput(v-model:value='rules[ruleIndex].value', #='{index: fieldIndex, _ }' :on-create="onCreateSelector")
+    NDynamicInput(v-model:value='rules[ruleIndex].value', #='{ index: fieldIndex, _ }' :on-create="onCreateSelector")
       NInput.prop-name(v-model:value='rules[ruleIndex].value[fieldIndex].key', placeholder='属性名' style="max-width: 160px; align-self: flex-start;")
       div(style='margin: 8px 8px 0 8px') = 
       NInput.prop-value(v-if="rules[ruleIndex].value[fieldIndex].key != 'rules'" v-model:value='rules[ruleIndex].value[fieldIndex].value', placeholder='属性值')
@@ -111,16 +111,23 @@ export default defineComponent({
   flex: 0 0 100px;
   align-self: flex-start;
 }
+
 .prop-name {
   flex: 0 0 100px;
   // align-self: flex-start;
 }
-::v-deep {
-  .field-input .n-dynamic-input-item .n-form-item:first-of-type {
-    display: flex;
-    flex-direction: column;
-  }
+
+// ::v-deep {
+//   .field-input .n-dynamic-input-item .n-form-item:first-of-type {
+//     display: flex;
+//     flex-direction: column;
+//   }
+// }
+:deep(.field-input .n-dynamic-input-item .n-form-item:first-of-type) {
+  display: flex;
+  flex-direction: column;
 }
+
 :deep(.prop-value) {
   flex: 1;
 }

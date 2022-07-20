@@ -21,11 +21,11 @@ const config = {
   }
 }
 
-
 export declare interface RequestOptions {
   headers?: Headers
   timeout?: number
 }
+
 export default class Kumoko<T extends Meta> {
   // 当前站点抓取规则
   site: Site | undefined

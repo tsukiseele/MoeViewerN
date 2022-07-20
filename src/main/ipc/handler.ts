@@ -14,21 +14,14 @@ import { resolve } from 'path'
 
 const DIR_RULE_PATH = resolve(process.cwd(), 'static', 'rules')
 
-const __init_props__ = {
-  sites: [] as Site[],
-}
 const props = {
   sites: [] as Site[],
 }
-Object.defineProperty(props, 'sites', {
-  async get() {
-    return __init_props__.sites || (__init_props__.sites = await SiteLoader.loadSites(DIR_RULE_PATH))
-  }
-})
-// async function init() {
-//   console.log(props.sites);
-// }
-// init()
+async function init() {
+  props.sites = await SiteLoader.loadSites(DIR_RULE_PATH)
+}
+
+init()
 
 KumokuConfig.request = async (url: string, options: RequestOptions) => {
   options.timeout = 5000
