@@ -87,6 +87,9 @@
       transform: translateY(102%);
       padding: 0.5rem;
       .item-title {
+        max-lines: 3;
+        text-overflow: ellipsis;
+        overflow: hidden;
       }
       .item-options {
         display: flex;
