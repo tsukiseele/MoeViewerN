@@ -5,11 +5,30 @@ import fetch from '../libs/proxy-fetch'
 import _ from 'lodash'
 import * as cache from '../utils/disk-lru'
 import { Base64 } from 'js-base64'
+import { resolve } from 'path'
 // import log from 'electron-log'
 // By default, it writes logs to the following locations:
 // on Linux: ~/.config/{app name}/logs/{process type}.log
 // on macOS: ~/Library/Logs/{app name}/{process type}.log
 // on Windows: %USERPROFILE%\AppData\Roaming\{app name}\logs\{process type}.log
+
+const DIR_RULE_PATH = resolve(process.cwd(), 'static', 'rules')
+
+const __init_props__ = {
+  sites: [] as Site[],
+}
+const props = {
+  sites: [] as Site[],
+}
+Object.defineProperty(props, 'sites', {
+  async get() {
+    return __init_props__.sites || (__init_props__.sites = await SiteLoader.loadSites(DIR_RULE_PATH))
+  }
+})
+// async function init() {
+//   console.log(props.sites);
+// }
+// init()
 
 KumokuConfig.request = async (url: string, options: RequestOptions) => {
   options.timeout = 5000
@@ -18,10 +37,7 @@ KumokuConfig.request = async (url: string, options: RequestOptions) => {
 /**
  * 该文件封装了内容抓取，解析，封装操作的本地逻辑
  */
-ipcMain.handle('getSiteList', async (event, query) => {
-  // log.info('loadSite', `${process.cwd()}/static/rules`)
-  return await SiteLoader.loadSites(`${process.cwd()}/static/rules`)
-})
+ipcMain.handle('getSiteList', async (event, query) => props.sites)
 
 ipcMain.handle('request', async (event, params) => {
   const cacheData = cache.get(params.url)
@@ -73,25 +89,15 @@ ipcMain.on('requestAsync', async (event, params) => {
 
 ipcMain.handle('loadChildren', async (event, params) => {
   if (params.item && params.item.$children) {
-    // const requestAsText = async (url: string, options: RequestOptions) => {
-    //   // options.headers = { ...params.item.$site.headers }
-    //   options.timeout = 5000
-    //   return await (await fetch(url, options)).text()
-    // }
     return JSON.stringify(await new Kumoko(params.item).parseChildrenConcurrency(params.item, params.item.$section.rules))
   }
 })
 ipcMain.handle('load', async (event, query) => {
   if (!query || !query.siteId) return []
   try {
-    const sites = await SiteLoader.loadSites(`${process.cwd()}/static/rules`)
-    const site = sites.find((site) => site.id == query.siteId)
+    // const sites = await SiteLoader.loadSites(DIR_RULE_PATH)
+    const site = props.sites.find((site) => site.id == query.siteId)
     if (!site) return []
-    const requestAsText = async (url: string, options: RequestOptions) => {
-      // options.headers = { ...site.headers }
-      options.timeout = 5000
-      return await (await fetch(url, options)).text()
-    }
     const kumoko = new Kumoko<Meta>(site).setPage(query.page).setKeywords(query.keywords)
     const resultSet = await kumoko.parseSite()
     return JSON.stringify(resultSet)
