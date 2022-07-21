@@ -78,10 +78,10 @@ export default class Kumoko<T extends Meta> {
    */
   async parseSection(section: Section, isParseChildren = false): Promise<T[]> {
     if (!this.site) throw new Error('site cannot be empty!')
-    // 复用规则
-    if (section.reuse) {
-      section.rules = this.site.sections[section.reuse].rules
-    }
+    // 复用规则，现在已经在SiteLoader中处理
+    // if (section.reuse) {
+    //   section.rules = this.site.sections[section.reuse].rules
+    // }
     const result = await this.parseRules(section.index, section.rules)
     result.forEach((item) => {
       item.$section = section
@@ -140,7 +140,7 @@ export default class Kumoko<T extends Meta> {
     if (!rule) return []
     // 生成URL
     const url = this.replaceUrlTemplate(_url, page, keywords)
-    console.log('UUU', url);
+    console.log(`\u001b[1;46mRequest >>> \u001b[0m ${url}`);
     
     // 发送请求
     const html = await this.requestText(url, { headers: this.site?.headers })
@@ -210,9 +210,9 @@ export default class Kumoko<T extends Meta> {
     if (!this.site) throw Error('site cannot be empty!')
     const section = this.keywords ? this.site.sections.search : this.site.sections.home
     // 复用规则
-    if (section.reuse) {
-      section.rules = this.site.sections[section.reuse].rules
-    }
+    // if (section.reuse) {
+    //   section.rules = this.site.sections[section.reuse].rules
+    // }
     return section
   }
 

@@ -1,4 +1,5 @@
 import * as fs from 'fs/promises'
+import { readFileSync } from 'fs'
 /**
  *
  * @param dir
@@ -35,8 +36,21 @@ async function listFiles(dir: string, exts: string[]): Promise<string[]> {
  * @param file
  * @returns
  */
-async function loadSite(file: string) {
-  return await fs.readFile(file)
+// async function loadSite(file: string) {
+//   return await fs.readFile(file)
+// }
+async function loadSite(file: string): Promise<Site | undefined> {
+  // return await fs.readFile(file)
+  try {
+    const site = JSON.parse((await fs.readFile(file)).toString()) as Site
+    // 注入默认请求头
+    setDefaultHeaders(site)
+    // 复用规则
+    reuseRules(site)
+    if (checkSite(site)) return site
+  } catch (e) {
+    console.warn(`JSON load failed: ${file}, Cause: ${(e as Error).message}`)
+  }
 }
 
 /**
@@ -46,32 +60,18 @@ async function loadSite(file: string) {
  */
 async function loadSites(dir: string): Promise<Site[]> {
   const resultSet: Site[] = []
-
-  for (const json of await listFiles(dir, ['.json'])) {
-    try {
-      const site = JSON.parse((await loadSite(json)).toString()) as Site
-
-      // 注入默认请求头
-      await setDefaultHeaders(site)
-      // 设置Cookies到会话
-      // setCookiesToSession(site)
-      // 重用规则
-      reuseRules(site)
-      if (checkSite(site)) {
-        resultSet.push(site)
-      }
-    } catch (e) {
-      console.log(`JSON load failed: ${json}, Cause: ${(e as Error).message}`)
-    }
+  for (const file of await listFiles(dir, ['.json'])) {
+    const site = await loadSite(file)
+    site && resultSet.push(site)
   }
   return resultSet
 }
 
 function checkSite(site: Site) {
-  if (site.name) {
-    return site
-  }
-  return null
+  if (!(site && site.sections)) throw new Error('Empty site rules')
+  const values = Object.values(site.sections)
+  if (!(values && values.length && (values[0].rules || values[0].reuse))) throw new Error('Invalid site rules')
+  return site
 }
 
 function reuseRules(site: Site) {
@@ -89,41 +89,23 @@ function reuseRules(site: Site) {
  * 设置默认的请求头
  * @param site
  */
-async function setDefaultHeaders(site) {
+function setDefaultHeaders(site: Site) {
   if (!site) return
   const headers = site.headers || {}
   if (!headers.hasOwnProperty('User-Agent')) {
     headers['User-Agnet'] = 'Mozilla/5.0 (Windows NT 6.2; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/27.0.1453.94 Safari/537.36'
   }
-  if (!headers.hasOwnProperty('Referer') && site.sections.home && site.sections.home.index) {
+  if (!headers.hasOwnProperty('Referer') && site.sections?.home?.index) {
     const match = new RegExp('https?://.+?/').exec(site.sections.home.index)
     if (match && match[0]) headers['Referer'] = match[0]
   }
-  if (headers.hasOwnProperty('Cookie')) {
-    headers['Cookie'] = headers['Cookie'] + 'SameSite=None; Secure;'
-  }
+  // if (headers.hasOwnProperty('Cookie')) {
+  //   headers['Cookie'] = headers['Cookie'] + 'SameSite=None; Secure;'
+  // }
   site.headers = headers
 }
-/**
- * 设置Cookies到会话
- * @param site
- */
-function setCookiesToSession(site) {
-  if (!site || !site.headers || !site.sections.home || !site.sections.home.index) return
-  const match = new RegExp('https?://.+?/').exec(site.sections.home.index)
-  const cookie = site.headers['cookie'] || site.headers['Cookie']
-  if (match && match[0] && cookie) {
-    const domain = match[0]
-    // const p = /https?:\/\/(.*?\.).+?\..+?\//g.exec(domain)
-    // if (p && p[1]) {
-    //   domain = domain.replace(p[1], '*.')
-    // }
-    // domain = domain.replace(/https?:\/\//, '*://') || domain
-    // ipcRenderer.send('setCookies', domain, cookie)
-  }
-}
+
 export default {
-  setCookiesToSession,
   setDefaultHeaders,
   reuseRules,
   checkSite,

@@ -14,7 +14,7 @@
   "sections": {
     "home": {
       "index": "https://www.mzitu.com/page/{page:}/",
-      "rule": {
+      "rules": {
         "title": {
           "selector": "$(.lazy).attr(alt)"
         },
