@@ -15,21 +15,21 @@ const getWindowsFileName = (text: string) => {
   return text.replace(REG_FILENAME, '_')
 }
 ipcMain.handle('writeText', async (event, text: string, filename: string, dirname?: string): Promise<boolean> => {
-  const dir = resolve(DIR_APP, dirname || '')
-  const path = resolve(dir, getWindowsFileName(filename))
+  const dir = resolve(DIR_APP, dirname || '').trim()
+  const path = resolve(dir, getWindowsFileName(filename)).trim()
   await fs.mkdir(dir, { recursive: true })
   return Boolean(await fs.writeFile(path, text))
 })
 ipcMain.handle('writeFile', async (event, base64: string, filename: string, dirname?: string): Promise<boolean> => {
-  const dir = resolve(DIR_APP, dirname || '')
-  const path = resolve(dir, getWindowsFileName(filename))
+  const dir = resolve(DIR_APP, dirname || '').trim()
+  const path = resolve(dir, getWindowsFileName(filename)).trim()
   await fs.mkdir(dir, { recursive: true })
   return Boolean(await fs.writeFile(path, Base64.toUint8Array(base64)))
 })
 ipcMain.handle('writeDownload', async (event, base64: string, filename: string, dirname?: string): Promise<boolean> => {
   console.log('SAVE TO', resolve(DIR_DOWNLOAD, dirname || '', getWindowsFileName(filename)));
-  const dir = resolve(DIR_DOWNLOAD, dirname || '')
-  const path = resolve(dir, getWindowsFileName(filename))
+  const dir = resolve(DIR_DOWNLOAD, dirname || '').trim()
+  const path = resolve(dir, getWindowsFileName(filename)).trim()
   await fs.mkdir(dir, { recursive: true })
   return Boolean(await fs.writeFile(path, Base64.toUint8Array(base64)))
 })

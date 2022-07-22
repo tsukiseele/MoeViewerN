@@ -160,8 +160,12 @@ function onItemDownload(item: ImageMeta) {
         .list-item(v-if="item" @click="openChild(item)")
           img.item-cover(:src="item._src || placeholder" @load="(e) => onImgLoaded(e, item)")
           .item-info 
-            .item-title {{ item.title }}
-            .item-tags {{ item.tags }}
+            NTooltip(trigger="hover")
+              template(#trigger)
+                .item-title {{ item.title }}{{ item.tags ? ` ${item.tags}` : ''}}
+              span(style="max-width: 10rem;") {{ item.title }}{{ item.tags ? ` ${item.tags}` : ''}}
+            //- .item-title {{ item.title }}{{ item.tags ? ` ${item.tags}` : ''}}
+            //- .item-tags {{ item.tags }}
             .item-options
               i.mdi.mdi-download(@click.stop="onItemDownload(item)")
               NTooltip

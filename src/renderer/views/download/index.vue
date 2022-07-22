@@ -34,7 +34,7 @@
                   :border-radius="4" 
                   :class="{done: child?.progress?.progress  === 100}")
                 .item-progress--info {{ `${filesize(child.progress?.current || 0)} / ${filesize(child.progress?.total || 0)}` }}
-              .item-finish(v-else) {{ `下载完成 - ${filesize(child.progress?.current || 0)}` }}
+              .item-finish {{ `${getStatus(child.progress.status)} - ${filesize(child.progress?.current || 0)}` }}
               i.item-reload.mdi.mdi-refresh(@click="onReload(item, child)")
       .download-item(v-else)
         img.item-cover(:src="item?._src" alt="")
@@ -48,7 +48,7 @@
               :border-radius="4" 
               :class="{done: item?.progress?.progress  === 100}")
             .item-progress--info {{ `${filesize(item.progress?.current || 0)}/${filesize(item.progress?.total || 0)}` }}
-          .item-finish(v-else) {{ `下载完成 - ${filesize(item.progress?.current || 0)}` }}
+          .item-finish {{ `${getStatus(item.progress.status)} - ${filesize(item.progress?.current || 0)}` }}
 </template>
 
 <script lang="ts">
@@ -80,6 +80,22 @@ export default defineComponent({
     },
   },
   methods: {
+    getStatus(type: number) {
+      switch (type) {
+        case 1:
+          return '下载等待'
+        case 2:
+          return '下载准备'
+        case 4:
+          return '下载中'
+        case 8:
+          return '下载完成'
+        case 16:
+          return '下载错误'
+        default:
+          return ''
+      }
+    },
     onReload(item: ImageDownloadMeta, child: ImageDownloadMeta) {
       this.downloadStore.downloadGroup(item, [child])
       // window.$message(`下载开始: ${child.title}`)
@@ -131,24 +147,6 @@ $size: 5rem;
     &:hover {
       background-color: white;
     }
-    .item-cover {
-      position: relative;
-      width: $size;
-      height: $size;
-      object-fit: cover;
-      padding: 0.25rem;
-      overflow: hidden;
-      .item-type {
-        position: absolute;
-        text-align: center;
-
-        width: 1.5rem;
-        height: 1.5rem;
-        line-height: 1.5rem;
-        right: 0;
-        bottom: 0;
-      }
-    }
     .item-info {
       flex: 1;
       width: 0;
@@ -196,6 +194,24 @@ $size: 5rem;
       }
     }
   }
+    .item-cover {
+      position: relative;
+      width: $size;
+      height: $size;
+      object-fit: cover;
+      padding: 0.25rem;
+      overflow: hidden;
+      .item-type {
+        position: absolute;
+        text-align: center;
+
+        width: 1.5rem;
+        height: 1.5rem;
+        line-height: 1.5rem;
+        right: 0;
+        bottom: 0;
+      }
+    }
 }
 @media (min-width: 1024px) {
   #sites {

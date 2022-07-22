@@ -1,9 +1,12 @@
+
+
 interface Progress {
   uuid?: string
   total?: number
   current: number
   progress: number
   done: boolean
+  status?: number
   response?: { data: string; type: string }
 }
 declare namespace ElectronIPC {

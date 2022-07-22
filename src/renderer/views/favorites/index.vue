@@ -3,9 +3,11 @@
   div(style="font-size: 1rem; height: 2rem; line-height: 2rem;") 收藏夹
   ul.favorite-list
     li.favorite-list-item(v-for="item in favorites")
-      img.item-cover(:src="item._src" width="200px")
-      //- img.item-cover(:src="item._src" width="200px")
-      span.item-title {{ item.title }}
+      .item-card
+        img.item-cover(:src="item._src" width="200px")
+        //- img.item-cover(:src="item._src" width="200px")
+        .item-info 
+          span.item-title {{ item.title }}
 </template>
 
 <script lang="ts" setup>

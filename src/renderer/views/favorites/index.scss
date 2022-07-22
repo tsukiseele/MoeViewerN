@@ -1,5 +1,6 @@
 #favorites {
   display: flex;
+  flex-direction: column;
   align-items: center;
   padding: 1rem;
   .favorite-list {
@@ -13,21 +14,49 @@
       flex-direction: column;
       width: 200px;
       height: 324px;
-      margin: .5rem;
-      background-color: white;
+      margin: 0.5rem;
       cursor: pointer;
-      .item-cover {
+      &:hover .item-card {
+        transform: rotateY(360deg);
+      }
+      .item-card {
+        position: relative;
         width: 100%;
         height: 100%;
-        object-fit: cover;
-        padding: .5rem;
-        transition: .8s ease;
-      }
-      .item-title {
-      }
-      &:hover {
+        background-color: white;
+        transition: 0.8s ease-in-out;
+        padding: 0.5rem;
+        box-shadow: 0 0 1rem rgba(black, 0.12);
+
         .item-cover {
-          transform: rotateY(360deg);
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+        }
+        .item-info {
+          position: absolute;
+          left: 0;
+          bottom: 0;
+          width: 100%;
+          height: 4rem;
+          padding: .5rem;
+          color: black;
+          background-color: #fff;
+          overflow: hidden;
+          &::before {
+            content: '';
+            position: absolute;
+            left: 50%;
+            bottom: -.5rem;
+            width: 1rem;
+            height: 1rem;
+            border-radius: 50%;
+            transform: translateX(-50%);
+            background-color: #BDBDBD;
+          }
+          // background-image: linear-gradient(180deg, transparent, rgba(black, 0.67));
+        }
+        .item-title {
         }
       }
     }

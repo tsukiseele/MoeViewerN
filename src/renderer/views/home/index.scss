@@ -87,7 +87,7 @@
       transform: translateY(102%);
       padding: 0.5rem;
       .item-title {
-        max-lines: 3;
+        white-space: nowrap;
         text-overflow: ellipsis;
         overflow: hidden;
       }
