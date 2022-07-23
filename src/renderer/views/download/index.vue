@@ -34,7 +34,7 @@
                   :border-radius="4" 
                   :class="{done: child?.progress?.progress  === 100}")
                 .item-progress--info {{ `${filesize(child.progress?.current || 0)} / ${filesize(child.progress?.total || 0)}` }}
-              .item-finish {{ `${getStatus(child.progress.status)} - ${filesize(child.progress?.current || 0)}` }}
+              .item-finish {{ `${getStatus(child.progress?.status)} - ${filesize(child.progress?.current || 0)}` }}
               i.item-reload.mdi.mdi-refresh(@click="onReload(item, child)")
       .download-item(v-else)
         img.item-cover(:src="item?._src" alt="")
@@ -48,7 +48,7 @@
               :border-radius="4" 
               :class="{done: item?.progress?.progress  === 100}")
             .item-progress--info {{ `${filesize(item.progress?.current || 0)}/${filesize(item.progress?.total || 0)}` }}
-          .item-finish {{ `${getStatus(item.progress.status)} - ${filesize(item.progress?.current || 0)}` }}
+          .item-finish {{ `${getStatus(item.progress?.status)} - ${filesize(item.progress?.current || 0)}` }}
 </template>
 
 <script lang="ts">
@@ -80,7 +80,7 @@ export default defineComponent({
     },
   },
   methods: {
-    getStatus(type: number) {
+    getStatus(type: number | undefined) {
       switch (type) {
         case 1:
           return '下载等待'
@@ -130,94 +130,5 @@ export default defineComponent({
 </script>
 
 <style lang="scss" scoped>
-$size: 5rem;
-.download-list {
-  width: 100%;
-  .download-item {
-    position: relative;
-    display: flex;
-    align-items: center;
-    width: 100%;
-    // height: $size;
-    background-color: rgba(255, 255, 255, 0.5);
-    transition: 0.25s ease-out;
-    cursor: pointer;
-    // margin-bottom: .5rem;
-    border-bottom: 1px solid rgba($color: #000000, $alpha: 0.2);
-    &:hover {
-      background-color: white;
-    }
-    .item-info {
-      flex: 1;
-      width: 0;
-      height: 100%;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      padding: 0.5rem 1rem;
-      .item-name {
-        display: flex;
-        align-items: center;
-        white-space: nowrap;
-        text-overflow: ellipsis;
-        overflow: hidden;
-        font-size: 1rem;
-        i {
-          font-size: 1.25rem;
-        }
-      }
-      .item-progress {
-        display: flex;
-        align-items: center;
-        .item-progress--info {
-          flex: 0 0 10rem;
-          width: 0;
-          padding: 0.5rem;
-        }
-      }
-    }
-  }
-  .download-group {
-    .download-children {
-      position: relative;
-      padding-left: $size;
-      height: 0;
-      opacity: 0;
-      transform: scaleX(0);
-      transform-origin: 5rem 0;
-      transition: 0.3s cubic-bezier(0.075, 0.82, 0.165, 1);
-      &.expand {
-        opacity: 1;
-        height: 100%;
-        display: block;
-        transform: scaleX(1);
-      }
-    }
-  }
-    .item-cover {
-      position: relative;
-      width: $size;
-      height: $size;
-      object-fit: cover;
-      padding: 0.25rem;
-      overflow: hidden;
-      .item-type {
-        position: absolute;
-        text-align: center;
-
-        width: 1.5rem;
-        height: 1.5rem;
-        line-height: 1.5rem;
-        right: 0;
-        bottom: 0;
-      }
-    }
-}
-@media (min-width: 1024px) {
-  #sites {
-    min-height: 100vh;
-    display: flex;
-    align-items: center;
-  }
-}
+@import './index.scss';
 </style>

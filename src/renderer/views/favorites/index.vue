@@ -11,7 +11,7 @@
 </template>
 
 <script lang="ts" setup>
-import { useFavorites } from '../../stores/favorites'
+import { useFavorites } from '@/stores/favorites'
 import { NImage } from 'naive-ui';
 
 const favorites = useFavorites().favorites
