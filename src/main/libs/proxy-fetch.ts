@@ -21,11 +21,11 @@ import delay from 'delay'
       global.proxy = proxy
       global.proxyAgent = proxyAgent
       // console.info('Use proxy: ', setting?.toString())
-    console.log(`\u001b[1;42mUse proxy: \u001b[0m ${setting?.toString()}`);
+    console.log(`\u001b[1;42m Use proxy \u001b[0m ${setting?.toString()}`);
 
     }
   } catch (error) {
-    console.warn('\u001b[1;43mFailed to get proxy configuration: \u001b[0m', error)
+    console.warn('\u001b[1;43m Failed to get proxy configuration \u001b[0m', error)
   }
 })()
  

@@ -140,7 +140,6 @@ export default class Kumoko<T extends Meta> {
     if (!rule) return []
     // 生成URL
     const url = this.replaceUrlTemplate(_url, page, keywords)
-    console.log(`\u001b[1;46mRequest >>> \u001b[0m ${url}`);
     
     // 发送请求
     const html = await this.requestText(url, { headers: this.site?.headers })

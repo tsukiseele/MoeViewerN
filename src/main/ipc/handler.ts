@@ -24,6 +24,8 @@ async function init() {
 init()
 
 KumokuConfig.request = async (url: string, options: RequestOptions) => {
+  
+  console.log(`\u001b[1;46m Request \u001b[0m ${url}`);
   options.timeout = 5000
   return await (await fetch(url, options)).text()
 }

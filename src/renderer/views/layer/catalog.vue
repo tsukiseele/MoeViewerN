@@ -5,7 +5,8 @@ SLayer(:show="show" title="Gallery" @update:show="(show: boolean) => $emit('upda
       .images-wrapper(v-if="isLoaded")
         section.single(v-if="resultSet && resultSet.length == 1")
           NImageGroup(:theme-overrides="imageGroupThemeOverrides" show-toolbar-tooltip)
-            NImage(:src="resultSet[0]._src" object-fit="contain")
+            video(v-if="isVideo" :src="resultSet[0]._src" controls)
+            NImage(v-else :src="resultSet[0]._src" object-fit="contain")
         section.multiple(v-else-if="resultSet && resultSet.length")
           NImageGroup(:theme-overrides="imageGroupThemeOverrides" show-toolbar-tooltip)
             NImage(v-for="item in resultSet"  :src="item._src" object-fit="cover")
@@ -67,6 +68,7 @@ export default defineComponent({
     tags: [] as string[],
     scale: 1.0,
     percentage: 0,
+    isVideo: false,
   }),
   watch: {
     async show(nv) {
@@ -117,7 +119,6 @@ export default defineComponent({
   computed: {},
   async mounted() {
     this.tags = (this.item && this.item.tags && this.item.tags.split(' ')) || []
-    // document.addEventListener('wheel', this.onWheel, false)
   },
   methods: {
     async download(once: ImageMeta) {
@@ -126,6 +127,7 @@ export default defineComponent({
         this.percentage = Number((p.progress * 100).toFixed(2))
         if (p.done && p.response) {
           const { data, type } = p.response
+          this.isVideo = type.includes('video')
           const src = URL.createObjectURL(this.base64ToBlob(data, type))
           once._src = src
           
