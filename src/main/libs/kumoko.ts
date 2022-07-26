@@ -37,7 +37,7 @@ export default class Kumoko<T extends Meta> {
   request: ((url: string, options: RequestOptions) => Promise<string | undefined>) | undefined = undefined
 
   /**
-   * 通过配置构造一个爬虫对象
+   * 通过配置构造一个抓取对象
    * @param {Site} site 规则
    * @param {Number} page 当前页
    * @param {String} keywords 关键字
