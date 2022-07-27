@@ -27,7 +27,7 @@ export declare interface RequestOptions {
 }
 
 export default class Kumoko<T extends Meta> {
-  // 当前站点抓取规则
+  // 当前抓取规则
   site: Site | undefined
   // 当前分页值
   page: number = 1
@@ -39,8 +39,6 @@ export default class Kumoko<T extends Meta> {
   /**
    * 通过配置构造一个抓取对象
    * @param {Site} site 规则
-   * @param {Number} page 当前页
-   * @param {String} keywords 关键字
    */
   constructor(site: Site) {
     this.site = site
@@ -140,6 +138,7 @@ export default class Kumoko<T extends Meta> {
     if (!rule) return []
     // 生成URL
     const url = this.replaceUrlTemplate(_url, page, keywords)
+    console.log(`\u001b[1;46mRequest >>> \u001b[0m ${url}`);
     
     // 发送请求
     const html = await this.requestText(url, { headers: this.site?.headers })
