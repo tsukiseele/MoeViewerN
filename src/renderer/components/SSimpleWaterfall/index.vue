@@ -54,7 +54,9 @@ export default {
   watch: {
     'items.length': {
       handler(nv, ov) {
-        this.responsive()
+        console.log(ov, ' => ', nv);
+        if(ov && nv) update(ov, nv)
+        else this.responsive()
       },
     },
     loadedCount(nv, ov) {
@@ -133,9 +135,9 @@ export default {
     // 监听组件变化
     listenLayoutChanged() {
       this.resizeObserver = new ResizeObserver((entries) => {
-        entries.forEach((ele) => {
-          this.responsive()
-        })
+        // entries.forEach((ele) => {
+        entries && entries.length &&  this.responsive()
+        // })
       })
       this.resizeObserver.observe(this.$el)
     },

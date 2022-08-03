@@ -10,7 +10,7 @@ import SLoading from '@/components/SLoading/index.vue'
 import CatalogLayer from '@/views/layer/catalog.vue'
 import placeholder from '@/assets/images/placeholder.webp'
 import { useFavorites } from '@/stores/favorites'
-
+import { useDownloadStore } from '@/stores/download'
 const showCatalog = ref(false)
 const childItem = ref<ImageMeta>()
 const router = useRouter()
@@ -31,6 +31,8 @@ onMounted(async () => {
   if (sites.value && sites.value.length) {
     onSearch()
   }
+  // const store = useDownloadStore()
+  // store.download({originUrl: 'https://r3---sn-ni57rn7r.gvt1.com/edgedl/android/studio/ide-zips/2021.1.1.21/android-studio-2021.1.1.21-windows.zip?utm_source=androiddevtools&utm_medium=website&cms_redirect=yes&mh=-1&mip=43.243.192.40&mm=28&mn=sn-ni57rn7r&ms=nvh&mt=1658977463&mv=m&mvi=3&pl=24&rmhost=r2---sn-ni57rn7r.gvt1.com&shardbypass=sd&smhost=r2---sn-ni57rn7d.gvt1.com', title: 'AndroidStudio'})
 })
 
 function onLoaded() {

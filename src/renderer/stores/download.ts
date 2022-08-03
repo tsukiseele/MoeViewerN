@@ -24,8 +24,6 @@ export const useDownloadStore = defineStore({
     /**
      * 
      * @param item ImageMeta 图片数据
-     * @param filename 文件名，不包含后缀
-     * @param dirname 目录名，可选
      */
     download(item: ImageMeta) {
       const filename = `${item.title || ''} ${item.tags || ''} ${Date.now()}`.trim().substring(0, 64)
