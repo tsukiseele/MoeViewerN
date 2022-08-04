@@ -11,38 +11,14 @@
 <script>
 export default {
   props: {
-    items: {
-      type: Array,
-      default: () => [],
-    },
-    loadedCount: {
-      type: Number,
-      default: 0,
-    },
-    imageKey: {
-      type: String,
-      default: null,
-    },
-    itemWidth: {
-      type: Number,
-      default: 250,
-    },
-    gap: {
-      type: Number,
-      default: 20,
-    },
-    evenly: {
-      type: Boolean,
-      default: false,
-    },
-    maxColumn: {
-      type: Number,
-      default: null,
-    },
-    height: {
-      type: Number || String,
-      default: null,
-    },
+    items: { type: Array, default: () => [] },
+    loadedCount: { type: Number, default: 0 },
+    imageKey: { type: String, default: null },
+    itemWidth: { type: Number, default: 250 },
+    gap: { type: Number, default: 20 },
+    evenly: { type: Boolean, default: false },
+    maxColumn: { type: Number, default: null },
+    height: { type: Number | String, default: null },
   },
   emits: ['loading', 'loaded', 'scroll-bottom'],
   data: () => ({
@@ -55,7 +31,7 @@ export default {
     'items.length': {
       handler(nv, ov) {
         console.log(ov, ' => ', nv);
-        if(ov && nv) update(ov, nv)
+        if (ov && nv) update(ov, nv)
         else this.responsive()
       },
     },
@@ -136,7 +112,7 @@ export default {
     listenLayoutChanged() {
       this.resizeObserver = new ResizeObserver((entries) => {
         // entries.forEach((ele) => {
-        entries && entries.length &&  this.responsive()
+        entries && entries.length && this.responsive()
         // })
       })
       this.resizeObserver.observe(this.$el)
