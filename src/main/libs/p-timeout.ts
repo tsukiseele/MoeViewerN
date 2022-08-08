@@ -11,7 +11,7 @@ An error to be thrown when the request is aborted by AbortController.
 DOMException is thrown instead of this Error when DOMException is available.
 */
 export class AbortError extends Error {
-	constructor(message) {
+	constructor(message: string) {
 		super();
 		this.name = 'AbortError';
 		this.message = message;
