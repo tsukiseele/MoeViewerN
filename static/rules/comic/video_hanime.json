@@ -1,0 +1,59 @@
+{
+  "name": "HAnime",
+  "id": 1000,
+  "version": 1,
+  "author": "TsukiSeele",
+  "rating": "R",
+  "details": "HAnime - 里番",
+  "type": "video",
+  "icon": "https://hanime1.me/favicon.ico",
+  "headers": {
+    "Cookie": ""
+  },
+  "sections": {
+    "home": {
+      "index": "https://hanime1.me/search?query=&genre=%E8%A3%8F%E7%95%AA&page={page:0}",
+      "name": "主页",
+      "details": "主页详情",
+      "rules": {
+        "title": {
+          "selector": "$(.home-rows-videos-wrapper .home-rows-videos-div .home-rows-videos-title).text()"
+        },
+        "coverUrl": {
+          "selector": "$(.home-rows-videos-wrapper .home-rows-videos-div img).attr(src)"
+        },
+        "$children": {
+          "selector": "$(.home-rows-videos-wrapper a).attr(href)",
+          "capture": ".*",
+          "replacement": "$0?inline_set=ts_l&p={page:0}",
+          "rules": {
+            "title": {
+              "selector": "$(div.gdtl a img).attr(alt)",
+              "capture": "(.*)",
+              "replacement": "$1"
+            },
+            "tags": {
+              "selector": "$(#taglist tr > td:eq(1) > div).text()"
+            },
+            "coverUrl": {
+              "selector": "$(.gdtl > a > img).attr(src)"
+            },
+            "$children": {
+              "selector": "$(.gdtl > a).attr(href)",
+              "flat": true,
+              "rules": {
+                "originUrl": {
+                  "selector": "$(#img).attr(src)"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "search": {
+      "index": "https://hanime1.me/search?query={keywords:}&genre=%E8%A3%8F%E7%95%AA&page={page:0}",
+      "reuse": "home"
+    }
+  }
+}
