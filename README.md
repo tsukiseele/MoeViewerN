@@ -1,7 +1,7 @@
 # MoeViewerN
 <img src="./public/icon.ico" alt="MoeViewerN" width="128px" />
 
-一个可爱的二次元网络画廊浏览器，目前处在dev阶段。
+一个可爱的二次元网络画廊浏览器。
 
 ## 预览
 ![](./sample/preview_2.webp)
