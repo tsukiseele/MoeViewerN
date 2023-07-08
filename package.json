@@ -4,11 +4,11 @@
   "description": "Wow, such a lovely web gallery browser",
   "main": "build/main/main.js",
   "scripts": {
-    "dev": "yarn node scripts/dev-server.js",
-    "build": "yarn node scripts/build.js && electron-builder -c config/electron-builder.json",
-    "build:win": "yarn node scripts/build.js && electron-builder -c config/electron-builder.json --win",
-    "build:mac": "yarn node scripts/build.js && electron-builder -c config/electron-builder.json --mac",
-    "build:linux": "yarn node scripts/build.js && electron-builder -c config/electron-builder.json --linux"
+    "dev": "node scripts/dev-server.js",
+    "build": "node scripts/build.js && electron-builder -c config/electron-builder.json",
+    "build:win": "node scripts/build.js && electron-builder -c config/electron-builder.json --win",
+    "build:mac": "node scripts/build.js && electron-builder -c config/electron-builder.json --mac",
+    "build:linux": "node scripts/build.js && electron-builder -c config/electron-builder.json --linux"
   },
   "repository": "https://github.com/tsukiseele/MoeViewerN",
   "author": {
