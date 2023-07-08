@@ -25,6 +25,9 @@
           "capture": ".*",
           "replacement": "$0/{page:0}",
           "rules": {
+            "$key": {
+              "selector": "$(div#gt h1).text()"
+            },
             "title": {
               "selector": "$(div#gt h1).text()"
             },

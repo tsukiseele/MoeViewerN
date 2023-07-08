@@ -43,7 +43,7 @@ const router = createRouter({
     {
       path: '/settings',
       name: 'settings',
-      component: () => import('@/views/settings/index.js'),
+      component: () => import('@/views/settings/index.vue'),
     }
   ],
 })

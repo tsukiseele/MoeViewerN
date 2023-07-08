@@ -25,6 +25,11 @@
           "capture": ".*",
           "replacement": "$0?inline_set=ts_l&p={page:0}",
           "rules": {
+            "$key": {
+              "selector": "$(div.gdtl a img).attr(alt)",
+              "capture": "(.*)",
+              "replacement": "$1"
+            },
             "title": {
               "selector": "$(div.gdtl a img).attr(alt)",
               "capture": "(.*)",

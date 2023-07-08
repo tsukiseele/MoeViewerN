@@ -16,23 +16,35 @@
           "capture": ".*",
           "replacement": "Danbooru $0"
         },
-        "originUrl": {
-          "selector": "$(div#posts > div > article).attr(data-file-url)"
-        },
-        "sampleUrl": {
-          "selector": "$(div#posts > div > article).attr(data-large-file-url)"
-        },
         "coverUrl": {
-          "selector": "$(#posts .post-preview .post-preview-image).attr(src)"
+          "selector": "$(#posts .post-preview-image).attr(src)"
         },
         "tags": {
-          "selector": "$(div#posts > div > article).attr(data-tags)"
-        },
-        "source_url": {
-          "selector": "$(div#posts > div > article).attr(data-source)"
+          "selector": "$(#posts .post-preview).attr(data-tags)"
         },
         "info": {
-          "selector": "$(div#posts > div > article).attr(data-pixiv-id)"
+          "selector": "$(#posts .post-preview).attr(data-pixiv-id)"
+        },
+        "$children": {
+          "selector": "$(#posts .post-preview-link).attr(href)",
+          "capture": "(.*)",
+          "replacement": "https://danbooru.donmai.us$1",
+          "rules": {
+            "sampleUrl": {
+              "selector": "$(#image).attr(src)"
+            },
+            "largerUrl": {
+              "selector": "$(#post-option-view-large a).attr(href)"
+            },
+            "originUrl": {
+              "selector": "$(#post-option-view-original a).attr(href)"
+            },
+            "datetime": {
+              "selector": "$(script#forum-posts-latest).html()",
+              "capture": "(\\d{4}-\\d{2}-\\d{2})T(\\d{2}:\\d{2}:\\d{2})",
+              "replacement": "$1 $2"
+            }
+          }
         }
       }
     },

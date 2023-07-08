@@ -6,7 +6,7 @@
   "rating": "R",
   "details": "HAnime - 里番",
   "type": "video",
-  "icon": "https://hanime1.me/favicon.ico",
+  "icon": "https://i.imgur.com/PTFz5Ej.png",
   "headers": {
     "Cookie": ""
   },
@@ -25,27 +25,25 @@
         "$children": {
           "selector": "$(.home-rows-videos-wrapper a).attr(href)",
           "capture": ".*",
-          "replacement": "$0?inline_set=ts_l&p={page:0}",
+          "replacement": "$0",
+          "flat": true,
           "rules": {
             "title": {
-              "selector": "$(div.gdtl a img).attr(alt)",
+              "selector": "$(title).text()",
               "capture": "(.*)",
               "replacement": "$1"
             },
-            "tags": {
-              "selector": "$(#taglist tr > td:eq(1) > div).text()"
+            "sampleUrl": {
+              "regex": "source\\s*=\\s*'(.+)'",
+              "capture": "(.*)",
+              "replacement": "$1"
+
             },
-            "coverUrl": {
-              "selector": "$(.gdtl > a > img).attr(src)"
+            "largerUrl": {
+              "selector": "$(#player source:eq(2)).attr(src)"
             },
-            "$children": {
-              "selector": "$(.gdtl > a).attr(href)",
-              "flat": true,
-              "rules": {
-                "originUrl": {
-                  "selector": "$(#img).attr(src)"
-                }
-              }
+            "originUrl": {
+              "selector": "$(#player source:eq(1)).attr(src)"
             }
           }
         }
