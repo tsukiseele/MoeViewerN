@@ -11,15 +11,17 @@ async function createWindow() {
     if (eaw) AcrylicBrowserWindow = eaw.BrowserWindow
   } catch (error) {}
 
-  const workAreaSize = screen
-    .getAllDisplays()
-    .map((item) => item.workAreaSize)
-    .reduceRight((a, b) => ({ width: a.width + b.width, height: Math.max(a.height, b.height) }), { width: 0, height: 0 })
-  
   const width = 1080
   const height = 720
-  const x = workAreaSize.width - width / 2
-  const y = workAreaSize.height - height / 2
+  const primaryDisplay = screen.getPrimaryDisplay()
+  const x = (primaryDisplay.workArea.width - width) / 2
+  const y = (primaryDisplay.workArea.height - height) / 2
+  // const workAreaSize = screen
+  //   .getAllDisplays()
+  //   .map((item) => item.workAreaSize)
+  //   .reduceRight((a, b) => ({ width: a.width + b.width, height: Math.max(a.height, b.height) }), { width: 0, height: 0 })
+  // const x = workAreaSize.width - width / 2
+  // const y = workAreaSize.height - height / 2
   const mainWindow = new (AcrylicBrowserWindow || BrowserWindow)({
     width: width,
     height: height,

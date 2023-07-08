@@ -1,6 +1,6 @@
 <template lang="pug">
 //- NModal()
-Transition(name='fade')
+Transition(name='layer-fade')
   .layer(v-if="showModal")
     header
       .title {{ title }}
@@ -45,13 +45,18 @@ export default defineComponent({
 </script>
 
 <style lang="scss" scoped>
-.fade-enter-active,
-.fade-leave-active {
-  transition: opacity 0.5s ease-out;
+.layer-fade-enter-active {
+  transition: all 0.5s cubic-bezier(0.075, 0.82, 0.165, 1);
 }
-.fade-enter-from,
-.fade-leave-to {
+
+.layer-fade-leave-active {
+  transition: all 0.3s cubic-bezier(0.075, 0.82, 0.165, 1);
+}
+
+.layer-fade-enter-from,
+.layer-fade-leave-to {
   opacity: 0;
+  transform: scale(0.8);
 }
 .layer {
   position: absolute;
