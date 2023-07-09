@@ -14,12 +14,12 @@ import { useDownloadStore } from '@/stores/download'
 const showCatalog = ref(false)
 const childItem = ref<ImageMeta>()
 const router = useRouter()
-const results = ref<any[]>([])
-const query = ref({ page: 1, keywords: 'namori', siteId: 923 })
+const items = ref<any[]>([])
+const query = ref({ page: 1, keywords: '', siteId: 923 })
 const sites = ref<Site[]>([])
 const currentSite = ref<Site>()
 const isLoaded = ref(false)
-const isListLoading = ref(false)
+const isNextLoading = ref(false)
 const keywordsOptions = ref([] as { label: string; value: any }[])
 const loadedCount = ref(0)
 const queue = new pQueue({ concurrency: 16 })
@@ -42,17 +42,25 @@ function onLoaded() {
 async function onSearch() {
   query.value.page = 1
   currentSite.value = sites.value.find((site) => site.id == query.value.siteId)
+  // items.value = []
   loadList(query.value)
 }
 async function loadList(params: any) {
   isLoaded.value = false
-  results.value = await window.eapi.invokeAsObject('load', params)
-  // if (!results.value || !results.value.length) $message.error(`资源未找到！`)
+  items.value = await window.eapi.invokeAsObject('load', params)
+  // if (!items.value || !items.value.length) $message.error(`资源未找到！`)
+  console.log(`Get ${items.value.length} item`);
+  
   isLoaded.value = true
 }
 async function loadNext(params: any) {
   const next = await window.eapi.invokeAsObject('load', params)
-  results.value.push(...next)
+  console.log(items);
+  console.log(next);
+  // items.value = [...items.value, ...next]
+  // items.value.push(...next)
+  items.value = [...items.value, ...next]//.value.push(next[0])
+  console.log(`Get ${next.length} item, ${items.value.length} item for all`);
 }
 const base64ToBlob = (base64: string, type: string) => {
   return new Blob([Base64.toUint8Array(base64)], { type: type })
@@ -74,15 +82,17 @@ async function loadImage(el: PreloadImageElement, item: any) {
   })
 }
 async function onScrollBottom() {
-  if (isListLoading.value) return
-  isListLoading.value = true
+  if (isNextLoading.value) return
+  console.log(isNextLoading.value);
+  
+  isNextLoading.value = true
   try {
     query.value.page++
     await loadNext(query.value)
   } catch (error) {
     console.log(error)
   } finally {
-    isListLoading.value = false
+    isNextLoading.value = false
   }
 }
 function openChild(item: any) {
@@ -157,10 +167,13 @@ function onItemDownload(item: ImageMeta) {
       template(#suffix)
         i.mdi.mdi-magnify(@click="onSearch" )
   main
-    SSimpleWaterfall(v-if="isLoaded && results && results.length" :items="results" :loaded-count="loadedCount" image-key="coverUrl" :item-width="200" @loaded="onLoaded" @loading="isLoaded = false" @scroll-bottom="onScrollBottom")
+    SSimpleWaterfall(v-if="isLoaded && items && items.length" :items="items" :loaded-count="loadedCount" image-key="coverUrl" :item-width="200" @loaded="onLoaded" @loading="isLoaded = false" @scroll-bottom="onScrollBottom")
       template(v-slot="{item, index}")
-        .list-item(v-if="item" @click="openChild(item)")
+        .list-item(v-if="item" @click="openChild(item)" :style="{opacity: item._src ? 1 : 0}")
+          //- img.item-cover(v-show="item._src" :src="item._src || placeholder" @load="(e) => onImgLoaded(e, item)")
           img.item-cover(:src="item._src || placeholder" @load="(e) => onImgLoaded(e, item)")
+          .item-left-angle 
+            .item-number-order {{ index + 1 }}
           .item-info 
             NTooltip(trigger="hover")
               template(#trigger)
@@ -175,13 +188,13 @@ function onItemDownload(item: ImageMeta) {
                   i.mdi.mdi-star(@click.stop="onItemStar(item)")
                 | 收藏
           .item-mask 
-    NResult(v-else-if="isLoaded && results.length === 0" status="info" title="提示" description="已经到底了")
+    NResult(v-else-if="isLoaded && items.length === 0" status="info" title="提示" description="已经到底了")
     NResult(v-else-if="isLoaded" status="404" title="资源未找到" description="可能因素：网络不可用，防火墙拦截（尤其是在中国大陆）")
       template(#footer)
         NButton(@click="onSearch") Reload
     SLoading(:show="!isLoaded")
 
-    SLoading.list-loading(:show="isListLoading" type="line")
+    SLoading.list-loading(:show="isNextLoading" type="line")
   CatalogLayer(v-model:show="showCatalog" :item="childItem")
 </template>
 

@@ -48,7 +48,6 @@ export default defineComponent({
 .layer-fade-enter-active {
   transition: all 0.5s cubic-bezier(0.075, 0.82, 0.165, 1);
 }
-
 .layer-fade-leave-active {
   transition: all 0.3s cubic-bezier(0.075, 0.82, 0.165, 1);
 }

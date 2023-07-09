@@ -22,27 +22,28 @@ async function createWindow() {
   //   .reduceRight((a, b) => ({ width: a.width + b.width, height: Math.max(a.height, b.height) }), { width: 0, height: 0 })
   // const x = workAreaSize.width - width / 2
   // const y = workAreaSize.height - height / 2
-  const mainWindow = new (AcrylicBrowserWindow || BrowserWindow)({
+  // const mainWindow = new (AcrylicBrowserWindow || BrowserWindow)({
+  const mainWindow = new BrowserWindow({
     width: width,
     height: height,
     x: x,
     y: y,
     frame: false,
-    transparent: true,
+    // transparent: true,
     webPreferences: {
       preload: join(__dirname, 'preload.js'),
       nodeIntegration: false,
       contextIsolation: true,
     },
-    vibrancy: {
-      // 'light', 'dark', 'appearance-based' or '#rrggbbaa'
-      theme: 'appearance-based',
-      // 'acrylic', 'blur'
-      effect: 'acrylic',
-      useCustomWindowRefreshMethod: true,
-      maximumRefreshRate: 60,
-      disableOnBlur: true,
-    },
+    // vibrancy: {
+    //   // 'light', 'dark', 'appearance-based' or '#rrggbbaa'
+    //   theme: 'appearance-based',
+    //   // 'acrylic', 'blur'
+    //   effect: 'acrylic',
+    //   useCustomWindowRefreshMethod: true,
+    //   maximumRefreshRate: 60,
+    //   disableOnBlur: true,
+    // },
   })
   if (process.env.NODE_ENV === 'development') {
     const rendererPort = process.argv[2]

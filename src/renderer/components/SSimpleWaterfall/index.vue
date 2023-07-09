@@ -31,8 +31,11 @@ export default {
     'items.length': {
       handler(nv, ov) {
         console.log(ov, ' => ', nv);
-        if (ov && nv) update(ov, nv)
-        else this.responsive()
+        if (ov && nv) {
+          this.responsive(ov.length)
+        } else {
+          this.responsive()
+        }
       },
     },
     loadedCount(nv, ov) {
@@ -56,18 +59,15 @@ export default {
         this.$emit('scroll-bottom')
       }
     },
-    responsive() {
+    responsive(offset = 0) {
       if (this.timer) return
       this.timer = setTimeout(() => {
-        try {
-          clearTimeout(this.timer)
-          this.timer = null
-          this.fall()
-        } finally {
-        }
-      }, 500)
+        clearTimeout(this.timer)
+        this.timer = null
+        this.fall(Array.from(this.$el.querySelectorAll('.waterfall--list-item')).slice(offset))
+      }, 1000)
     },
-    fall() {
+    fall(itemEls) {
       const container = this.$el.children[0]
       // 获取当前页面的宽度
       const containerWidth = container.offsetWidth
@@ -79,7 +79,7 @@ export default {
       // 若传入平均间距，则为0，否则自动计算
       const margin = this.evenly ? realGap : (containerWidth - (this.itemWidth + realGap) * this.column + realGap) / 2
       // 获取所有需要布局的项
-      const itemEls = this.$el.querySelectorAll('.waterfall--list-item')
+      // const itemEls = this.$el.querySelectorAll('.waterfall--list-item')
       // 数组，保存最低高度
       const heightArr = []
       // 保存偏移量
@@ -102,11 +102,18 @@ export default {
           heightArr[minIndex] = minHeight + realGap + height
         }
         // itemEl.style.top = top + 'px'
-        // itemEl.style.left = left + 'px'
+        // itemEl.style.left = left + 'px'    
+        if (itemEl.style.transform) {
+          itemEl.style.transition = `transform cubic-bezier(0.075, 0.82, 0.165, 1) .1s, opacity .2s ease`
+        }
         itemEl.style.transform = `translate3d(${left}px, ${top}px, 0)`
         itemEl.style.opacity = 1
       })
       container.style.height = this.height ? this.height : Math.max(...heightArr) + 'px'
+      // Check container full
+      if (this.$el.offsetHeight > container.offsetHeight) {
+        this.$emit('scroll-bottom')
+      }
     },
     // 监听组件变化
     listenLayoutChanged() {
