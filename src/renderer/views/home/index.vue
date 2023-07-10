@@ -175,7 +175,7 @@ function onItemDownload(item: ImageMeta) {
           .item-left-angle 
             .item-number-order {{ index + 1 }}
           .item-info 
-            NTooltip(trigger="hover")
+            //- NTooltip(trigger="hover")
               template(#trigger)
                 .item-title {{ item.title }}{{ item.tags ? ` ${item.tags}` : ''}}
               span(style="max-width: 10rem;") {{ item.title }}{{ item.tags ? ` ${item.tags}` : ''}}
@@ -183,7 +183,7 @@ function onItemDownload(item: ImageMeta) {
             //- .item-tags {{ item.tags }}
             .item-options
               i.mdi.mdi-download(@click.stop="onItemDownload(item)")
-              NTooltip
+              //- NTooltip
                 template(#trigger)
                   i.mdi.mdi-star(@click.stop="onItemStar(item)")
                 | 收藏

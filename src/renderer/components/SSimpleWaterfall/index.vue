@@ -54,10 +54,22 @@ export default {
       })
     },
     onScroll(e) {
-      const { scrollTop, clientHeight, scrollHeight } = e.target
-      if (scrollTop + clientHeight - scrollHeight >= -1) {
-        this.$emit('scroll-bottom')
-      }
+      requestAnimationFrame(() => {
+        const { scrollTop, offsetHeight, scrollHeight } = e.target
+        const visibleTop = scrollTop;
+        const visibleBottom = scrollTop + offsetHeight;
+        if (scrollHeight - visibleBottom < 16) {
+          this.$emit('scroll-bottom')
+        }
+        // const allItems = Array.from(this.$el.querySelectorAll('.waterfall--list-item'))
+        // allItems.forEach(item => {
+        //   if (item.offsetTop + item.offsetHeight - 300 < visibleTop/* || item.offsetTop + 300 > visibleBottom*/) {
+        //     item.style.display = 'none'
+        //   } else {
+        //     item.style.display = 'flex'
+        //   }
+        // })
+      })
     },
     responsive(offset = 0) {
       if (this.timer) return
@@ -101,12 +113,12 @@ export default {
           left = (this.itemWidth + realGap) * minIndex + margin
           heightArr[minIndex] = minHeight + realGap + height
         }
-        // itemEl.style.top = top + 'px'
-        // itemEl.style.left = left + 'px'    
         if (itemEl.style.transform) {
           itemEl.style.transition = `transform cubic-bezier(0.075, 0.82, 0.165, 1) .1s, opacity .2s ease`
         }
-        itemEl.style.transform = `translate3d(${left}px, ${top}px, 0)`
+        itemEl.style.top = top + 'px'
+        itemEl.style.left = left + 'px'    
+        // itemEl.style.transform = `translate3d(${left}px, ${top}px, 0)`
         itemEl.style.opacity = 1
       })
       container.style.height = this.height ? this.height : Math.max(...heightArr) + 'px'
