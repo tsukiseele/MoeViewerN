@@ -113,8 +113,9 @@ export default {
           left = (this.itemWidth + realGap) * minIndex + margin
           heightArr[minIndex] = minHeight + realGap + height
         }
-        if (itemEl.style.transform) {
-          itemEl.style.transition = `transform cubic-bezier(0.075, 0.82, 0.165, 1) .1s, opacity .2s ease`
+        if (itemEl.offsetTop > 0 || itemEl.offsetLeft > 0) {
+          itemEl.style.transition = `top cubic-bezier(0.075, 0.82, 0.165, 1) .1s, left cubic-bezier(0.075, 0.82, 0.165, 1) .1s, opacity .2s ease`
+          // itemEl.style.transition = `transform cubic-bezier(0.075, 0.82, 0.165, 1) .1s, opacity .2s ease`
         }
         itemEl.style.top = top + 'px'
         itemEl.style.left = left + 'px'    
