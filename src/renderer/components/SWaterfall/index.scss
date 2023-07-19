@@ -1,0 +1,22 @@
+.waterfall--list {
+  position: relative;
+  // transition: .25s ease-out;
+  .waterfall--list-item {
+    position: absolute;
+    opacity: 0;
+    // transition: transform cubic-bezier(0.075, 0.82, 0.165, 1) .1s, opacity .2s ease, height .2s ease; //top 0.25s ease, left 0.25s ease, opacity .25s ease-out, height .25s ease;
+    transition: opacity .2s ease;
+    :deep(img) {
+      width: 100%;
+      height: 100%;
+    }
+  }
+}
+
+.waterfall-wrapper {
+  width: 100%;
+  height: 100%;
+  padding: 1rem 0;
+  overflow: auto;
+  background-color: hsl(0, 0%, 95%);
+}

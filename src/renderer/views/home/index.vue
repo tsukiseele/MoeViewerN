@@ -22,7 +22,7 @@ const isLoaded = ref(false)
 const isNextLoading = ref(false)
 const keywordsOptions = ref([] as { label: string; value: any }[])
 const loadedCount = ref(0)
-const queue = new pQueue({ concurrency: 16 })
+const queue = new pQueue({ concurrency: 8 })
 const siteOptions = computed(() => (sites.value && sites.value.length && sites.value.map((site) => ({ label: site.name, value: site.id }))) || undefined)
 
 onMounted(async () => {
@@ -42,36 +42,57 @@ function onLoaded() {
 async function onSearch() {
   query.value.page = 1
   currentSite.value = sites.value.find((site) => site.id == query.value.siteId)
-  // items.value = []
+
+  items.value = []
   loadList(query.value)
 }
+
 async function loadList(params: any) {
   isLoaded.value = false
-  items.value = await window.eapi.invokeAsObject('load', params)
+  // items.value = await window.eapi.invokeAsObject('load', params)
+  pushQueue(await window.eapi.invokeAsObject('load', params))
   // if (!items.value || !items.value.length) $message.error(`资源未找到！`)
-  console.log(`Get ${items.value.length} item`);
-  
+  // console.log(`Get ${items.value.length} item`);
   isLoaded.value = true
 }
+
 async function loadNext(params: any) {
-  const next = await window.eapi.invokeAsObject('load', params)
-  console.log(items);
-  console.log(next);
-  // items.value = [...items.value, ...next]
-  // items.value.push(...next)
-  items.value = [...items.value, ...next]//.value.push(next[0])
-  console.log(`Get ${next.length} item, ${items.value.length} item for all`);
+  pushQueue(await window.eapi.invokeAsObject('load', params))
+
+  // const next = await window.eapi.invokeAsObject('load', params)
+  // console.log(items);
+  // console.log(next);
+  // // items.value = [...items.value, ...next]
+  // // items.value.push(...next)
+  // items.value = [...items.value, ...next]//.value.push(next[0])
+  // console.log(`Get ${next.length} item, ${items.value.length} item for all`);
 }
+
+async function pushQueue(images: Array<ImageMeta>) {
+  images.forEach(item => {
+    queue.add(
+      async () => {
+        const { data, type } = await window.eapi.invoke('request', { url: item.coverUrl, options: { headers: currentSite.value?.headers, timeout: 5000, retries: 5 } })
+        item._src = URL.createObjectURL(base64ToBlob(data, type))
+        // loadedCount.value = loadedCount.value ? loadedCount.value + 1 : 1
+        items.value.push(item)
+      })
+  })
+}
+
 const base64ToBlob = (base64: string, type: string) => {
   return new Blob([Base64.toUint8Array(base64)], { type: type })
 }
+
 interface PreloadImageElement extends HTMLImageElement {
   loaded?: boolean
 }
+
 function onImgLoaded(e: Event, item: any) {
   const el = (e.composedPath && e.composedPath())[0] as PreloadImageElement
   !el.loaded && loadImage(el, item)
 }
+
 async function loadImage(el: PreloadImageElement, item: any) {
   if (item._src) return
   queue.add(async () => {
@@ -81,10 +102,11 @@ async function loadImage(el: PreloadImageElement, item: any) {
     loadedCount.value = loadedCount.value ? loadedCount.value + 1 : 1
   })
 }
+
 async function onScrollBottom() {
   if (isNextLoading.value) return
   console.log(isNextLoading.value);
-  
+
   isNextLoading.value = true
   try {
     query.value.page++
@@ -95,6 +117,7 @@ async function onScrollBottom() {
     isNextLoading.value = false
   }
 }
+
 function openChild(item: any) {
   childItem.value = item
   showCatalog.value = true
@@ -108,6 +131,7 @@ interface KeywordsOption {
     antecedent?: string
   }
 }
+
 const renderLabel = (option: KeywordsOption) => {
   const typeMap = {
     0: { type: 'General', color: '#0075f8' },
@@ -122,6 +146,7 @@ const renderLabel = (option: KeywordsOption) => {
   const type = typeMap[option.value.category]
   return [`${option.value.value}`, ` ${option.value.antecedent ? `→ ${option.value.antecedent} ` : ' '}`, h(NTag, { size: 'small', color: { color: type.color || 'black', borderColor: type.color || 'black', textColor: 'white' } }, { default: () => type.type || '' })]
 }
+
 const getKeywordsOptions = _.throttle(async (nv) => {
   keywordsOptions.value = []
   if (nv) {
@@ -171,7 +196,8 @@ function onItemDownload(item: ImageMeta) {
       template(v-slot="{item, index}")
         .list-item(v-if="item" @click="openChild(item)" :style="{opacity: item._src ? 1 : 0}")
           //- img.item-cover(v-show="item._src" :src="item._src || placeholder" @load="(e) => onImgLoaded(e, item)")
-          img.item-cover(:src="item._src || placeholder" @load="(e) => onImgLoaded(e, item)")
+          //- img.item-cover(:src="item._src || placeholder" @load="(e) => onImgLoaded(e, item)")
+          img.item-cover(:src="item._src || placeholder")
           .item-left-angle 
             .item-number-order {{ index + 1 }}
           .item-info 
